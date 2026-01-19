@@ -10,23 +10,21 @@ Get more context about this project on [our official page](https://www.invincibl
 
 ## How it works
 
-It is very similar to the [Unmute project](https://github.com/kyutai-labs/unmute); The main difference is that, instead of having the TTS reads out whatever the LLM answers, we ask the LLM to provide multiple possible answers and the TTS only uters the one selected by the user.
-
-Of course this experimental system has more features than just this, but this is the core idea.
+It is very similar to the [Unmute project](https://github.com/kyutai-labs/unmute); The main difference is that, instead of having the TTS reads out whatever the LLM answers, we ask the LLM to provide multiple possible answers and the TTS only utters the one selected by the user. This experimental system has more features than just this, in particular in the ways the LLM can be personnalized and the UI allows additional guidance of its answers, but this is the core idea.
 
 ## 🚀 Getting Started
 
 We plan to open soon an online version of the system, with TTS freely provived by Gradium. In the meantime, we explain below how to insall and run it locally, for developpers to start exploring it right away. 
 
-We provide two ways of doing this (see below); we recommend starting with the Gradium + Cerebras option, as it is easier to set up, and moving to the fully self-hosted option (Kyutai TTS/STT + vLLM) once you are more confortable with the project.
+We provide two ways of doing this (see below); we recommend starting with the Gradium STT/TTS + Cerebras LLM option, as it is easier to set up, and moving to the fully self-hosted option (Kyutai STT/TTS + vLLM) once you are more confortable with the project.
 
-### Using Gradium for TTS and STT, and an LLM service compatible with the OpenAI API
+### Using Gradium for STT/TTS and an LLM service compatible with the OpenAI API
 
 This is the easiest way to get started since it doesn't require a GPU nor much setup.
 
 #### The LLM service
 
-For the LLM, we recommend grabbing a key from [Cerebras](https://www.cerebras.ai/) as Cerebras has a very low latency and high throughput API, which is great for fast suggestions in the InvincibleVoice UI. The free tier is enough to get you started.
+For the LLM, we recommend grabbing a key from [Cerebras](https://www.cerebras.ai/) as their service has a very low latency and high throughput API, which is great for fast suggestions in the InvincibleVoice UI. The free tier is enough to get you started.
 We recommend:
 ```
 export KYUTAI_LLM_URL=https://api.cerebras.ai/v1
@@ -38,11 +36,7 @@ Of course anything else works as long as it is OpenAI compatible. Latency and th
 
 #### The audio services
 
-You can use [Gradium](https://gradium.ai/) for TTS and STT, as well as any provider for the LLM API. This is the easiest way to get started as it requires little setup.
-
-Concerning the TTS and STT, grab an API key from Gradium, the free tier should be enough to get you started.
-
-Then you need to set the following environment variables:
+You can use [Gradium](https://gradium.ai/) for STT and TTS by grabbing an API key from them, the free tier should be enough to get you started. Then you need to set the following environment variables:
 ```
 export GRADIUM_API_KEY=<your_gradium_api_key>
 export TTS_VOICE_ID=<desired_voice_id_it_is_optional>
@@ -72,8 +66,7 @@ export KYUTAI_LLM_MODEL=qwen-3-235b-a22b-instruct-2507  # or similar
 
 #### The audio services
 
-You'll need to set up both a TTS server and an STT server from Kyutai. For the moment we only support the server of [Delayed Stream Modelling](https://github.com/kyutai-labs/delayed-streams-modeling).
-
+You'll need to set up both STT and TTS servers from Kyutai. For the moment we only support the server of [Delayed Stream Modelling](https://github.com/kyutai-labs/delayed-streams-modeling).
 Then you need to set the following environment variables:
 ```
 export STT_IS_GRADIUM=false
