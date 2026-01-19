@@ -1,4 +1,4 @@
-![logo](images/logo.png)
+![logo](https://raw.githubusercontent.com/kyutai-labs/invincible-voice/refs/heads/main/images/logo.png)
 
 
 InvincibleVoice (formerly Unmute) is a real-time voice communication system
