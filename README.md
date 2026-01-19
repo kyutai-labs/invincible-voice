@@ -10,13 +10,13 @@ Get more context about this project on [our official page](https://www.invincibl
 
 ## How it works
 
-It is very similar to the [Unmute project](https://github.com/kyutai-labs/unmute), the main difference is that instead of having a TTS read out whatever the LLM answers, we ask the LLM to provide multiple possible answers and the TTS only plays the one selected by the user.
+It is very similar to the [Unmute project](https://github.com/kyutai-labs/unmute); The main difference is that, instead of having the TTS reads out whatever the LLM answers, we ask the LLM to provide multiple possible answers and the TTS only uters the one selected by the user.
 
 Of course this experimental system has more features than just this, but this is the core idea.
 
 ## 🚀 Getting Started
 
-We plan to open soon an online version of the system, with TTS freely provived by Gradiumm. In the meantime, we explain below how insall and run it locally, for developpers to start exploring it. 
+We plan to open soon an online version of the system, with TTS freely provived by Gradium. In the meantime, we explain below how to insall and run it locally, for developpers to start exploring it right away. 
 
 We provide two ways of doing this (see below); we recommend starting with the Gradium + Cerebras option, as it is easier to set up, and moving to the fully self-hosted option (Kyutai TTS/STT + vLLM) once you are more confortable with the project.
 
@@ -38,9 +38,9 @@ Of course anything else works as long as it is OpenAI compatible. Latency and th
 
 #### The audio services
 
-You can use [Gradium](https://gradium.ai/) for TTS and STT, as well as any LLM provider for the LLM api. This is the easiest way to get started as it requires little setup.
+You can use [Gradium](https://gradium.ai/) for TTS and STT, as well as any provider for the LLM API. This is the easiest way to get started as it requires little setup.
 
-Concerning the TTS and STT, grab an api key from Gradium, the free tier should be enough to get you started.
+Concerning the TTS and STT, grab an API key from Gradium, the free tier should be enough to get you started.
 
 Then you need to set the following environment variables:
 ```
@@ -59,7 +59,7 @@ docker compose up
 
 ### Using STT/TTS from Kyutai along with a self-hosted LLM
 
-If you have enough compute power, you can run the entire stack locally. This has the advantage of complete privacy and completely ownership of stack and data, but is more involved. This is nice for commercial use.
+If you have enough compute power, you can run the entire stack locally. This has the advantage of complete privacy and complete ownership of stack and data, but is more involved. This is nice for commercial use.
 
 #### The LLM service
 
