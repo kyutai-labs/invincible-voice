@@ -26,7 +26,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   frontend:
-    image: incincible-voice-frontend:latest
+    image: invincible-voice-frontend:latest
     build:
       context: services/frontend/
       dockerfile: hot-reloading.Dockerfile
