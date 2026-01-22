@@ -43,7 +43,7 @@ services:
       - "traefik.http.routers.frontend.priority=10" # lowest priority
 
   backend:
-    image: incincible-voice-backend:latest
+    image: invincible-voice-backend:latest
     platform: linux/amd64
     build:
       context: services/backend
