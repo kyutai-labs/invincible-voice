@@ -8,7 +8,7 @@ from fastapi.security import HTTPBearer
 from starlette.responses import Response
 
 from backend.kyutai_constants import (
-    KYUTAI_TTS_API_KEY,
+    KYUTAI_API_KEY,
     TTS_IS_GRADIUM,
     TTS_SERVER,
     get_tts_setup,
@@ -60,7 +60,7 @@ async def text_to_speech(
         response = await client.post(
             TTS_SERVER,
             json=query,
-            headers={"kyutai-api-key": KYUTAI_TTS_API_KEY},
+            headers={"kyutai-api-key": KYUTAI_API_KEY},
         )
 
     response.raise_for_status()
@@ -78,3 +78,11 @@ async def text_to_speech(
             "Cache-Control": "no-cache",
         },
     )
+
+
+@tts_router.get("/sample_rate")
+async def get_tts_sample_rate() -> Response:
+    if TTS_IS_GRADIUM:
+        return {"sample_rate": 48000} # Could be obtained from gradium client ?
+    else:
+        return {"sample_rate": 24000} # Kyutai TTS sample rate

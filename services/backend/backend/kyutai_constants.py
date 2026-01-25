@@ -18,7 +18,7 @@ KYUTAI_STT_URL = os.environ["KYUTAI_STT_URL"]
 TTS_IS_GRADIUM = is_env_true("TTS_IS_GRADIUM")
 TTS_SERVER = os.environ["TTS_SERVER"]
 
-KYUTAI_TTS_API_KEY = os.environ.get("KYUTAI_TTS_API_KEY")
+KYUTAI_API_KEY = os.environ.get("KYUTAI_API_KEY")
 
 LLM_API_KEY = os.environ["KYUTAI_LLM_API_KEY"]
 LLM_URL = os.environ["KYUTAI_LLM_URL"]

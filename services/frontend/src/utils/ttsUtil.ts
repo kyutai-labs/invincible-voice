@@ -14,7 +14,10 @@ export interface TTSOptions {
 export async function playTTSStream(
   options: TTSOptions,
 ): Promise<AudioContext> {
-  const SAMPLE_RATE = 48000;
+  /* Fetch sample rate from backend */
+  const SAMPLE_RATE = await fetch('/api/v1/tts/sample_rate').then((res) =>
+    res.json().then((data) => data.sample_rate),
+  );
   const { text, messageId, cacheType = 'temporary' } = options;
   const audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
 
