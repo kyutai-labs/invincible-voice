@@ -1,88 +1,37 @@
-from typing import Annotated, AsyncIterator
+from typing import Annotated
 
-import gradium
-import httpx
 from fastapi import APIRouter, Depends
-from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer
 from starlette.responses import Response
 
 from backend.kyutai_constants import (
-    KYUTAI_API_KEY,
-    TTS_IS_GRADIUM,
-    TTS_SERVER,
-    get_tts_setup,
+    TTS_PROVIDER
 )
 from backend.routes.user import get_current_user
 from backend.storage import UserData
 from backend.typing import TTSRequest
 
+from backend.tts.tts_utils import tts_pocket, tts_gradium, tts_dsm
+
 bearer_scheme = HTTPBearer()
 tts_router = APIRouter(prefix="/v1/tts", tags=["TTS"])
-
 
 @tts_router.post("/")
 async def text_to_speech(
     request: TTSRequest, _: Annotated[UserData, Depends(get_current_user)]
 ) -> Response:
-    if TTS_IS_GRADIUM:
-        client = gradium.client.GradiumClient(
-            base_url="https://eu.api.gradium.ai/api/",
-        )
+    if TTS_PROVIDER == "dsm":
+        return await tts_dsm(request.text)
 
-        # Get TTS setup configuration from constants
-        setup = get_tts_setup()
+    if TTS_PROVIDER == "gradium":
+        return await tts_gradium(request.text)
 
-        # Gradium streaming response
-        stream = await client.tts_stream(setup, text=request.text)
-
-        async def pcm_audio_generator():
-            async for chunk in stream.iter_bytes():
-                yield chunk
-
-        return StreamingResponse(
-            pcm_audio_generator(),
-            media_type="application/octet-stream",
-            headers={
-                "Accept-Ranges": "bytes",
-                "Cache-Control": "no-cache",
-            },
-        )
-
-    # Use Kyutai TTS
-    query = {
-        "text": request.text,
-        "voice": "unmute-prod-website/developer-1.mp3",
-        "temperature": 0.8,
-    }
-
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            TTS_SERVER,
-            json=query,
-            headers={"kyutai-api-key": KYUTAI_API_KEY},
-        )
-
-    response.raise_for_status()
-
-    data = response.content
-
-    async def audio_generator() -> AsyncIterator[bytes]:
-        yield data  # Maybe data.bytes ?
-
-    return StreamingResponse(
-        audio_generator(),
-        media_type="audio/wav",
-        headers={
-            "Accept-Ranges": "bytes",
-            "Cache-Control": "no-cache",
-        },
-    )
-
+    # Default to Pocket TTS
+    return await tts_pocket(request.text)
 
 @tts_router.get("/sample_rate")
 async def get_tts_sample_rate() -> Response:
-    if TTS_IS_GRADIUM:
+    if TTS_PROVIDER == "gradium":
         return {"sample_rate": 48000} # Could be obtained from gradium client ?
-    else:
+    else: # DSM and Pocket TTS
         return {"sample_rate": 24000} # Kyutai TTS sample rate

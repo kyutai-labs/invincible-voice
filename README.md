@@ -39,11 +39,11 @@ Of course anything else works as long as it is OpenAI compatible. Latency and th
 You can use [Gradium](https://gradium.ai/) for STT and TTS by grabbing an API key from them, the free tier should be enough to get you started. Then you need to set the following environment variables:
 ```
 export GRADIUM_API_KEY=<your_gradium_api_key>
-export TTS_VOICE_ID=<desired_voice_id_it_is_optional>
-export TTS_SERVER=https://eu.api.gradium.ai/api/
-export TTS_IS_GRADIUM=true
-export KYUTAI_STT_URL=wss://eu.api.gradium.ai/api/speech/asr
-export STT_IS_GRADIUM=true
+export KYUTAI_STT_PROVIDER=gradium
+export KYUTAI_STT_SERVER=wss://eu.api.gradium.ai/api/speech/asr
+export KYUTAI_TTS_PROVIDER=gradium
+export KYUTAI_TTS_VOICE_ID=<desired_voice_id_it_is_optional>
+export KYUTAI_TTS_SERVER=https://eu.api.gradium.ai/api/
 ```
 
 and then
@@ -66,13 +66,17 @@ export KYUTAI_LLM_MODEL=qwen-3-235b-a22b-instruct-2507  # or similar
 
 #### The audio services
 
-You'll need to set up both STT and TTS servers from Kyutai. For the moment we only support the server of [Delayed Stream Modelling](https://github.com/kyutai-labs/delayed-streams-modeling).
-Then you need to set the following environment variables:
+You’ll need to set up both STT and TTS servers from Kyutai.
+For STT, we only support the [Delayed Stream Modelling](https://github.com/kyutai-labs/delayed-streams-modeling) server for the moment.
+For TTS, we support both the [Delayed Stream Modelling](https://github.com/kyutai-labs/delayed-streams-modeling) and [Pocket TTS](https://github.com/kyutai-labs/pocket-tts) servers. If you don’t set up a TTS server, the Python API of [Pocket TTS](https://github.com/kyutai-labs/pocket-tts) will be used automatically.
+Then, you need to set the following environment variables:
+
 ```
-export STT_IS_GRADIUM=false
-export TTS_IS_GRADIUM=false
-export TTS_SERVER=<your_tts_server_url>
-export KYUTAI_STT_URL=<your_stt_server_url>
+export KYUTAI_STT_PROVIDER=dsm
+export KYUTAI_STT_SERVER=<your_stt_server_url>
+export KYUTAI_TTS_PROVIDER=<pocket/dsm>
+export KYUTAI_TTS_SERVER=<your_tts_server_url_optional_with_pocket>
+export KYUTAI_TTS_VOICE_ID=<desired_voice_id_it_is_optional>
 export KYUTAI_API_KEY=<your_kyutai_api_key>
 ```
 

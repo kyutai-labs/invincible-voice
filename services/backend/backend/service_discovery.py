@@ -12,14 +12,14 @@ from functools import partial, wraps
 
 from backend import metrics as mt
 from backend.exceptions import MissingServiceAtCapacity, MissingServiceTimeout
-from backend.kyutai_constants import KYUTAI_STT_URL, LLM_URL
+from backend.kyutai_constants import STT_SERVER, LLM_URL
 from backend.timer import Stopwatch
 
 logger = logging.getLogger(__name__)
 
 # Always use Gradium STT
 SERVICES = {
-    "stt": (KYUTAI_STT_URL, False),
+    "stt": (STT_SERVER, False),
     "llm": (LLM_URL, True),
 }
 K = tp.TypeVar("K", bound=tp.Hashable)

@@ -4,6 +4,8 @@ from pathlib import Path
 
 
 def is_env_true(env_var_name: str) -> bool:
+    if env_var_name not in os.environ:
+        return False
     env_var_value = os.environ[env_var_name]
 
     env_var_lower = env_var_value.lower()
@@ -11,12 +13,23 @@ def is_env_true(env_var_name: str) -> bool:
         raise ValueError(f"Invalid boolean value: {env_var_value}")
     return env_var_lower in ("true", "1")
 
-
 # The defaults are already ws://, but make the env vars support http:// and https://
-STT_IS_GRADIUM = is_env_true("STT_IS_GRADIUM")
-KYUTAI_STT_URL = os.environ["KYUTAI_STT_URL"]
-TTS_IS_GRADIUM = is_env_true("TTS_IS_GRADIUM")
-TTS_SERVER = os.environ["TTS_SERVER"]
+# STT Configuration
+STT_PROVIDER = os.environ.get("KYUTAI_STT_PROVIDER").lower()
+if STT_PROVIDER not in ("gradium", "dsm"):
+    raise ValueError(f"Invalid KYUTAI_STT_PROVIDER: {STT_PROVIDER}, must be 'gradium' or 'dsm'")
+STT_SERVER = os.environ["KYUTAI_STT_SERVER"]
+
+# TTS Configuration
+TTS_SERVER = os.environ["KYUTAI_TTS_SERVER"]
+TTS_PROVIDER = os.environ.get("KYUTAI_TTS_PROVIDER").lower()
+if not TTS_PROVIDER:
+    # Default to Pocket TTS
+    TTS_PROVIDER = "pocket"
+if TTS_PROVIDER not in ("pocket", "gradium", "dsm"):
+    raise ValueError(f"Invalid KYUTAI_TTS_PROVIDER: {TTS_PROVIDER}, must be 'pocket', 'gradium', or 'dsm'")
+if TTS_SERVER == "": # If empty we force local Pocket TTS
+    TTS_PROVIDER = "pocket"
 
 KYUTAI_API_KEY = os.environ.get("KYUTAI_API_KEY")
 
@@ -45,7 +58,14 @@ USERS_SETTINGS_AND_HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # TTS Configuration
-DEFAULT_TTS_VOICE = "kelly"
+TTS_VOICE_ID = os.environ.get("KYUTAI_TTS_VOICE_ID")
+if not TTS_VOICE_ID:
+    if TTS_PROVIDER == "gradium":
+        TTS_VOICE_ID = "Lxc7YlPC8ckLJA8H" # Kelly
+    elif TTS_PROVIDER == "dsm":
+        TTS_VOICE_ID = "unmute-prod-website/developer-1.mp3"
+    else:  # TTS_PROVIDER == "pocket"
+        TTS_VOICE_ID = "alba"
 TTS_OUTPUT_FORMAT = "pcm"
 
 # We prefer to scale this by running more instances of the server than having a single
@@ -56,8 +76,4 @@ SEMAPHORE = asyncio.Semaphore(MAX_CLIENTS)
 
 def get_tts_setup() -> dict[str, str]:
     """Get TTS setup configuration based on environment variables."""
-    tts_voice_id = os.environ.get("TTS_VOICE_ID")
-    if tts_voice_id:
-        return {"voice_id": tts_voice_id, "output_format": TTS_OUTPUT_FORMAT}
-    else:
-        return {"voice": DEFAULT_TTS_VOICE, "output_format": TTS_OUTPUT_FORMAT}
+    return {"voice_id": TTS_VOICE_ID, "output_format": TTS_OUTPUT_FORMAT}
