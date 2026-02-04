@@ -1,10 +1,9 @@
-import os
 from typing import Annotated
 
 import gradium
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.kyutai_constants import DEFAULT_TTS_VOICE, TTS_IS_GRADIUM
+from backend.kyutai_constants import TTS_IS_GRADIUM, TTS_VOICE_ID
 from backend.routes.user import get_current_user
 from backend.storage import UserData
 from backend.typing import VoiceSelectionRequest
@@ -16,8 +15,7 @@ async def _get_available_voices() -> dict[str, str]:
     """Get available voices based on the TTS provider."""
     if not TTS_IS_GRADIUM:
         # For Kyutai TTS, return the configured voice with unknown language
-        tts_voice_id = os.environ.get("TTS_VOICE_ID", DEFAULT_TTS_VOICE)
-        return {tts_voice_id: "unknown"}
+        return {TTS_VOICE_ID: "unknown"}
 
     client = gradium.GradiumClient(
         base_url="https://eu.api.gradium.ai/api/",
