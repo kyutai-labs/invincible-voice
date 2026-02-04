@@ -53,16 +53,23 @@ services:
     volumes:
       - /users_data:/users_data
     environment:
-      - KYUTAI_LLM_URL=https://openrouter.ai/api
-      - KYUTAI_LLM_MODEL=${KYUTAI_LLM_MODEL}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - TTS_LOCK_TTL_SECONDS=300
+      - STT_LOCK_TTL_SECONDS=600
+      - KYUTAI_LLM_URL=https://openrouter.ai/api/v1
       - KYUTAI_LLM_API_KEY=${KYUTAI_LLM_API_KEY}
-      - GRADIUM_API_KEY=${GRADIUM_API_KEY}
-      - TTS_VOICE_ID=${TTS_VOICE_ID}
-      - TTS_URL=${TTS_URL}
-      - TTS_IS_GRADIUM=${TTS_IS_GRADIUM}
-      - STT_URL=${STT_URL}
-      - STT_IS_GRADIUM=${STT_IS_GRADIUM}
+      - KYUTAI_LLM_MODEL=@preset/invincible-voice
       - KYUTAI_USERS_DATA_PATH=/users_data
+      - SECRET_KEY=${SECRET_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GRADIUM_API_KEY=${GRADIUM_API_KEY}
+      # TODO: allow dynamic voice selection
+      - TTS_VOICE_ID=${TTS_VOICE_ID}
+      - STT_IS_GRADIUM=true
+      - KYUTAI_STT_URL=wss://eu.api.gradium.ai/api/speech/asr
+      - TTS_IS_GRADIUM=true
+      - TTS_SERVER=https://eu.api.gradium.ai/api/
     deploy:
       labels:
         - "traefik.enable=true"
