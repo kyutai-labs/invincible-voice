@@ -68,5 +68,4 @@ async def list_voices() -> dict[str, str]:
     For Kyutai TTS, returns {TTS_VOICE_ID: "unknown"}.
     """
     list_of_voices = await _get_available_voices()
-    print(list_of_voices)
     return {name: lang for name, (_, lang) in list_of_voices.items()}

@@ -225,7 +225,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   // Handle voice creation
   const handleCreateVoice = useCallback(async () => {
     if (!voiceUploadFile || !voiceUploadName.trim()) {
-      setVoiceUploadError('Veuillez fournir un fichier audio et un nom pour la voix');
+      setVoiceUploadError(
+        'Veuillez fournir un fichier audio et un nom pour la voix',
+      );
       return;
     }
 
@@ -244,7 +246,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
         // Refresh the voices list with a small delay to allow the API to process the new voice
         setIsLoadingVoices(true);
         // Wait a bit for the API to index the new voice
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise<void>((resolve) => {
+          setTimeout(() => resolve(), 500);
+        });
         const voicesResult = await getVoices();
         if (voicesResult.data) {
           setAvailableVoices(voicesResult.data);
@@ -261,7 +265,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
         setShowVoiceUpload(false);
       }
     } catch (err) {
-      setVoiceUploadError(err instanceof Error ? err.message : 'An error occurred');
+      setVoiceUploadError(
+        err instanceof Error ? err.message : 'An error occurred',
+      );
     } finally {
       setIsCreatingVoice(false);
     }
@@ -452,10 +458,14 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               <div className='mt-2 px-4 py-3 bg-[#181818] border border-white rounded-2xl'>
                 <div className='flex flex-col gap-3'>
                   <div className='flex flex-col gap-1'>
-                    <label className='text-xs font-medium text-gray-300'>
+                    <label
+                      htmlFor='voice-upload-name-input'
+                      className='text-xs font-medium text-gray-300'
+                    >
                       Nom de la voix
                     </label>
                     <input
+                      id='voice-upload-name-input'
                       type='text'
                       value={voiceUploadName}
                       onChange={(e) => setVoiceUploadName(e.target.value)}
@@ -464,10 +474,14 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     />
                   </div>
                   <div className='flex flex-col gap-1'>
-                    <label className='text-xs font-medium text-gray-300'>
+                    <label
+                      htmlFor='voice-upload-file-input'
+                      className='text-xs font-medium text-gray-300'
+                    >
                       Fichier audio (WAV)
                     </label>
                     <input
+                      id='voice-upload-file-input'
                       type='file'
                       accept='.wav'
                       onChange={handleVoiceFileChange}
@@ -493,11 +507,18 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     <button
                       type='button'
                       onClick={handleCreateVoice}
-                      disabled={isCreatingVoice || !voiceUploadFile || !voiceUploadName.trim()}
+                      disabled={
+                        isCreatingVoice ||
+                        !voiceUploadFile ||
+                        !voiceUploadName.trim()
+                      }
                       className='flex-1 px-4 py-2 text-sm text-white bg-[#39F2AE] rounded-xl focus:outline-none hover:bg-[#2EDB9B] disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                       {isCreatingVoice ? (
-                        <LoaderCircleIcon size={16} className='animate-spin mx-auto' />
+                        <LoaderCircleIcon
+                          size={16}
+                          className='animate-spin mx-auto'
+                        />
                       ) : (
                         'Créer la voix'
                       )}
