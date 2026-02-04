@@ -1,4 +1,11 @@
 services:
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+    labels:
+      - "traefik.enable=false"
+
   traefik:
     image: traefik:v3.6.6
     command:
@@ -52,6 +59,10 @@ services:
       - ./services/backend/backend:/app/backend
       - ./volumes/users_data:/users_data
     environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - TTS_LOCK_TTL_SECONDS=300
+      - STT_LOCK_TTL_SECONDS=600
       - KYUTAI_LLM_URL=${KYUTAI_LLM_URL}
       - KYUTAI_LLM_API_KEY=${KYUTAI_LLM_API_KEY}
       - KYUTAI_LLM_MODEL=${KYUTAI_LLM_MODEL}

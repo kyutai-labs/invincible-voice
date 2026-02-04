@@ -1,4 +1,3 @@
-import asyncio
 import os
 from pathlib import Path
 
@@ -25,6 +24,12 @@ LLM_URL = os.environ["KYUTAI_LLM_URL"]
 LLM_MODEL = os.environ["KYUTAI_LLM_MODEL"]
 # If None, a dict-based cache will be used instead of Redis
 
+# Redis Configuration for Locking
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+TTS_LOCK_TTL_SECONDS = int(os.getenv("TTS_LOCK_TTL_SECONDS", "300"))
+STT_LOCK_TTL_SECONDS = int(os.getenv("STT_LOCK_TTL_SECONDS", "600"))
+
 # Also checked on the frontend, see constant of the same name
 MAX_VOICE_FILE_SIZE_MB = 4
 
@@ -47,11 +52,6 @@ USERS_SETTINGS_AND_HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 # TTS Configuration
 DEFAULT_TTS_VOICE = "kelly"
 TTS_OUTPUT_FORMAT = "pcm"
-
-# We prefer to scale this by running more instances of the server than having a single
-# server handle more. This is to avoid the GIL.
-MAX_CLIENTS = 4
-SEMAPHORE = asyncio.Semaphore(MAX_CLIENTS)
 
 
 def get_tts_setup() -> dict[str, str]:

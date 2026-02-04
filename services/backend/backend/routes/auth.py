@@ -1,17 +1,21 @@
 import uuid
-from fastapi import APIRouter, HTTPException, Depends, status
-from fastapi.security import OAuth2PasswordRequestForm
 
-from backend.typing import UserSettings, GoogleAuthRequest
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from typing_extensions import Annotated
+
 from backend.libs.google import verify_google_token
-from backend.storage import get_user_data_path, get_user_data_from_storage, UserData
-from backend.security import verify_password, create_access_token, hash_password
+from backend.security import create_access_token, hash_password, verify_password
+from backend.storage import UserData, get_user_data_from_storage, get_user_data_path
+from backend.typing import GoogleAuthRequest, UserSettings
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @auth_router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
+def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+):
     user = get_user_data_from_storage(form_data.username)
 
     if not user or not verify_password(form_data.password, user.hashed_password):
@@ -27,7 +31,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @auth_router.post("/register")
-def register(form_data: OAuth2PasswordRequestForm = Depends()):
+def register(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+):
     user_data_path = get_user_data_path(form_data.username)
     if user_data_path.exists():
         raise HTTPException(
@@ -79,7 +85,7 @@ def google_login(data: GoogleAuthRequest):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Account exists, login with password",
             )
-    except:
+    except FileNotFoundError:
         user = UserData(
             user_id=uuid.uuid4(),
             email=email,

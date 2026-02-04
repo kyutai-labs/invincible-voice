@@ -1,23 +1,27 @@
-import logging
 import datetime as dt
+import logging
+
 from fastapi import (
+    APIRouter,
+    Depends,
     HTTPException,
     WebSocket,
     status,
-    APIRouter,
-    Depends,
 )
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from typing_extensions import Annotated
 
 from backend import metrics as mt
+from backend.kyutai_constants import REDIS_HOST, REDIS_PORT, STT_LOCK_TTL_SECONDS
+from backend.libs.tts_lock import RedisLockManager
+from backend.libs.websockets import report_websocket_exception, run_route
+from backend.security import decode_access_token
+from backend.storage import UserData, get_user_data_from_storage
 from backend.timer import Stopwatch
 from backend.typing import UserSettings
 from backend.unmute_handler import UnmuteHandler
-from backend.kyutai_constants import SEMAPHORE
-from backend.security import decode_access_token
-from backend.storage import UserData, get_user_data_from_storage
-from backend.libs.websockets import report_websocket_exception, run_route
+
+_stt_lock_manager = RedisLockManager(REDIS_HOST, REDIS_PORT, STT_LOCK_TTL_SECONDS)
 
 _current_profile = None
 
@@ -43,7 +47,7 @@ def get_current_user_from_bearer(bearer: str) -> UserData:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
-        )
+        ) from None
 
     email = payload.get("sub")
     if not email:
@@ -63,19 +67,22 @@ def get_current_user_from_bearer(bearer: str) -> UserData:
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
 ) -> UserData:
     return get_current_user_from_bearer(credentials.credentials)
 
 
-@user_router.get("/")
-def get_me(user: UserData = Depends(get_current_user)) -> UserData:
+@user_router.get("")
+def get_me(
+    user: Annotated[UserData, Depends(get_current_user)],
+) -> UserData:
     return user
 
 
 @user_router.post("/settings")
 def update_user_settings(
-    settings: UserSettings, user: UserData = Depends(get_current_user)
+    settings: UserSettings,
+    user: Annotated[UserData, Depends(get_current_user)],
 ):
     user.user_settings = settings
     user.save()
@@ -83,7 +90,8 @@ def update_user_settings(
 
 @user_router.delete("/conversations/{conversation_id}")
 def delete_conversation(
-    conversation_id: int, user: UserData = Depends(get_current_user)
+    conversation_id: int,
+    user: Annotated[UserData, Depends(get_current_user)],
 ):
     del user.conversations[conversation_id]
     user.save()
@@ -129,7 +137,7 @@ async def websocket_route(
             frame = frame.f_back
         _current_profile.start(caller_frame=frame)
 
-    async with SEMAPHORE:
+    async with _stt_lock_manager.acquire_lock(str(user.email), "stt"):
         try:
             # The `subprotocol` argument is important because the client specifies what
             # protocol(s) it supports and OpenAI uses "realtime" as the value. If we

@@ -1,7 +1,7 @@
 from functools import partial
 
-from backend.typing import HealthStatus
 from backend.service_discovery import async_ttl_cached
+from backend.typing import HealthStatus
 
 
 @partial(async_ttl_cached, ttl_sec=0.5)

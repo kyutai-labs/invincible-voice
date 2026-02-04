@@ -1,8 +1,8 @@
+from fastapi import status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.types import ASGIApp
 from starlette.requests import Request
 from starlette.responses import Response
-from fastapi import status
+from starlette.types import ASGIApp
 
 
 class LimitUploadSizeForPath(BaseHTTPMiddleware):

@@ -2,15 +2,15 @@ import logging
 import uuid
 from pathlib import Path
 from typing import Literal
-from fastapi import HTTPException, status
 
 import humanize
 import pydantic
+from fastapi import HTTPException, status
 
 from backend import kyutai_constants
 from backend import openai_realtime_api_events as ora
 from backend.llm.system_prompt import BASE_SYSTEM_PROMPT
-from backend.typing import UserSettings, Conversation, LLMMessage, SpeakerMessage
+from backend.typing import Conversation, LLMMessage, SpeakerMessage, UserSettings
 
 logger = logging.getLogger(__name__)
 
