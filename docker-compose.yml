@@ -1,10 +1,4 @@
 services:
-  redis:
-    image: redis:8-alpine
-    ports:
-      - "6379:6379"
-    labels:
-      - "traefik.enable=false"
 
   traefik:
     image: traefik:v3.6.6
@@ -86,7 +80,13 @@ services:
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=80"
       - "traefik.http.routers.backend.priority=100" # higher priority than frontend
-      - "prometheus-port=80"
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+    labels:
+      - "traefik.enable=false"
 
 networks:
   default:
