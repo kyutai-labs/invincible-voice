@@ -47,3 +47,7 @@ jobs:
       - name: Run ESLint
         working-directory: services/frontend
         run: pnpm lint
+
+      - name: Build frontend
+        working-directory: services/frontend
+        run: pnpm build
