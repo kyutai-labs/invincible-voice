@@ -47,17 +47,4 @@ USERS_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 
 USERS_SETTINGS_AND_HISTORY_DIR = USERS_DATA_DIR / "user_settings_and_history"
 USERS_SETTINGS_AND_HISTORY_DIR.mkdir(parents=True, exist_ok=True)
-
-
-# TTS Configuration
-DEFAULT_TTS_VOICE = "kelly"
-TTS_OUTPUT_FORMAT = "pcm"
-
-
-def get_tts_setup() -> dict[str, str]:
-    """Get TTS setup configuration based on environment variables."""
-    tts_voice_id = os.environ.get("TTS_VOICE_ID")
-    if tts_voice_id:
-        return {"voice_id": tts_voice_id, "output_format": TTS_OUTPUT_FORMAT}
-    else:
-        return {"voice": DEFAULT_TTS_VOICE, "output_format": TTS_OUTPUT_FORMAT}
+TTS_VOICE_ID = os.environ.get("TTS_VOICE_ID", "kelly")
