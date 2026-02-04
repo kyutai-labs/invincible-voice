@@ -20,6 +20,7 @@ import {
   updateUserSettings,
   Document,
   getVoices,
+  createVoice,
 } from '@/utils/userData';
 import DocumentEditorPopup from './DocumentEditorPopup';
 
@@ -50,6 +51,11 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   > | null>(null);
   const [isLoadingVoices, setIsLoadingVoices] = useState(false);
   const [isPlayingVoice, setIsPlayingVoice] = useState(false);
+  const [isCreatingVoice, setIsCreatingVoice] = useState(false);
+  const [showVoiceUpload, setShowVoiceUpload] = useState(false);
+  const [voiceUploadFile, setVoiceUploadFile] = useState<File | null>(null);
+  const [voiceUploadName, setVoiceUploadName] = useState<string>('');
+  const [voiceUploadError, setVoiceUploadError] = useState<string | null>(null);
   const promptTokenCount = useMemo(
     () => estimateTokens(formData.prompt),
     [formData.prompt],
@@ -215,6 +221,67 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
       setIsPlayingVoice(false);
     }
   }, [formData.voice]);
+
+  // Handle voice creation
+  const handleCreateVoice = useCallback(async () => {
+    if (!voiceUploadFile || !voiceUploadName.trim()) {
+      setVoiceUploadError('Veuillez fournir un fichier audio et un nom pour la voix');
+      return;
+    }
+
+    setIsCreatingVoice(true);
+    setVoiceUploadError(null);
+
+    try {
+      const result = await createVoice(voiceUploadFile, voiceUploadName);
+
+      if (result.error) {
+        setVoiceUploadError(result.error);
+        return;
+      }
+
+      if (result.data) {
+        // Refresh the voices list with a small delay to allow the API to process the new voice
+        setIsLoadingVoices(true);
+        // Wait a bit for the API to index the new voice
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const voicesResult = await getVoices();
+        if (voicesResult.data) {
+          setAvailableVoices(voicesResult.data);
+          // Select the newly created voice
+          handleInputChange('voice', result.data.name);
+        } else {
+          console.error('Failed to fetch voices:', voicesResult.error);
+        }
+        setIsLoadingVoices(false);
+
+        // Reset the upload form
+        setVoiceUploadFile(null);
+        setVoiceUploadName('');
+        setShowVoiceUpload(false);
+      }
+    } catch (err) {
+      setVoiceUploadError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsCreatingVoice(false);
+    }
+  }, [voiceUploadFile, voiceUploadName, handleInputChange]);
+
+  // Handle voice file selection
+  const handleVoiceFileChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        if (!file.name.toLowerCase().endsWith('.wav')) {
+          setVoiceUploadError('Veuillez fournir un fichier WAV');
+          return;
+        }
+        setVoiceUploadFile(file);
+        setVoiceUploadError(null);
+      }
+    },
+    [],
+  );
   const handleSave = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -372,6 +439,73 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 Tester votre voix
               </button>
             </div>
+            {!showVoiceUpload && (
+              <button
+                type='button'
+                onClick={() => setShowVoiceUpload(true)}
+                className='mt-2 px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green hover:bg-[#2B2B2B]'
+              >
+                Cloner votre propre voix
+              </button>
+            )}
+            {showVoiceUpload && (
+              <div className='mt-2 px-4 py-3 bg-[#181818] border border-white rounded-2xl'>
+                <div className='flex flex-col gap-3'>
+                  <div className='flex flex-col gap-1'>
+                    <label className='text-xs font-medium text-gray-300'>
+                      Nom de la voix
+                    </label>
+                    <input
+                      type='text'
+                      value={voiceUploadName}
+                      onChange={(e) => setVoiceUploadName(e.target.value)}
+                      className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green'
+                      placeholder='Ma voix'
+                    />
+                  </div>
+                  <div className='flex flex-col gap-1'>
+                    <label className='text-xs font-medium text-gray-300'>
+                      Fichier audio (WAV)
+                    </label>
+                    <input
+                      type='file'
+                      accept='.wav'
+                      onChange={handleVoiceFileChange}
+                      className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green file:mr-4 file:py-1 file:px-4 file:rounded-lg file:border-0 file:bg-[#39F2AE] file:text-black file:text-sm file:cursor-pointer'
+                    />
+                  </div>
+                  {voiceUploadError && (
+                    <p className='text-xs text-red-400'>{voiceUploadError}</p>
+                  )}
+                  <div className='flex gap-2'>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        setShowVoiceUpload(false);
+                        setVoiceUploadFile(null);
+                        setVoiceUploadName('');
+                        setVoiceUploadError(null);
+                      }}
+                      className='flex-1 px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green hover:bg-[#2B2B2B]'
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type='button'
+                      onClick={handleCreateVoice}
+                      disabled={isCreatingVoice || !voiceUploadFile || !voiceUploadName.trim()}
+                      className='flex-1 px-4 py-2 text-sm text-white bg-[#39F2AE] rounded-xl focus:outline-none hover:bg-[#2EDB9B] disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                      {isCreatingVoice ? (
+                        <LoaderCircleIcon size={16} className='animate-spin mx-auto' />
+                      ) : (
+                        'Créer la voix'
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <div className='flex flex-col flex-1 gap-2'>
             <div className='flex items-center justify-between mb-1'>

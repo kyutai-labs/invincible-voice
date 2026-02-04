@@ -283,3 +283,49 @@ export async function selectVoice(
     };
   }
 }
+
+/**
+ * Creates a new voice by uploading an audio file
+ * POST /v1/voices/create
+ *
+ * @param audioFile - The audio file (WAV) to use for voice cloning
+ * @param name - The name for the new voice
+ * @returns Promise<ApiResponse<{ uid: string; name: string }>>
+ */
+export async function createVoice(
+  audioFile: File,
+  name: string,
+): Promise<ApiResponse<{ uid: string; name: string }>> {
+  try {
+    const url = `/api/v1/voices/create`;
+
+    const formData = new FormData();
+    formData.append('audio_file', audioFile);
+    formData.append('name', name);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: addAuthHeaders({}),
+      body: formData,
+    });
+
+    if (!response.ok) {
+      return {
+        error: `Failed to create voice: ${response.status} ${response.statusText}`,
+        status: response.status,
+      };
+    }
+
+    const data: { uid: string; name: string } = await response.json();
+
+    return {
+      data,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      status: 0,
+    };
+  }
+}
