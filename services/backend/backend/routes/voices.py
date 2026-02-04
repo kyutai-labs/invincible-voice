@@ -10,7 +10,7 @@ from backend.kyutai_constants import TTS_IS_GRADIUM, TTS_VOICE_ID
 voices_router = APIRouter(prefix="/v1", tags=["Voices"])
 
 
-async def _get_available_voices() -> dict[str, tuple[str, str]]:
+async def _get_available_voices(user_name: str) -> dict[str, tuple[str, str]]:
     """Get available voices based on the TTS provider."""
     if not TTS_IS_GRADIUM:
         # For Kyutai TTS, return the configured voice with unknown language
@@ -22,10 +22,15 @@ async def _get_available_voices() -> dict[str, tuple[str, str]]:
 
     voices = await client.voice_get(include_catalog=True)
     # Return only catalog voices (built-in), format as {name: language}
-    return {
-        voice["name"]: (voice["uid"], voice.get("language") or "Custom voice")
-        for voice in voices
-    }
+    result = {}
+    for voice in voices:
+        if voice.get("is_catalog", False):
+            result[voice["name"]] = (voice["uid"], voice.get("language") or "unknown")
+        else:
+            # For custome voices, it's username/voice_name
+            if voice["name"].startswith(f"{user_name}/"):
+                result[voice["name"]] = (voice["uid"], "Custom voice")
+    return result
 
 
 @voices_router.post("/voices/create")
