@@ -23,7 +23,7 @@ tts_router = APIRouter(prefix="/v1/tts", tags=["TTS"])
 
 @tts_router.post("/")
 async def text_to_speech(
-    request: TTSRequest, _: Annotated[UserData, Depends(get_current_user)]
+    request: TTSRequest, user: Annotated[UserData, Depends(get_current_user)]
 ) -> Response:
     if TTS_IS_GRADIUM:
         client = gradium.client.GradiumClient(
@@ -32,6 +32,10 @@ async def text_to_speech(
 
         # Get TTS setup configuration from constants
         setup = get_tts_setup()
+
+        # Override voice if user has selected one
+        if user.user_settings.voice:
+            setup["voice"] = user.user_settings.voice
 
         # Gradium streaming response
         stream = await client.tts_stream(setup, text=request.text)
@@ -50,9 +54,14 @@ async def text_to_speech(
         )
 
     # Use Kyutai TTS
+    voice = (
+        user.user_settings.voice
+        if user.user_settings.voice
+        else "unmute-prod-website/developer-1.mp3"
+    )
     query = {
         "text": request.text,
-        "voice": "unmute-prod-website/developer-1.mp3",
+        "voice": voice,
         "temperature": 0.8,
     }
 

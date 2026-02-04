@@ -19,7 +19,7 @@ from backend.kyutai_constants import (
 from backend.libs.files import LimitUploadSizeForPath
 from backend.libs.health import get_health
 from backend.libs.tts_lock import TTSLockMiddleware
-from backend.routes import auth_router, tts_router, user_router
+from backend.routes import auth_router, tts_router, user_router, voices_router
 
 app = FastAPI(openapi_prefix="/api")
 
@@ -58,6 +58,7 @@ app.add_middleware(
 app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(tts_router)
+app.include_router(voices_router)
 
 app.add_middleware(
     LimitUploadSizeForPath,

@@ -38,6 +38,7 @@ class UserSettings(pydantic.BaseModel):
     friends: list[str]
     documents: list[Document] = pydantic.Field(default_factory=list)
     thinking_mode: bool = False
+    voice: str | None = None
 
 
 class GoogleAuthRequest(pydantic.BaseModel):
@@ -58,3 +59,7 @@ class HealthStatus(pydantic.BaseModel):
 class TTSRequest(pydantic.BaseModel):
     text: str
     message_id: uuid.UUID
+
+
+class VoiceSelectionRequest(pydantic.BaseModel):
+    voice: str
