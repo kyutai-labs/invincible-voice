@@ -25,6 +25,12 @@ LLM_URL = os.environ["KYUTAI_LLM_URL"]
 LLM_MODEL = os.environ["KYUTAI_LLM_MODEL"]
 # If None, a dict-based cache will be used instead of Redis
 
+# Redis Configuration for Locking
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+TTS_LOCK_TTL_SECONDS = int(os.getenv("TTS_LOCK_TTL_SECONDS", "300"))
+STT_LOCK_TTL_SECONDS = int(os.getenv("STT_LOCK_TTL_SECONDS", "600"))
+
 # Also checked on the frontend, see constant of the same name
 MAX_VOICE_FILE_SIZE_MB = 4
 
