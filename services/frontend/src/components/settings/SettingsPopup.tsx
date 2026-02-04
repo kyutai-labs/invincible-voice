@@ -344,8 +344,10 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               >
                 <option value=''>Par défaut</option>
                 {availableVoices &&
-                  Object.entries(availableVoices).map(
-                    ([voiceName, language]) => (
+                  Object.entries(availableVoices)
+                    .sort(([, langA], [, langB]) => langA.localeCompare(langB))
+                    .map(
+                      ([voiceName, language]) => (
                       <option
                         key={voiceName}
                         value={voiceName}
