@@ -24,6 +24,9 @@ dependencies = [
     "pwdlib[argon2]",
     "google-auth",
     "av==14.0.1",
+    "pocket-tts",
+    "huggingface_hub[hf_xet]",
+    "hf_xet"
 ]
 
 [build-system]
