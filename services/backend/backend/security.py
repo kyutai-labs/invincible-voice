@@ -1,9 +1,9 @@
 import os
-import jwt
-from pwdlib import PasswordHash
-
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+
+import jwt
+from pwdlib import PasswordHash
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 if SECRET_KEY is None:

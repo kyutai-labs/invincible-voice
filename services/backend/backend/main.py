@@ -1,26 +1,24 @@
 import logging
 from typing import Annotated
 
-from backend.kyutai_constants import (
-    MAX_VOICE_FILE_SIZE_MB,
-    REDIS_HOST,
-    REDIS_PORT,
-    STT_LOCK_TTL_SECONDS,
-    TTS_LOCK_TTL_SECONDS,
-)
-from backend.libs.health import get_health
-from backend.libs.tts_lock import TTSLockMiddleware
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import Field, TypeAdapter
 from starlette.requests import Request
 
 import backend.openai_realtime_api_events as ora
 from backend import metrics as mt
+from backend.kyutai_constants import (
+    MAX_VOICE_FILE_SIZE_MB,
+    REDIS_HOST,
+    REDIS_PORT,
+    TTS_LOCK_TTL_SECONDS,
+)
 from backend.libs.files import LimitUploadSizeForPath
+from backend.libs.health import get_health
+from backend.libs.tts_lock import TTSLockMiddleware
 from backend.routes import auth_router, tts_router, user_router
 
 app = FastAPI(openapi_prefix="/api")

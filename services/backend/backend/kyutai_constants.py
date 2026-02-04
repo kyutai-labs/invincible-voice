@@ -1,4 +1,3 @@
-import asyncio
 import os
 from pathlib import Path
 
@@ -53,11 +52,6 @@ USERS_SETTINGS_AND_HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 # TTS Configuration
 DEFAULT_TTS_VOICE = "kelly"
 TTS_OUTPUT_FORMAT = "pcm"
-
-# We prefer to scale this by running more instances of the server than having a single
-# server handle more. This is to avoid the GIL.
-MAX_CLIENTS = 4
-SEMAPHORE = asyncio.Semaphore(MAX_CLIENTS)
 
 
 def get_tts_setup() -> dict[str, str]:

@@ -2,9 +2,10 @@ import asyncio
 import base64
 import json
 import logging
-import sphn
-import numpy as np
 from typing import Annotated
+
+import numpy as np
+import sphn
 from fastapi import WebSocket, WebSocketDisconnect, status
 from fastapi.websockets import WebSocketState
 from fastrtc import AdditionalOutputs, CloseStream, audio_to_float32
@@ -18,10 +19,9 @@ from backend.exceptions import (
     WebSocketClosedError,
     make_ora_error,
 )
-from backend.libs.health import get_health
 from backend.kyutai_constants import SAMPLE_RATE
+from backend.libs.health import get_health
 from backend.unmute_handler import UnmuteHandler
-
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
