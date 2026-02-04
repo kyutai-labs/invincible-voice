@@ -1,12 +1,7 @@
-from typing import Annotated
-
 import gradium
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter
 
 from backend.kyutai_constants import TTS_IS_GRADIUM, TTS_VOICE_ID
-from backend.routes.user import get_current_user
-from backend.storage import UserData
-from backend.typing import VoiceSelectionRequest
 
 voices_router = APIRouter(prefix="/v1", tags=["Voices"])
 
@@ -39,25 +34,3 @@ async def list_voices() -> dict[str, str]:
     """
     list_of_voices = await _get_available_voices()
     return {name: lang for name, (_, lang) in list_of_voices.items()}
-
-
-@voices_router.post("/voices/select")
-async def select_voice(
-    request: VoiceSelectionRequest,
-    user: Annotated[UserData, Depends(get_current_user)],
-) -> dict[str, str]:
-    """Select a voice for the user.
-
-    The selected voice will be stored in the user settings.
-    """
-    available_voices = await _get_available_voices()
-
-    if request.voice not in available_voices:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Voice '{request.voice}' is not available. Available voices: {', '.join(available_voices.keys())}",
-        )
-
-    user.user_settings.voice = request.voice
-    user.save()
-    return {"voice": request.voice}
