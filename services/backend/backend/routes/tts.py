@@ -28,7 +28,6 @@ async def text_to_speech(
 ) -> Response:
     # Use voice from request if provided, otherwise use user's saved voice or default
     if request.voice_name is not None:
-        print("voix demandée :", request.voice_name)
         list_of_voices = await _get_available_voices()
         if request.voice_name not in list_of_voices:
             raise HTTPException(
