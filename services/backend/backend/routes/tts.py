@@ -83,6 +83,6 @@ async def text_to_speech(
 @tts_router.get("/sample_rate")
 async def get_tts_sample_rate() -> Response:
     if TTS_IS_GRADIUM:
-        return {"sample_rate": 48000} # Could be obtained from gradium client ?
+        return {"sample_rate": 48000}  # Could be obtained from gradium client ?
     else:
-        return {"sample_rate": 24000} # Kyutai TTS sample rate
+        return {"sample_rate": 24000}  # Kyutai TTS sample rate

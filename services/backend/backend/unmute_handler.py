@@ -307,9 +307,9 @@ class UnmuteHandler(AsyncStreamHandler):
         # the process is busy with something else, which is bad.
         self.debug_dict["last_receive_time"] = self.audio_received_sec()
         float_audio = audio_to_float32(array)
-        self.debug_dict["chatbot"][
-            "state_override"
-        ] = self.chatbot.conversation_state_override
+        self.debug_dict["chatbot"]["state_override"] = (
+            self.chatbot.conversation_state_override
+        )
         self.debug_plot_data.append(
             {
                 "t": self.audio_received_sec(),

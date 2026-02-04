@@ -14,7 +14,7 @@ It is very similar to the [Unmute project](https://github.com/kyutai-labs/unmute
 
 ## 🚀 Getting Started
 
-We plan to open soon an online version of the system, with TTS freely provived by Gradium. In the meantime, we explain below how to insall and run it locally, for developpers to start exploring it right away. 
+We plan to open soon an online version of the system, with TTS freely provived by Gradium. In the meantime, we explain below how to insall and run it locally, for developpers to start exploring it right away.
 
 We provide two ways of doing this (see below); we recommend starting with the Gradium STT/TTS + Cerebras LLM option, as it is easier to set up, and moving to the fully self-hosted option (Kyutai STT/TTS + vLLM) once you are more confortable with the project.
 
