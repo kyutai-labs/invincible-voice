@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 from contextlib import asynccontextmanager
 
 import redis.asyncio as aioredis
@@ -12,6 +11,27 @@ from starlette.responses import Response
 from backend.security import decode_access_token
 
 logger = logging.getLogger(__name__)
+
+
+def _decode_user_id_from_token(token: str, log_context: str) -> str:
+    """Decode and extract user ID from a JWT token."""
+    try:
+        payload = decode_access_token(token)
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token payload",
+            )
+        return user_id
+    except HTTPException:
+        raise
+    except Exception:
+        logger.warning(f"Failed to decode JWT token in {log_context}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        ) from None
 
 
 class RedisLockManager:
@@ -26,9 +46,7 @@ class RedisLockManager:
     async def get_client(self) -> aioredis.Redis:
         """Get or create the Redis client."""
         if self._client is None:
-            self._client = await aioredis.from_url(
-                f"redis://{self.host}:{self.port}", decode_responses=False
-            )
+            self._client = await aioredis.from_url(f"redis://{self.host}:{self.port}")
         return self._client
 
     async def close(self):
@@ -38,7 +56,7 @@ class RedisLockManager:
             self._client = None
 
     @asynccontextmanager
-    async def acquire_lock(self, user_id: str, lock_name: str = "tts"):
+    async def acquire_lock(self, user_id: str, lock_name: str):
         """Acquire a lock for a given user and operation.
 
         The lock is released when the context manager exits.
@@ -93,64 +111,36 @@ class TTSLockMiddleware(BaseHTTPMiddleware):
         lock_ttl_seconds: int = 300,
     ):
         super().__init__(app)
-        self.redis_host = redis_host
-        self.redis_port = redis_port
-        self.lock_ttl_seconds = lock_ttl_seconds
         self._lock_manager = RedisLockManager(redis_host, redis_port, lock_ttl_seconds)
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        # Apply lock to TTS POST endpoint
         if request.method == "POST" and request.url.path == "/v1/tts/":
-            user_id = self._extract_user_id(request)
-            if user_id:
-                try:
-                    async with self._lock_manager.acquire_lock(user_id, "tts"):
-                        return await call_next(request)
-                except HTTPException:
-                    # Re-raise HTTP exceptions (like the 429 from lock timeout)
-                    raise
+            async with self._lock_manager.acquire_lock(self._extract_user_id(request), "tts"):
+                return await call_next(request)
 
-        # Apply lock to STT WebSocket endpoint
         if request.url.path == "/v1/user/new-conversation":
-            user_id = self._extract_user_id_from_websocket(request)
-            if user_id:
-                try:
-                    async with self._lock_manager.acquire_lock(user_id, "stt"):
-                        return await call_next(request)
-                except HTTPException:
-                    raise
+            async with self._lock_manager.acquire_lock(
+                self._extract_user_id_from_websocket(request), "stt"
+            ):
+                return await call_next(request)
 
         return await call_next(request)
 
-    def _extract_user_id(self, request: Request) -> str | None:
+    def _extract_user_id(self, request: Request) -> str:
         """Extract user ID from the Authorization header JWT token."""
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
-            return None
+            raise HTTPException(status_code=401, detail="Authentication required")
+        return _decode_user_id_from_token(auth_header[7:], "TTS lock middleware")
 
-        token = auth_header[7:]  # Remove "Bearer " prefix
-        try:
-            payload = decode_access_token(token)
-            return payload.get("sub")
-        except Exception:
-            logger.warning("Failed to decode JWT token in TTS lock middleware")
-            return None
-
-    def _extract_user_id_from_websocket(self, request: Request) -> str | None:
+    def _extract_user_id_from_websocket(self, request: Request) -> str:
         """Extract user ID from WebSocket subprotocol (Bearer.<token>)."""
-        subprotocols = request.scope.get("subprotocols", [])
-        for protocol in subprotocols:
+        for protocol in request.scope.get("subprotocols", []):
             if protocol.startswith("Bearer."):
-                token = protocol.replace("Bearer.", "")
-                try:
-                    payload = decode_access_token(token)
-                    return payload.get("sub")
-                except Exception:
-                    logger.warning("Failed to decode JWT token from WebSocket subprotocol")
-                    return None
-        return None
+                return _decode_user_id_from_token(protocol[7:], "WebSocket subprotocol")
+        raise HTTPException(status_code=401, detail="Authentication required")
 
     async def close(self):
         """Clean up resources."""
