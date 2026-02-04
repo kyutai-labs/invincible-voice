@@ -11,21 +11,20 @@ from backend.typing import VoiceSelectionRequest
 voices_router = APIRouter(prefix="/v1", tags=["Voices"])
 
 
-async def _get_available_voices() -> dict[str, str]:
+async def _get_available_voices() -> dict[str, tuple[str, str]]:
     """Get available voices based on the TTS provider."""
     if not TTS_IS_GRADIUM:
         # For Kyutai TTS, return the configured voice with unknown language
-        return {TTS_VOICE_ID: "unknown"}
+        return {TTS_VOICE_ID: (TTS_VOICE_ID, "unknown")}
 
     client = gradium.GradiumClient(
         base_url="https://eu.api.gradium.ai/api/",
     )
 
     voices = await client.voice_get(include_catalog=True)
-
     # Return only catalog voices (built-in), format as {name: language}
     return {
-        voice["name"]: voice["language"]
+        voice["name"]: (voice["uid"], voice["language"])
         for voice in voices
         if voice.get("is_catalog") and voice.get("language")
     }
@@ -38,7 +37,8 @@ async def list_voices() -> dict[str, str]:
     Returns a dictionary where the key is the voice name and the value is the language.
     For Kyutai TTS, returns {TTS_VOICE_ID: "unknown"}.
     """
-    return await _get_available_voices()
+    list_of_voices = await _get_available_voices()
+    return {name: lang for name, (_, lang) in list_of_voices.items()}
 
 
 @voices_router.post("/voices/select")

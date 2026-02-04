@@ -48,6 +48,7 @@ export interface UserSettings {
   friends: string[];
   documents: Document[];
   thinking_mode: boolean;
+  voice?: string;
 }
 
 /**
@@ -191,6 +192,88 @@ export async function deleteConversation(
     }
 
     return {
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      status: 0,
+    };
+  }
+}
+
+/**
+ * Fetches available voices from the backend API
+ * GET /v1/voices
+ *
+ * @returns Promise<ApiResponse<Record<string, string>>>
+ */
+export async function getVoices(): Promise<
+  ApiResponse<Record<string, string>>
+> {
+  try {
+    const url = `/api/v1/voices`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: addAuthHeaders({
+        'Content-Type': 'application/json',
+      }),
+    });
+
+    if (!response.ok) {
+      return {
+        error: `Failed to fetch voices: ${response.status} ${response.statusText}`,
+        status: response.status,
+      };
+    }
+
+    const data: Record<string, string> = await response.json();
+
+    return {
+      data,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      status: 0,
+    };
+  }
+}
+
+/**
+ * Selects a voice for the user
+ * POST /v1/voices/select
+ *
+ * @param voice - The voice to select
+ * @returns Promise<ApiResponse<{ voice: string }>>
+ */
+export async function selectVoice(
+  voice: string,
+): Promise<ApiResponse<{ voice: string }>> {
+  try {
+    const url = `/api/v1/voices/select`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: addAuthHeaders({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify({ voice }),
+    });
+
+    if (!response.ok) {
+      return {
+        error: `Failed to select voice: ${response.status} ${response.statusText}`,
+        status: response.status,
+      };
+    }
+
+    const data: { voice: string } = await response.json();
+
+    return {
+      data,
       status: response.status,
     };
   } catch (error) {

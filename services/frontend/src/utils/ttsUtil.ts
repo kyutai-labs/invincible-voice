@@ -5,6 +5,7 @@ export interface TTSOptions {
   text: string;
   cacheType?: CacheType;
   messageId: string;
+  voiceName?: string;
 }
 
 /**
@@ -18,11 +19,13 @@ export async function playTTSStream(
   const SAMPLE_RATE = await fetch('/api/v1/tts/sample_rate').then((res) =>
     res.json().then((data) => data.sample_rate),
   );
-  const { text, messageId, cacheType = 'temporary' } = options;
+  const { text, messageId, cacheType = 'temporary', voiceName } = options;
   const audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
 
-  if (ttsCache.get(text)) {
-    const fullAudio = ttsCache.get(text)!;
+  // Use voiceName as part of cache key so different voices have separate entries
+  const cacheKey = voiceName ? `${text}|${voiceName}` : text;
+  if (ttsCache.get(cacheKey)) {
+    const fullAudio = ttsCache.get(cacheKey)!;
     const audioBuffer = audioContext.createBuffer(
       1,
       fullAudio?.length,
@@ -40,10 +43,19 @@ export async function playTTSStream(
   let nextStartTime = 0;
   let isFirstChunk = true;
 
+  const requestBody: {
+    text: string;
+    message_id: string;
+    voice_name?: string;
+  } = { text, message_id: messageId };
+  if (options.voiceName) {
+    requestBody.voice_name = options.voiceName;
+  }
+
   const response = await fetch(`/api/v1/tts/`, {
     method: 'POST',
     headers: addAuthHeaders({ 'Content-Type': 'application/json' }),
-    body: JSON.stringify({ text, message_id: messageId }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok || !response.body) {
@@ -106,7 +118,7 @@ export async function playTTSStream(
       index += 1;
     }
   }
-  ttsCache.set(text, fullMessageBuffer, cacheType);
+  ttsCache.set(cacheKey, fullMessageBuffer, cacheType);
 
   return audioContext;
 }

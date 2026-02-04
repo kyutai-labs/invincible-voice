@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import { CheckIcon, LoaderCircleIcon, X } from 'lucide-react';
+import { CheckIcon, LoaderCircleIcon, Play, X } from 'lucide-react';
 import {
   useState,
   useEffect,
@@ -14,7 +14,13 @@ import Edit from '@/components/icons/Edit';
 import Plus from '@/components/icons/Plus';
 import Trash from '@/components/icons/Trash';
 import { estimateTokens, formatTokenCount } from '@/utils/tokenUtils';
-import { UserSettings, updateUserSettings, Document } from '@/utils/userData';
+import { playTTSStream } from '@/utils/ttsUtil';
+import {
+  UserSettings,
+  updateUserSettings,
+  Document,
+  getVoices,
+} from '@/utils/userData';
 import DocumentEditorPopup from './DocumentEditorPopup';
 
 interface SettingsPopupProps {
@@ -38,6 +44,12 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   const [editingDocumentIndex, setEditingDocumentIndex] = useState<
     number | null
   >(null);
+  const [availableVoices, setAvailableVoices] = useState<Record<
+    string,
+    string
+  > | null>(null);
+  const [isLoadingVoices, setIsLoadingVoices] = useState(false);
+  const [isPlayingVoice, setIsPlayingVoice] = useState(false);
   const promptTokenCount = useMemo(
     () => estimateTokens(formData.prompt),
     [formData.prompt],
@@ -161,6 +173,48 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     setEditingDocument(null);
     setEditingDocumentIndex(null);
   }, []);
+
+  // Fetch available voices
+  useEffect(() => {
+    const fetchVoices = async () => {
+      setIsLoadingVoices(true);
+      const result = await getVoices();
+      if (result.data) {
+        setAvailableVoices(result.data);
+      } else {
+        console.error('Failed to fetch voices:', result.error);
+      }
+      setIsLoadingVoices(false);
+    };
+    fetchVoices();
+  }, []);
+
+  // Handle voice selection
+  const handleVoiceChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      handleInputChange('voice', event.target.value);
+    },
+    [handleInputChange],
+  );
+
+  // Handle test voice button click
+  const handleTestVoice = useCallback(async () => {
+    if (!formData.voice) return;
+    setIsPlayingVoice(true);
+    try {
+      const testText =
+        'Bonjour, votre voix ressemblera à cela. Vous pouvez aussi cloner votre propre voix en fournissant un enregistrement audio de vous.';
+      await playTTSStream({
+        text: testText,
+        messageId: crypto.randomUUID(),
+        voiceName: formData.voice,
+      });
+    } catch (error) {
+      console.error('Failed to play test voice:', error);
+    } finally {
+      setIsPlayingVoice(false);
+    }
+  }, [formData.voice]);
   const handleSave = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -271,6 +325,52 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 onChange={onChangeThinkingMode}
                 className='w-4 h-4 text-green-600 bg-[#1B1B1B] rounded focus:ring-green-500 focus:ring-2'
               />
+            </div>
+          </div>
+          <div className='flex flex-col gap-2'>
+            <label
+              htmlFor='settings-voice-select'
+              className='text-sm font-medium text-white'
+            >
+              Voix
+            </label>
+            <div className='flex gap-2'>
+              <select
+                id='settings-voice-select'
+                value={formData.voice || ''}
+                onChange={handleVoiceChange}
+                disabled={isLoadingVoices}
+                className='flex-1 px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green disabled:opacity-50'
+              >
+                <option value=''>Par défaut</option>
+                {availableVoices &&
+                  Object.entries(availableVoices).map(
+                    ([voiceName, language]) => (
+                      <option
+                        key={voiceName}
+                        value={voiceName}
+                      >
+                        {voiceName} ({language})
+                      </option>
+                    ),
+                  )}
+              </select>
+              <button
+                type='button'
+                onClick={handleTestVoice}
+                disabled={!formData.voice || isPlayingVoice}
+                className='px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green hover:bg-[#2B2B2B] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap'
+              >
+                {isPlayingVoice ? (
+                  <LoaderCircleIcon
+                    size={16}
+                    className='animate-spin'
+                  />
+                ) : (
+                  <Play size={16} />
+                )}
+                Tester votre voix
+              </button>
             </div>
           </div>
           <div className='flex flex-col flex-1 gap-2'>

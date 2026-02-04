@@ -37,7 +37,7 @@ logging.basicConfig(
 
 
 bearer_scheme = HTTPBearer()
-user_router = APIRouter(prefix="/v1/user", tags=["User"])
+user_router = APIRouter(prefix="/v1/user", tags=["User"], redirect_slashes=False)
 
 
 def get_current_user_from_bearer(bearer: str) -> UserData:
@@ -72,7 +72,7 @@ def get_current_user(
     return get_current_user_from_bearer(credentials.credentials)
 
 
-@user_router.get("")
+@user_router.get("/")
 def get_me(
     user: Annotated[UserData, Depends(get_current_user)],
 ) -> UserData:

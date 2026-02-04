@@ -2,7 +2,7 @@ from typing import Annotated, AsyncIterator
 
 import gradium
 import httpx
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer
 from starlette.responses import Response
@@ -14,6 +14,7 @@ from backend.kyutai_constants import (
     TTS_VOICE_ID,
 )
 from backend.routes.user import get_current_user
+from backend.routes.voices import _get_available_voices
 from backend.storage import UserData
 from backend.typing import TTSRequest
 
@@ -25,18 +26,28 @@ tts_router = APIRouter(prefix="/v1/tts", tags=["TTS"])
 async def text_to_speech(
     request: TTSRequest, user: Annotated[UserData, Depends(get_current_user)]
 ) -> Response:
-    # Override voice if user has selected one
-    if user.user_settings.voice:
-        voice = user.user_settings.voice
+    # Use voice from request if provided, otherwise use user's saved voice or default
+    if request.voice_name is not None:
+        print("voix demandée :", request.voice_name)
+        list_of_voices = await _get_available_voices()
+        if request.voice_name not in list_of_voices:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Voice '{request.voice_name}' is not available. Available voices: {', '.join(list_of_voices.keys())}",
+            )
+        voice_id = list_of_voices[request.voice_name][0]
+    elif user.user_settings.voice is not None:
+        voice_id = (await _get_available_voices())[user.user_settings.voice][0]
     else:
-        voice = TTS_VOICE_ID
+        voice_id = TTS_VOICE_ID
+
     if TTS_IS_GRADIUM:
         client = gradium.client.GradiumClient(
             base_url="https://eu.api.gradium.ai/api/",
         )
         # Gradium streaming response
         stream = await client.tts_stream(
-            {"voice_id": voice, "output_format": "pcm"}, text=request.text
+            {"voice_id": voice_id, "output_format": "pcm"}, text=request.text
         )
 
         async def pcm_audio_generator():
@@ -54,7 +65,7 @@ async def text_to_speech(
 
     query = {
         "text": request.text,
-        "voice": voice,
+        "voice": voice_id,
         "temperature": 0.8,
     }
 

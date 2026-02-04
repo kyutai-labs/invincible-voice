@@ -59,6 +59,7 @@ class HealthStatus(pydantic.BaseModel):
 class TTSRequest(pydantic.BaseModel):
     text: str
     message_id: uuid.UUID
+    voice_name: str | None = None
 
 
 class VoiceSelectionRequest(pydantic.BaseModel):
