@@ -49,7 +49,9 @@ class TTSLockMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         if request.method == "POST" and request.url.path == "/v1/tts/":
-            async with self._lock_manager.acquire_lock(self._extract_user_id(request), "tts"):
+            async with self._lock_manager.acquire_lock(
+                self._extract_user_id(request), "tts"
+            ):
                 return await call_next(request)
 
         return await call_next(request)

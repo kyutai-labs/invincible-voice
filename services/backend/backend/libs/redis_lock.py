@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 
 logger = logging.getLogger(__name__)
 
+
 class RedisLockManager:
     """Manages Redis locks for TTS calls on a per-user basis."""
 
@@ -43,7 +44,9 @@ class RedisLockManager:
         max_delay = 4.0  # 4 seconds
 
         for attempt in range(max_retries):
-            acquired = await client.set(lock_key, "1", nx=True, ex=self.lock_ttl_seconds)
+            acquired = await client.set(
+                lock_key, "1", nx=True, ex=self.lock_ttl_seconds
+            )
 
             if acquired:
                 try:
