@@ -1,0 +1,95 @@
+services:
+  traefik:
+    image: traefik:v3.3.1
+    command:
+      # Swarm provider configuration
+      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
+      - "--providers.swarm.exposedByDefault=false"
+
+      # EntryPoints for HTTP and HTTPS
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      # Redirect HTTP to HTTPS
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+
+      # Let's Encrypt configuration
+      - "--certificatesResolvers.letsencrypt.acme.httpChallenge.entryPoint=web"
+      - "--certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesResolvers.letsencrypt.acme.email=gabriel@kyutai.org"
+      - "--certificatesResolvers.letsencrypt.acme.httpChallenge=true"
+      - "--log.level=TRACE"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - letsencrypt:/letsencrypt
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  frontend:
+    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-frontend:latest
+    build:
+      context: services/frontend/
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.frontend.rule=(Host(`invincible-voice.kyutai.org`) || Host(`localhost`)) && PathPrefix(`/`)"
+        - "traefik.http.routers.frontend.entrypoints=websecure"
+        - "traefik.http.routers.frontend.tls=true"
+        - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+        - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+        - "traefik.http.routers.frontend.priority=10"
+
+  backend:
+    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-backend:latest
+    build:
+      context: services/backend
+    # TODO: remove and use bucket instead
+    volumes:
+      - /users_data:/users_data
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - TTS_LOCK_TTL_SECONDS=300
+      - STT_LOCK_TTL_SECONDS=600
+      - KYUTAI_LLM_URL=https://openrouter.ai/api/v1
+      - KYUTAI_LLM_API_KEY=${KYUTAI_LLM_API_KEY}
+      - KYUTAI_LLM_MODEL=@preset/invincible-voice
+      - KYUTAI_USERS_DATA_PATH=/users_data
+      - SECRET_KEY=${SECRET_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GRADIUM_API_KEY=${GRADIUM_API_KEY}
+      # TODO: allow dynamic voice selection
+      - TTS_VOICE_ID=${TTS_VOICE_ID}
+      - STT_IS_GRADIUM=true
+      - KYUTAI_STT_URL=wss://eu.api.gradium.ai/api/speech/asr
+      - TTS_IS_GRADIUM=true
+      - TTS_SERVER=https://eu.api.gradium.ai/api/
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.backend.rule=(Host(`invincible-voice.kyutai.org`) || Host(`localhost`)) && PathPrefix(`/api`)"
+        - "traefik.http.routers.backend.middlewares=strip-api"
+        - "traefik.http.middlewares.strip-api.replacepathregex.regex=^/api/(.*)"
+        - "traefik.http.middlewares.strip-api.replacepathregex.replacement=/$$1"
+        - "traefik.http.routers.backend.entrypoints=websecure"
+        - "traefik.http.routers.backend.tls=true"
+        - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+        - "traefik.http.services.backend.loadbalancer.server.port=80"
+        - "traefik.http.routers.backend.priority=100"
+
+
+volumes:
+  letsencrypt:
+
+networks:
+  default:
+    driver: overlay
+    attachable: true
+    driver_opts:
+      encrypted: "true"
