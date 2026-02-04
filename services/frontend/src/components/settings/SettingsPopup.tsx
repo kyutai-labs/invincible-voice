@@ -346,16 +346,14 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 {availableVoices &&
                   Object.entries(availableVoices)
                     .sort(([, langA], [, langB]) => langA.localeCompare(langB))
-                    .map(
-                      ([voiceName, language]) => (
+                    .map(([voiceName, language]) => (
                       <option
                         key={voiceName}
                         value={voiceName}
                       >
                         {voiceName} ({language})
                       </option>
-                    ),
-                  )}
+                    ))}
               </select>
               <button
                 type='button'
