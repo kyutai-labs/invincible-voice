@@ -29,6 +29,38 @@ async def _get_voice_uid(voice_name: str, user_name: str) -> str:
 voices_router = APIRouter(prefix="/v1", tags=["Voices"])
 
 
+@voices_router.delete("/voices")
+async def delete_voice(
+    voice_name: str,
+    user: Annotated[UserData, Depends(get_current_user)],
+) -> dict:
+    """Delete a custom voice.
+
+    Only works for custom voices (ones starting with the user's email).
+    Catalog voices cannot be deleted.
+
+    Query parameter: voice_name - The full voice name to delete
+    """
+    if not TTS_IS_GRADIUM:
+        raise HTTPException(
+            status_code=400, detail="Voice deletion is only supported with Gradium TTS"
+        )
+
+    if not voice_name.startswith(f"{user.email}/"):
+        raise HTTPException(status_code=400, detail="Only custom voices can be deleted")
+
+    # Get the UID for the voice
+    voice_uid = await _get_voice_uid(voice_name, user.email)
+
+    client = gradium.GradiumClient(
+        base_url="https://eu.api.gradium.ai/api/",
+    )
+
+    await gradium.voices.delete(client, voice_uid=voice_uid)
+
+    return {"message": "Voice deleted successfully", "name": voice_name}
+
+
 async def _get_available_voices(user_name: str) -> dict[str, tuple[str, str]]:
     """Get available voices based on the TTS provider."""
     if not TTS_IS_GRADIUM:
@@ -102,33 +134,3 @@ async def list_voices(
     """
     list_of_voices = await _get_available_voices(user.email)
     return {name: lang for name, (_, lang) in list_of_voices.items()}
-
-
-@voices_router.delete("/voices/{voice_name:path}")
-async def delete_voice(
-    voice_name: str,
-    user: Annotated[UserData, Depends(get_current_user)],
-) -> dict:
-    """Delete a custom voice.
-
-    Only works for custom voices (ones starting with the user's email).
-    Catalog voices cannot be deleted.
-    """
-    if not TTS_IS_GRADIUM:
-        raise HTTPException(
-            status_code=400, detail="Voice deletion is only supported with Gradium TTS"
-        )
-
-    if not voice_name.startswith(f"{user.email}/"):
-        raise HTTPException(status_code=400, detail="Only custom voices can be deleted")
-
-    # Get the UID for the voice
-    voice_uid = await _get_voice_uid(voice_name, user.email)
-
-    client = gradium.GradiumClient(
-        base_url="https://eu.api.gradium.ai/api/",
-    )
-
-    await gradium.voices.delete(client, voice_uid=voice_uid)
-
-    return {"message": "Voice deleted successfully", "name": voice_name}

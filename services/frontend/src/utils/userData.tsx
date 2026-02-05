@@ -329,3 +329,44 @@ export async function createVoice(
     };
   }
 }
+
+/**
+ * Deletes a custom voice
+ * DELETE /v1/voices?voice_name={voice_name}
+ *
+ * @param voiceName - The name of the voice to delete
+ * @returns Promise<ApiResponse<{ message: string; name: string }>>
+ */
+export async function deleteVoice(
+  voiceName: string,
+): Promise<ApiResponse<{ message: string; name: string }>> {
+  try {
+    const url = `/api/v1/voices?voice_name=${encodeURIComponent(voiceName)}`;
+
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: addAuthHeaders({
+        'Content-Type': 'application/json',
+      }),
+    });
+
+    if (!response.ok) {
+      return {
+        error: `Failed to delete voice: ${response.status} ${response.statusText}`,
+        status: response.status,
+      };
+    }
+
+    const data: { message: string; name: string } = await response.json();
+
+    return {
+      data,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      status: 0,
+    };
+  }
+}

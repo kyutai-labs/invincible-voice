@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import { CheckIcon, LoaderCircleIcon, Play, X } from 'lucide-react';
+import { CheckIcon, LoaderCircleIcon, Play, X, XCircle } from 'lucide-react';
 import {
   useState,
   useEffect,
@@ -21,6 +21,7 @@ import {
   Document,
   getVoices,
   createVoice,
+  deleteVoice,
 } from '@/utils/userData';
 import DocumentEditorPopup from './DocumentEditorPopup';
 
@@ -56,6 +57,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   const [voiceUploadFile, setVoiceUploadFile] = useState<File | null>(null);
   const [voiceUploadName, setVoiceUploadName] = useState<string>('');
   const [voiceUploadError, setVoiceUploadError] = useState<string | null>(null);
+  const [showDeleteVoiceConfirm, setShowDeleteVoiceConfirm] = useState(false);
+  const [voiceToDelete, setVoiceToDelete] = useState<string | null>(null);
+  const [isDeletingVoice, setIsDeletingVoice] = useState(false);
   const promptTokenCount = useMemo(
     () => estimateTokens(formData.prompt),
     [formData.prompt],
@@ -288,6 +292,47 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     },
     [],
   );
+
+  // Handle voice deletion
+  const handleDeleteVoice = useCallback(async () => {
+    if (!voiceToDelete) return;
+
+    setIsDeletingVoice(true);
+    try {
+      const result = await deleteVoice(voiceToDelete);
+
+      if (result.error) {
+        console.error('Failed to delete voice:', result.error);
+        return;
+      }
+
+      // Refresh the voices list
+      setIsLoadingVoices(true);
+      await new Promise<void>((resolve) => {
+        setTimeout(() => resolve(), 500);
+      });
+      const voicesResult = await getVoices();
+      if (voicesResult.data) {
+        setAvailableVoices(voicesResult.data);
+        // If the deleted voice was selected, reset to default
+        if (formData.voice === voiceToDelete) {
+          handleInputChange('voice', '');
+        }
+      } else {
+        console.error('Failed to fetch voices:', voicesResult.error);
+      }
+      setIsLoadingVoices(false);
+
+      // Close the confirmation dialog
+      setShowDeleteVoiceConfirm(false);
+      setVoiceToDelete(null);
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsDeletingVoice(false);
+    }
+  }, [voiceToDelete, formData.voice, handleInputChange]);
+
   const handleSave = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -345,36 +390,51 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
 
   return (
     <div className='flex flex-col w-full h-full gap-y-2'>
+
       <div className='flex flex-row justify-between w-full'>
+
         <h2 className='text-base font-medium text-white'>Paramètres</h2>
+
         <div className='flex flex-row items-center gap-2 -mr-5 -mt-2'>
+
           <button
             className='text-[#FF6459] underline text-xs'
             onClick={signOut}
           >
-            Se déconnecter
+                                    Se déconnecter
           </button>
+
           <button
             className='size-10 cursor-pointer flex items-center justify-center rounded-2xl bg-[#101010]'
             onClick={onCancel}
           >
+
             <X
               size={24}
               className='text-white'
             />
+
           </button>
+
         </div>
+
       </div>
+
       <div className='grid grow w-full grid-cols-2 gap-8'>
+
         <div className='flex flex-col h-full gap-6 pb-4'>
+
           <div className='flex flex-row gap-8'>
+
             <div className='flex flex-col grow gap-2'>
+
               <label
                 htmlFor='settings-name-input'
                 className='text-sm font-medium text-white'
               >
-                Votre nom
+                                                Votre nom
               </label>
+
               <input
                 id='settings-name-input'
                 type='text'
@@ -383,14 +443,18 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 className='w-full px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green'
                 placeholder='Le nom avec lequel vous souhaitez communiquer'
               />
+
             </div>
+
             <div className='flex items-center gap-2 pt-6'>
+
               <label
                 htmlFor='settings-thinking-mode-input'
                 className='text-sm font-medium text-white'
               >
-                Thinking Mode:
+                                                Thinking Mode:
               </label>
+
               <input
                 id='settings-thinking-mode-input'
                 type='checkbox'
@@ -398,16 +462,22 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 onChange={onChangeThinkingMode}
                 className='w-4 h-4 text-green-600 bg-[#1B1B1B] rounded focus:ring-green-500 focus:ring-2'
               />
+
             </div>
+
           </div>
+
           <div className='flex flex-col gap-2'>
+
             <label
               htmlFor='settings-voice-select'
               className='text-sm font-medium text-white'
             >
-              Voix
+                                          Voix
             </label>
+
             <div className='flex gap-2'>
+
               <select
                 id='settings-voice-select'
                 value={formData.voice || ''}
@@ -415,7 +485,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 disabled={isLoadingVoices}
                 className='flex-1 px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green disabled:opacity-50'
               >
+
                 <option value=''>Par défaut</option>
+
                 {availableVoices &&
                   Object.entries(availableVoices)
                     .sort(([, langA], [, langB]) => langA.localeCompare(langB))
@@ -424,19 +496,24 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                         key={voiceName}
                         value={voiceName}
                       >
+
                         {voiceName.includes('/')
                           ? voiceName.substring(voiceName.indexOf('/') + 1)
-                          : voiceName}{' '}
-                        ({language})
+                          : voiceName}
+                                                                        (
+                        {language})
                       </option>
                     ))}
+
               </select>
+
               <button
                 type='button'
                 onClick={handleTestVoice}
                 disabled={!formData.voice || isPlayingVoice}
                 className='px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green hover:bg-[#2B2B2B] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap'
               >
+
                 {isPlayingVoice ? (
                   <LoaderCircleIcon
                     size={16}
@@ -445,28 +522,58 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 ) : (
                   <Play size={16} />
                 )}
-                Tester votre voix
+                                                Tester votre voix
               </button>
+
+              {formData.voice &&
+                availableVoices &&
+                availableVoices[formData.voice] === 'Custom voice' && (
+                  <button
+                    type='button'
+                    onClick={() => {
+                      setVoiceToDelete(formData.voice || null);
+                      setShowDeleteVoiceConfirm(true);
+                    }}
+                    className='px-3 py-2 text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-red-500 hover:bg-[#2B2B2B] hover:border-[#FF6459]'
+                    title='Supprimer cette voix'
+                  >
+
+                    <XCircle
+                      size={16}
+                      className='text-[#FF6459]'
+                    />
+
+                  </button>
+                )}
+
             </div>
+
             {!showVoiceUpload && (
               <button
                 type='button'
                 onClick={() => setShowVoiceUpload(true)}
                 className='mt-2 px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green hover:bg-[#2B2B2B]'
               >
-                Cloner votre propre voix
+                                                Cloner votre propre voix
+
               </button>
             )}
+
             {showVoiceUpload && (
               <div className='mt-2 px-4 py-3 bg-[#181818] border border-white rounded-2xl'>
+
                 <div className='flex flex-col gap-3'>
+
                   <div className='flex flex-col gap-1'>
+
                     <label
                       htmlFor='voice-upload-name-input'
                       className='text-xs font-medium text-gray-300'
                     >
-                      Nom de la voix
+                                                                  Nom de la voix
+
                     </label>
+
                     <input
                       id='voice-upload-name-input'
                       type='text'
@@ -475,14 +582,19 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green'
                       placeholder='Ma voix'
                     />
+
                   </div>
+
                   <div className='flex flex-col gap-1'>
+
                     <label
                       htmlFor='voice-upload-file-input'
                       className='text-xs font-medium text-gray-300'
                     >
-                      Fichier audio (WAV)
+                                                                  Fichier audio (WAV)
+
                     </label>
+
                     <input
                       id='voice-upload-file-input'
                       type='file'
@@ -490,11 +602,15 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       onChange={handleVoiceFileChange}
                       className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green file:mr-4 file:py-1 file:px-4 file:rounded-lg file:border-0 file:bg-[#39F2AE] file:text-black file:text-sm file:cursor-pointer'
                     />
+
                   </div>
+
                   {voiceUploadError && (
                     <p className='text-xs text-red-400'>{voiceUploadError}</p>
                   )}
+
                   <div className='flex gap-2'>
+
                     <button
                       type='button'
                       onClick={() => {
@@ -505,8 +621,10 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       }}
                       className='flex-1 px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green hover:bg-[#2B2B2B]'
                     >
-                      Annuler
+                                                                  Annuler
+
                     </button>
+
                     <button
                       type='button'
                       onClick={handleCreateVoice}
@@ -517,6 +635,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       }
                       className='flex-1 px-4 py-2 text-sm text-white bg-[#39F2AE] rounded-xl focus:outline-none hover:bg-[#2EDB9B] disabled:opacity-50 disabled:cursor-not-allowed'
                     >
+
                       {isCreatingVoice ? (
                         <LoaderCircleIcon
                           size={16}
@@ -525,37 +644,61 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       ) : (
                         'Créer la voix'
                       )}
+
                     </button>
+
                   </div>
+
                 </div>
+
               </div>
             )}
+
           </div>
+
           <div className='flex flex-col flex-1 gap-2'>
+
             <div className='flex items-center justify-between mb-1'>
+
               <div className='text-sm font-medium text-white'>
-                Configurez votre assistant conversationnel
+                                                Configurez votre assistant conversationnel
+
               </div>
+
               <span className='text-sm text-gray-400'>
+
                 {formatTokenCount(promptTokenCount)}
+
               </span>
+
             </div>
+
             <textarea
               value={formData.prompt}
               onChange={onChangePrompt}
               className='flex-1 w-full min-h-0 px-6 py-4 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
               placeholder='Enter your prompt'
             />
+
           </div>
+
         </div>
+
         <div className='flex flex-col h-full gap-2'>
+
           <div className='flex flex-col grow h-full gap-2'>
+
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
+
               <div className='block mb-1 text-sm font-medium text-white'>
-                Mots-clés supplémentaires
+                                                Mots-clés supplémentaires
+
               </div>
+
               <div className='flex flex-col w-full gap-0.5'>
+
                 <div className='flex flex-wrap gap-1.5 min-h-6 max-h-28 overflow-y-auto overflow-x-hidden py-2'>
+
                   {formData.additional_keywords.map((keyword) => (
                     <AdditionalKeyword
                       key={keyword}
@@ -563,13 +706,18 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       removeKeyword={handleRemoveKeyword}
                     />
                   ))}
+
                   {formData.additional_keywords.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
-                      Pas de mots-clés ajoutés
+                                                                  Pas de mots-clés ajoutés
+
                     </p>
                   )}
+
                 </div>
+
                 <div className='relative flex gap-2'>
+
                   <input
                     type='text'
                     value={newKeywordInput}
@@ -578,6 +726,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     className='flex-1 px-4 py-1 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green h-10'
                     placeholder='Ajoutez votre mot-clé'
                   />
+
                   <button
                     onClick={handleAddKeyword}
                     className='absolute shrink-0 h-8 p-px right-1 inset-y-1 w-fit green-to-purple-via-blue-gradient rounded-xl'
@@ -586,24 +735,36 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                         'drop-shadow(0rem 0.2rem 0.15rem var(--darkgray))',
                     }}
                   >
+
                     <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                      Ajouter
+                                                                  Ajouter
+
                       <Plus
                         width={24}
                         height={24}
                         className='shrink-0 text-white'
                       />
+
                     </div>
+
                   </button>
+
                 </div>
+
               </div>
+
             </div>
+
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
+
               <div className='block mb-1 text-sm font-medium text-white'>
-                Amis
+                                                Amis
               </div>
+
               <div className='flex flex-col w-full gap-0.5'>
+
                 <div className='flex flex-wrap gap-1.5 min-h-6 max-h-28 overflow-y-auto overflow-x-hidden py-2'>
+
                   {formData.friends.map((friend) => (
                     <Friend
                       key={friend}
@@ -611,13 +772,18 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       removeFriend={handleRemoveFriend}
                     />
                   ))}
+
                   {formData.friends.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
-                      Aucun ami ajouté pour le moment
+                                                                  Aucun ami ajouté pour le moment
+
                     </p>
                   )}
+
                 </div>
+
                 <div className='relative flex gap-2'>
+
                   <input
                     type='text'
                     value={newFriendInput}
@@ -626,6 +792,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     className='flex-1 px-4 py-1 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green h-10'
                     placeholder="Entrez le nom d'un ami"
                   />
+
                   <button
                     onClick={handleAddFriend}
                     className='absolute shrink-0 h-8 p-px right-1 inset-y-1 w-fit green-to-purple-via-blue-gradient rounded-xl'
@@ -634,23 +801,34 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                         'drop-shadow(0rem 0.2rem 0.15rem var(--darkgray))',
                     }}
                   >
+
                     <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                      Ajouter
+                                                                  Ajouter
+
                       <Plus
                         width={24}
                         height={24}
                         className='shrink-0 text-white'
                       />
+
                     </div>
+
                   </button>
+
                 </div>
+
               </div>
+
             </div>
+
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
+
               <div className='flex flex-row items-center justify-between w-full mb-2'>
+
                 <div className='block mb-1 text-sm font-medium text-white'>
-                  Documents
+                                                      Documents
                 </div>
+
                 <button
                   onClick={handleAddDocument}
                   className='shrink-0 p-px w-fit green-to-purple-via-blue-gradient rounded-xl h-8 -mt-0.5 mr-1'
@@ -658,18 +836,26 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     filter: 'drop-shadow(0rem 0.2rem 0.15rem var(--darkgray))',
                   }}
                 >
+
                   <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                    Ajouter un document
+                                                            Ajouter un document
+
                     <Plus
                       width={24}
                       height={24}
                       className='shrink-0 text-white'
                     />
+
                   </div>
+
                 </button>
+
               </div>
+
               <div className='flex flex-col w-full gap-0.5'>
+
                 <div className='flex flex-col gap-2 py-2 overflow-x-hidden overflow-y-auto max-h-40'>
+
                   {(formData.documents || []).map((doc, index) => (
                     <DocumentCard
                       key={index}
@@ -679,51 +865,123 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       removeDocument={handleRemoveDocument}
                     />
                   ))}
+
                   {(!formData.documents || formData.documents.length === 0) && (
                     <p className='text-sm italic text-gray-500'>
-                      No documents added yet
+                                                                  No documents added yet
+
                     </p>
                   )}
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
           <div className='flex justify-end gap-x-3'>
+
             <button
               className='px-8 text-sm h-14 bg-[#101010] rounded-2xl'
               onClick={onCancel}
             >
-              Annuler
+                                          Annuler
             </button>
+
             <button
               className='p-px h-14 light-green-to-green-gradient rounded-2xl'
               onClick={handleSave}
             >
+
               <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
-                Sauvegarder la configuration
+                                                Sauvegarder la configuration
+
                 {!isLoading && (
                   <CheckIcon
                     size={24}
                     className='text-[#39F2AE]'
                   />
                 )}
+
                 {isLoading && (
                   <LoaderCircleIcon
                     size={24}
                     className='animate-spin text-[#39F2AE]'
                   />
                 )}
+
               </div>
+
             </button>
+
           </div>
+
         </div>
+
       </div>
+
       <DocumentEditorPopup
         document={editingDocument}
         isOpen={isDocumentEditorOpen}
         onSave={handleSaveDocument}
         onCancel={handleCancelDocument}
       />
+
+      {showDeleteVoiceConfirm && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70'>
+
+          <div className='bg-[#1B1B1B] border border-white rounded-2xl p-6 max-w-md w-full mx-4'>
+
+            <h3 className='text-lg font-medium text-white mb-2'>
+                                          Supprimer la voix personnalisée
+
+            </h3>
+
+            <p className='text-sm text-gray-300 mb-6'>
+                                          Êtes-vous sûr de vouloir supprimer cette voix
+                                          personnalisée ? Cette action est irréversible.
+
+            </p>
+
+            <div className='flex justify-end gap-3'>
+
+              <button
+                onClick={() => {
+                  setShowDeleteVoiceConfirm(false);
+                  setVoiceToDelete(null);
+                }}
+                disabled={isDeletingVoice}
+                className='px-6 py-2 text-sm text-white bg-[#101010] border border-white rounded-2xl focus:outline-none hover:bg-[#2B2B2B] disabled:opacity-50'
+              >
+                                                Annuler
+              </button>
+
+              <button
+                onClick={handleDeleteVoice}
+                disabled={isDeletingVoice}
+                className='px-6 py-2 text-sm text-white bg-[#FF6459] rounded-2xl focus:outline-none hover:bg-[#E0554E] disabled:opacity-50 flex items-center gap-2'
+              >
+
+                {isDeletingVoice ? (
+                  <LoaderCircleIcon
+                    size={16}
+                    className='animate-spin'
+                  />
+                ) : (
+                  'Supprimer'
+                )}
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 };
@@ -745,22 +1003,28 @@ const AdditionalKeyword: FC<AdditionalKeywordProps> = ({
 
   return (
     <div className='relative group'>
+
       <button
         className='h-10 p-px transition-colors green-to-light-green-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500'
         type='button'
       >
+
         <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
-          {keyword}
+                              {keyword}
+
         </div>
+
       </button>
+
       <button
         type='button'
         onClick={onClickRemove}
         className='absolute flex items-center justify-center w-4 h-4 text-sm text-white transition-opacity bg-red-500 rounded-full opacity-0 -top-1 -right-1 hover:bg-[#FF6459] group-hover:opacity-100'
         title='Remove keyword'
       >
-        ×
+                        ×
       </button>
+
     </div>
   );
 };
@@ -777,22 +1041,28 @@ const Friend: FC<FriendProps> = ({ friend, removeFriend }) => {
 
   return (
     <div className='relative group'>
+
       <button
         type='button'
         className='h-10 p-px transition-colors blue-to-light-blue-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500'
       >
+
         <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
-          {friend}
+                              {friend}
+
         </div>
+
       </button>
+
       <button
         type='button'
         onClick={onClickRemove}
         className='absolute flex items-center justify-center w-4 h-4 text-sm text-white transition-opacity bg-red-500 rounded-full opacity-0 -top-1 -right-1 hover:bg-[#FF6459] group-hover:opacity-100'
         title='Remove friend'
       >
-        ×
+                        ×
       </button>
+
     </div>
   );
 };
@@ -823,38 +1093,53 @@ const DocumentCard: FC<DocumentProps> = ({
 
   return (
     <div className='flex flex-row items-center gap-x-2 justify-between bg-[#1B1B1B] border border-black rounded-2xl pl-5 pr-2 min-h-14'>
+
       <div className='grow flex flex-col gap-0.5'>
+
         <span className='block text-base font-medium text-white truncate'>
-          {document.title}
+                              {document.title}
+
         </span>
+
         <span className='text-[10px] text-gray-400'>
-          {formatTokenCount(docTokenCount)}
+                              {formatTokenCount(docTokenCount)}
+
         </span>
+
       </div>
+
       <div className='flex gap-2'>
+
         <button
           aria-label='editer'
           className='size-10 cursor-pointer flex items-center justify-center rounded-xl bg-[#101010]/25'
           onClick={handleEditDocument}
         >
+
           <Edit
             width={24}
             height={24}
             className='text-white'
           />
+
         </button>
+
         <button
           aria-label='supprimer'
           className='size-10 cursor-pointer flex items-center justify-center rounded-xl bg-[#101010]/25'
           onClick={handleRemoveDocument}
         >
+
           <Trash
             width={24}
             height={24}
             className='text-[#FF6459]'
           />
+
         </button>
+
       </div>
+
     </div>
   );
 };
