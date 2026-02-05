@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from typing_extensions import Annotated
 
-from backend.kyutai_constants import ALLOW_PASSWORD
+from backend.kyutai_constants import ALLOW_PASSWORD, GOOGLE_CLIENT_ID
 from backend.libs.google import verify_google_token
 from backend.security import create_access_token, hash_password, verify_password
 from backend.storage import UserData, get_user_data_from_storage, get_user_data_path
@@ -131,3 +131,8 @@ def google_login(data: GoogleAuthRequest):
 @auth_router.get("/allow-password")
 def allow_password() -> dict[str, bool]:
     return {"allow_password": ALLOW_PASSWORD}
+
+
+@auth_router.get("/google-client-id")
+def google_client_id() -> dict[str, str]:
+    return {"google_client_id": GOOGLE_CLIENT_ID}

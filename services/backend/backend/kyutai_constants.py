@@ -2,13 +2,18 @@ import os
 from pathlib import Path
 
 
+def is_value_true(value: str, env_var_name: str) -> bool:
+    env_var_lower = value.lower()
+    if env_var_lower not in ("true", "false", "1", "0"):
+        raise ValueError(
+            f"Invalid boolean value: {value} for environment variable {env_var_name}"
+        )
+    return env_var_lower in ("true", "1")
+
+
 def is_env_true(env_var_name: str) -> bool:
     env_var_value = os.environ[env_var_name]
-
-    env_var_lower = env_var_value.lower()
-    if env_var_lower not in ("true", "false", "1", "0"):
-        raise ValueError(f"Invalid boolean value: {env_var_value}")
-    return env_var_lower in ("true", "1")
+    return is_value_true(env_var_value, env_var_name)
 
 
 # The defaults are already ws://, but make the env vars support http:// and https://
@@ -50,5 +55,7 @@ USERS_SETTINGS_AND_HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 TTS_VOICE_ID = os.environ.get("TTS_VOICE_ID", "kelly")
 
 
-ALLOW_PASSWORD = is_env_true(os.getenv("ALLOW_PASSWORD", "1"))
+ALLOW_PASSWORD = is_value_true(
+    os.environ.get("ALLOW_PASSWORD", "true"), "ALLOW_PASSWORD"
+)
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
