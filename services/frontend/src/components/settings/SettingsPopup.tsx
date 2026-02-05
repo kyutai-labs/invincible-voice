@@ -424,7 +424,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                         key={voiceName}
                         value={voiceName}
                       >
-                        {voiceName} ({language})
+                        {voiceName.includes('/') ? voiceName.substring(voiceName.indexOf('/') + 1) : voiceName} ({language})
                       </option>
                     ))}
               </select>
