@@ -1,11 +1,13 @@
 import pathlib
 import tempfile
+from typing import Annotated
 
 import gradium
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from typing_extensions import Annotated
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from backend.kyutai_constants import TTS_IS_GRADIUM, TTS_VOICE_ID
+from backend.routes.user import get_current_user
+from backend.storage import UserData
 
 voices_router = APIRouter(prefix="/v1", tags=["Voices"])
 
@@ -72,11 +74,13 @@ async def create_voice(
 
 
 @voices_router.get("/voices")
-async def list_voices() -> dict[str, str]:
+async def list_voices(
+    user: Annotated[UserData, Depends(get_current_user)],
+) -> dict[str, str]:
     """List available voices from Gradium TTS.
 
     Returns a dictionary where the key is the voice name and the value is the language.
     For Kyutai TTS, returns {TTS_VOICE_ID: "unknown"}.
     """
-    list_of_voices = await _get_available_voices()
+    list_of_voices = await _get_available_voices(user.email)
     return {name: lang for name, (_, lang) in list_of_voices.items()}

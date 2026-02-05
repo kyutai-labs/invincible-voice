@@ -28,7 +28,7 @@ async def text_to_speech(
 ) -> Response:
     # Use voice from request if provided, otherwise use user's saved voice or default
     if request.voice_name is not None:
-        list_of_voices = await _get_available_voices()
+        list_of_voices = await _get_available_voices(user.email)
         if request.voice_name not in list_of_voices:
             raise HTTPException(
                 status_code=400,
@@ -36,7 +36,9 @@ async def text_to_speech(
             )
         voice_id = list_of_voices[request.voice_name][0]
     elif user.user_settings.voice is not None:
-        voice_id = (await _get_available_voices())[user.user_settings.voice][0]
+        voice_id = (await _get_available_voices(user.email))[user.user_settings.voice][
+            0
+        ]
     else:
         voice_id = TTS_VOICE_ID
 
