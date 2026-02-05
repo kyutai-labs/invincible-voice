@@ -19,6 +19,12 @@ async def _get_available_voices(user_name: str) -> dict[str, tuple[str, str]]:
     client = gradium.GradiumClient(
         base_url="https://eu.api.gradium.ai/api/",
     )
+    if "/" in user_name:
+        # Just as a safety precaution. I don't know if that can happen, but I don't
+        # want security issues and having custom voices leaking.
+        raise HTTPException(
+            status_code=400, detail="Username cannot contain '/' character"
+        )
 
     voices = await client.voice_get(include_catalog=True)
     # Return only catalog voices (built-in), format as {name: language}
