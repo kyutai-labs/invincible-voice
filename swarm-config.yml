@@ -70,6 +70,7 @@ services:
       - KYUTAI_STT_URL=wss://eu.api.gradium.ai/api/speech/asr
       - TTS_IS_GRADIUM=true
       - TTS_SERVER=https://eu.api.gradium.ai/api/
+      - ALLOW_PASSWORD=false
     deploy:
       labels:
         - "traefik.enable=true"

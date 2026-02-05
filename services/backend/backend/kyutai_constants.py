@@ -48,3 +48,6 @@ USERS_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 USERS_SETTINGS_AND_HISTORY_DIR = USERS_DATA_DIR / "user_settings_and_history"
 USERS_SETTINGS_AND_HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 TTS_VOICE_ID = os.environ.get("TTS_VOICE_ID", "kelly")
+
+
+ALLOW_PASSWORD = is_env_true(os.getenv("ALLOW_PASSWORD", "1"))
