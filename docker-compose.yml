@@ -17,7 +17,7 @@ services:
 
       - "--providers.docker.constraints=Label(`pub_port`,`80`)"
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend.middlewares=strip-api,auth-invincible"
+      - "traefik.http.routers.backend.middlewares=strip-api"
       - "traefik.http.middlewares.strip-api.replacepathregex.regex=^/api/(.*)"
       - "traefik.http.middlewares.strip-api.replacepathregex.replacement=/$$1"
     ports:

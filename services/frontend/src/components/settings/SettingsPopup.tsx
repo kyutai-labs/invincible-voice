@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import { CheckIcon, LoaderCircleIcon, Play, X } from 'lucide-react';
+import { CheckIcon, LoaderCircleIcon, Play, X, XCircle } from 'lucide-react';
 import {
   useState,
   useEffect,
@@ -21,6 +21,7 @@ import {
   Document,
   getVoices,
   createVoice,
+  deleteVoice,
 } from '@/utils/userData';
 import DocumentEditorPopup from './DocumentEditorPopup';
 
@@ -56,6 +57,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   const [voiceUploadFile, setVoiceUploadFile] = useState<File | null>(null);
   const [voiceUploadName, setVoiceUploadName] = useState<string>('');
   const [voiceUploadError, setVoiceUploadError] = useState<string | null>(null);
+  const [showDeleteVoiceConfirm, setShowDeleteVoiceConfirm] = useState(false);
+  const [voiceToDelete, setVoiceToDelete] = useState<string | null>(null);
+  const [isDeletingVoice, setIsDeletingVoice] = useState(false);
   const promptTokenCount = useMemo(
     () => estimateTokens(formData.prompt),
     [formData.prompt],
@@ -288,6 +292,47 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     },
     [],
   );
+
+  // Handle voice deletion
+  const handleDeleteVoice = useCallback(async () => {
+    if (!voiceToDelete) return;
+
+    setIsDeletingVoice(true);
+    try {
+      const result = await deleteVoice(voiceToDelete);
+
+      if (result.error) {
+        console.error('Failed to delete voice:', result.error);
+        return;
+      }
+
+      // Refresh the voices list
+      setIsLoadingVoices(true);
+      await new Promise<void>((resolve) => {
+        setTimeout(() => resolve(), 500);
+      });
+      const voicesResult = await getVoices();
+      if (voicesResult.data) {
+        setAvailableVoices(voicesResult.data);
+        // If the deleted voice was selected, reset to default
+        if (formData.voice === voiceToDelete) {
+          handleInputChange('voice', '');
+        }
+      } else {
+        console.error('Failed to fetch voices:', voicesResult.error);
+      }
+      setIsLoadingVoices(false);
+
+      // Close the confirmation dialog
+      setShowDeleteVoiceConfirm(false);
+      setVoiceToDelete(null);
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsDeletingVoice(false);
+    }
+  }, [voiceToDelete, formData.voice, handleInputChange]);
+
   const handleSave = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -347,6 +392,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     <div className='flex flex-col w-full h-full gap-y-2'>
       <div className='flex flex-row justify-between w-full'>
         <h2 className='text-base font-medium text-white'>Paramètres</h2>
+
         <div className='flex flex-row items-center gap-2 -mr-5 -mt-2'>
           <button
             className='text-[#FF6459] underline text-xs'
@@ -354,6 +400,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
           >
             Se déconnecter
           </button>
+
           <button
             className='size-10 cursor-pointer flex items-center justify-center rounded-2xl bg-[#101010]'
             onClick={onCancel}
@@ -365,6 +412,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
           </button>
         </div>
       </div>
+
       <div className='grid grow w-full grid-cols-2 gap-8'>
         <div className='flex flex-col h-full gap-6 pb-4'>
           <div className='flex flex-row gap-8'>
@@ -375,6 +423,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               >
                 Votre nom
               </label>
+
               <input
                 id='settings-name-input'
                 type='text'
@@ -384,6 +433,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 placeholder='Le nom avec lequel vous souhaitez communiquer'
               />
             </div>
+
             <div className='flex items-center gap-2 pt-6'>
               <label
                 htmlFor='settings-thinking-mode-input'
@@ -391,6 +441,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               >
                 Thinking Mode:
               </label>
+
               <input
                 id='settings-thinking-mode-input'
                 type='checkbox'
@@ -400,6 +451,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               />
             </div>
           </div>
+
           <div className='flex flex-col gap-2'>
             <label
               htmlFor='settings-voice-select'
@@ -407,6 +459,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             >
               Voix
             </label>
+
             <div className='flex gap-2'>
               <select
                 id='settings-voice-select'
@@ -416,6 +469,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 className='flex-1 px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green disabled:opacity-50'
               >
                 <option value=''>Par défaut</option>
+
                 {availableVoices &&
                   Object.entries(availableVoices)
                     .sort(([, langA], [, langB]) => langA.localeCompare(langB))
@@ -426,11 +480,12 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       >
                         {voiceName.includes('/')
                           ? voiceName.substring(voiceName.indexOf('/') + 1)
-                          : voiceName}{' '}
+                          : voiceName}
                         ({language})
                       </option>
                     ))}
               </select>
+
               <button
                 type='button'
                 onClick={handleTestVoice}
@@ -447,7 +502,27 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 )}
                 Tester votre voix
               </button>
+
+              {formData.voice &&
+                availableVoices &&
+                availableVoices[formData.voice] === 'Custom voice' && (
+                  <button
+                    type='button'
+                    onClick={() => {
+                      setVoiceToDelete(formData.voice || null);
+                      setShowDeleteVoiceConfirm(true);
+                    }}
+                    className='px-3 py-2 text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-red-500 hover:bg-[#2B2B2B] hover:border-[#FF6459]'
+                    title='Supprimer cette voix'
+                  >
+                    <XCircle
+                      size={16}
+                      className='text-[#FF6459]'
+                    />
+                  </button>
+                )}
             </div>
+
             {!showVoiceUpload && (
               <button
                 type='button'
@@ -457,6 +532,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 Cloner votre propre voix
               </button>
             )}
+
             {showVoiceUpload && (
               <div className='mt-2 px-4 py-3 bg-[#181818] border border-white rounded-2xl'>
                 <div className='flex flex-col gap-3'>
@@ -467,6 +543,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     >
                       Nom de la voix
                     </label>
+
                     <input
                       id='voice-upload-name-input'
                       type='text'
@@ -476,6 +553,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       placeholder='Ma voix'
                     />
                   </div>
+
                   <div className='flex flex-col gap-1'>
                     <label
                       htmlFor='voice-upload-file-input'
@@ -483,6 +561,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     >
                       Fichier audio (WAV)
                     </label>
+
                     <input
                       id='voice-upload-file-input'
                       type='file'
@@ -491,9 +570,11 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green file:mr-4 file:py-1 file:px-4 file:rounded-lg file:border-0 file:bg-[#39F2AE] file:text-black file:text-sm file:cursor-pointer'
                     />
                   </div>
+
                   {voiceUploadError && (
                     <p className='text-xs text-red-400'>{voiceUploadError}</p>
                   )}
+
                   <div className='flex gap-2'>
                     <button
                       type='button'
@@ -507,6 +588,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     >
                       Annuler
                     </button>
+
                     <button
                       type='button'
                       onClick={handleCreateVoice}
@@ -531,15 +613,18 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               </div>
             )}
           </div>
+
           <div className='flex flex-col flex-1 gap-2'>
             <div className='flex items-center justify-between mb-1'>
               <div className='text-sm font-medium text-white'>
                 Configurez votre assistant conversationnel
               </div>
+
               <span className='text-sm text-gray-400'>
                 {formatTokenCount(promptTokenCount)}
               </span>
             </div>
+
             <textarea
               value={formData.prompt}
               onChange={onChangePrompt}
@@ -548,6 +633,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             />
           </div>
         </div>
+
         <div className='flex flex-col h-full gap-2'>
           <div className='flex flex-col grow h-full gap-2'>
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
@@ -668,6 +754,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                   </div>
                 </button>
               </div>
+
               <div className='flex flex-col w-full gap-0.5'>
                 <div className='flex flex-col gap-2 py-2 overflow-x-hidden overflow-y-auto max-h-40'>
                   {(formData.documents || []).map((doc, index) => (
@@ -679,6 +766,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       removeDocument={handleRemoveDocument}
                     />
                   ))}
+
                   {(!formData.documents || formData.documents.length === 0) && (
                     <p className='text-sm italic text-gray-500'>
                       No documents added yet
@@ -695,6 +783,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             >
               Annuler
             </button>
+
             <button
               className='p-px h-14 light-green-to-green-gradient rounded-2xl'
               onClick={handleSave}
@@ -718,12 +807,55 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
           </div>
         </div>
       </div>
+
       <DocumentEditorPopup
         document={editingDocument}
         isOpen={isDocumentEditorOpen}
         onSave={handleSaveDocument}
         onCancel={handleCancelDocument}
       />
+
+      {showDeleteVoiceConfirm && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70'>
+          <div className='bg-[#1B1B1B] border border-white rounded-2xl p-6 max-w-md w-full mx-4'>
+            <h3 className='text-lg font-medium text-white mb-2'>
+              Supprimer la voix personnalisée
+            </h3>
+
+            <p className='text-sm text-gray-300 mb-6'>
+              Êtes-vous sûr de vouloir supprimer cette voix personnalisée ?
+              Cette action est irréversible.
+            </p>
+            <div className='flex justify-end gap-3'>
+              <button
+                onClick={() => {
+                  setShowDeleteVoiceConfirm(false);
+                  setVoiceToDelete(null);
+                }}
+                disabled={isDeletingVoice}
+                className='px-6 py-2 text-sm text-white bg-[#101010] border border-white rounded-2xl focus:outline-none hover:bg-[#2B2B2B] disabled:opacity-50'
+              >
+                Annuler
+              </button>
+
+              <button
+                onClick={handleDeleteVoice}
+                disabled={isDeletingVoice}
+                className='px-6 py-2 text-sm text-white bg-[#FF6459] rounded-2xl focus:outline-none hover:bg-[#E0554E] disabled:opacity-50 flex items-center gap-2'
+              >
+                {isDeletingVoice ? (
+                  <LoaderCircleIcon
+                    size={16}
+                    className='animate-spin'
+                  />
+                ) : (
+                  'Supprimer'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -753,6 +885,7 @@ const AdditionalKeyword: FC<AdditionalKeywordProps> = ({
           {keyword}
         </div>
       </button>
+
       <button
         type='button'
         onClick={onClickRemove}
@@ -785,6 +918,7 @@ const Friend: FC<FriendProps> = ({ friend, removeFriend }) => {
           {friend}
         </div>
       </button>
+
       <button
         type='button'
         onClick={onClickRemove}
@@ -827,10 +961,12 @@ const DocumentCard: FC<DocumentProps> = ({
         <span className='block text-base font-medium text-white truncate'>
           {document.title}
         </span>
+
         <span className='text-[10px] text-gray-400'>
           {formatTokenCount(docTokenCount)}
         </span>
       </div>
+
       <div className='flex gap-2'>
         <button
           aria-label='editer'
@@ -843,6 +979,7 @@ const DocumentCard: FC<DocumentProps> = ({
             className='text-white'
           />
         </button>
+
         <button
           aria-label='supprimer'
           className='size-10 cursor-pointer flex items-center justify-center rounded-xl bg-[#101010]/25'
