@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { useAuthContext } from './authContext';
 
 const Google = () => {
-  const { googleSignIn } = useAuthContext();
-  const clientID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const { googleSignIn, googleClientId } = useAuthContext();
+  const clientID = googleClientId;
   const redirect = window.location.origin;
   const response = 'id_token';
   const scope = 'openid profile email';

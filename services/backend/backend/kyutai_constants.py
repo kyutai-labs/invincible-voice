@@ -56,6 +56,6 @@ TTS_VOICE_ID = os.environ.get("TTS_VOICE_ID", "kelly")
 
 
 ALLOW_PASSWORD = is_value_true(
-    os.environ.get("ALLOW_PASSWORD", "true"), "ALLOW_PASSWORD"
+    os.environ.get("ALLOW_PASSWORD", "true") or "true", "ALLOW_PASSWORD"
 )
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "REPLACE_ME")

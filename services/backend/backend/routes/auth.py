@@ -7,7 +7,12 @@ from typing_extensions import Annotated
 from backend.kyutai_constants import ALLOW_PASSWORD, GOOGLE_CLIENT_ID
 from backend.libs.google import verify_google_token
 from backend.security import create_access_token, hash_password, verify_password
-from backend.storage import UserData, get_user_data_from_storage, get_user_data_path
+from backend.storage import (
+    UserData,
+    UserDataNotFoundError,
+    get_user_data_from_storage,
+    get_user_data_path,
+)
 from backend.typing import GoogleAuthRequest, UserSettings
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -96,7 +101,7 @@ def google_login(data: GoogleAuthRequest):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Account exists, login with password",
             )
-    except FileNotFoundError:
+    except UserDataNotFoundError:
         user = UserData(
             user_id=uuid.uuid4(),
             email=email,
@@ -135,4 +140,5 @@ def allow_password() -> dict[str, bool]:
 
 @auth_router.get("/google-client-id")
 def google_client_id() -> dict[str, str]:
+    print(GOOGLE_CLIENT_ID)
     return {"google_client_id": GOOGLE_CLIENT_ID}

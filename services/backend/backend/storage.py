@@ -5,7 +5,6 @@ from typing import Literal
 
 import humanize
 import pydantic
-from fastapi import HTTPException, status
 
 from backend import kyutai_constants
 from backend import openai_realtime_api_events as ora
@@ -116,12 +115,13 @@ def get_user_data_path(email: str) -> Path:
     return kyutai_constants.USERS_SETTINGS_AND_HISTORY_DIR / f"{email}.json"
 
 
+class UserDataNotFoundError(Exception):
+    pass
+
+
 def get_user_data_from_storage(user_email: str) -> UserData:
     user_data_path = get_user_data_path(user_email)
     if not user_data_path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
+        raise UserDataNotFoundError(f"No user data found for email: {user_email}")
     else:
         return UserData.model_validate_json(user_data_path.read_text())
