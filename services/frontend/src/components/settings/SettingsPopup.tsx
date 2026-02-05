@@ -554,7 +554,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 onClick={() => setShowVoiceUpload(true)}
                 className='mt-2 px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green hover:bg-[#2B2B2B]'
               >
-                                                Cloner votre propre voix
+              Cloner votre propre voix
 
               </button>
             )}
@@ -570,7 +570,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       htmlFor='voice-upload-name-input'
                       className='text-xs font-medium text-gray-300'
                     >
-                                                                  Nom de la voix
+                    Nom de la voix
 
                     </label>
 
@@ -591,7 +591,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       htmlFor='voice-upload-file-input'
                       className='text-xs font-medium text-gray-300'
                     >
-                                                                  Fichier audio (WAV)
+                    Fichier audio (WAV)
 
                     </label>
 
@@ -661,8 +661,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             <div className='flex items-center justify-between mb-1'>
 
               <div className='text-sm font-medium text-white'>
-                                                Configurez votre assistant conversationnel
-
+              Configurez votre assistant conversationnel
               </div>
 
               <span className='text-sm text-gray-400'>
@@ -691,8 +690,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
 
               <div className='block mb-1 text-sm font-medium text-white'>
-                                                Mots-clés supplémentaires
-
+              Mots-clés supplémentaires
               </div>
 
               <div className='flex flex-col w-full gap-0.5'>
@@ -709,8 +707,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
 
                   {formData.additional_keywords.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
-                                                                  Pas de mots-clés ajoutés
-
+                    Pas de mots-clés ajoutés
                     </p>
                   )}
 
@@ -775,8 +772,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
 
                   {formData.friends.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
-                                                                  Aucun ami ajouté pour le moment
-
+                    Aucun ami ajouté pour le moment
                     </p>
                   )}
 
