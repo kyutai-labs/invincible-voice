@@ -684,19 +684,13 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
         </div>
 
         <div className='flex flex-col h-full gap-2'>
-
           <div className='flex flex-col grow h-full gap-2'>
-
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
-
               <div className='block mb-1 text-sm font-medium text-white'>
               Mots-clés supplémentaires
               </div>
-
               <div className='flex flex-col w-full gap-0.5'>
-
                 <div className='flex flex-wrap gap-1.5 min-h-6 max-h-28 overflow-y-auto overflow-x-hidden py-2'>
-
                   {formData.additional_keywords.map((keyword) => (
                     <AdditionalKeyword
                       key={keyword}
@@ -704,15 +698,12 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       removeKeyword={handleRemoveKeyword}
                     />
                   ))}
-
                   {formData.additional_keywords.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
                     Pas de mots-clés ajoutés
                     </p>
                   )}
-
                 </div>
-
                 <div className='relative flex gap-2'>
 
                   <input
@@ -723,7 +714,6 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     className='flex-1 px-4 py-1 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green h-10'
                     placeholder='Ajoutez votre mot-clé'
                   />
-
                   <button
                     onClick={handleAddKeyword}
                     className='absolute shrink-0 h-8 p-px right-1 inset-y-1 w-fit green-to-purple-via-blue-gradient rounded-xl'
@@ -732,36 +722,21 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                         'drop-shadow(0rem 0.2rem 0.15rem var(--darkgray))',
                     }}
                   >
-
-                    <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                                                                  Ajouter
-
+                    <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>Ajouter
                       <Plus
                         width={24}
                         height={24}
                         className='shrink-0 text-white'
                       />
-
                     </div>
-
                   </button>
-
                 </div>
-
               </div>
-
             </div>
-
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
-
-              <div className='block mb-1 text-sm font-medium text-white'>
-                                                Amis
-              </div>
-
+              <div className='block mb-1 text-sm font-medium text-white'>Amis</div>
               <div className='flex flex-col w-full gap-0.5'>
-
                 <div className='flex flex-wrap gap-1.5 min-h-6 max-h-28 overflow-y-auto overflow-x-hidden py-2'>
-
                   {formData.friends.map((friend) => (
                     <Friend
                       key={friend}
@@ -769,17 +744,13 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       removeFriend={handleRemoveFriend}
                     />
                   ))}
-
                   {formData.friends.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
                     Aucun ami ajouté pour le moment
                     </p>
                   )}
-
                 </div>
-
                 <div className='relative flex gap-2'>
-
                   <input
                     type='text'
                     value={newFriendInput}
@@ -788,7 +759,6 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     className='flex-1 px-4 py-1 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green h-10'
                     placeholder="Entrez le nom d'un ami"
                   />
-
                   <button
                     onClick={handleAddFriend}
                     className='absolute shrink-0 h-8 p-px right-1 inset-y-1 w-fit green-to-purple-via-blue-gradient rounded-xl'
@@ -797,34 +767,19 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                         'drop-shadow(0rem 0.2rem 0.15rem var(--darkgray))',
                     }}
                   >
-
-                    <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                                                                  Ajouter
-
-                      <Plus
+                    <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>Ajouter<Plus
                         width={24}
                         height={24}
                         className='shrink-0 text-white'
                       />
-
                     </div>
-
                   </button>
-
                 </div>
-
               </div>
-
             </div>
-
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
-
               <div className='flex flex-row items-center justify-between w-full mb-2'>
-
-                <div className='block mb-1 text-sm font-medium text-white'>
-                                                      Documents
-                </div>
-
+                <div className='block mb-1 text-sm font-medium text-white'>Documents</div>
                 <button
                   onClick={handleAddDocument}
                   className='shrink-0 p-px w-fit green-to-purple-via-blue-gradient rounded-xl h-8 -mt-0.5 mr-1'
@@ -833,9 +788,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                   }}
                 >
 
-                  <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                                                            Ajouter un document
-
+                  <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>Ajouter un document
                     <Plus
                       width={24}
                       height={24}
@@ -863,37 +816,25 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                   ))}
 
                   {(!formData.documents || formData.documents.length === 0) && (
-                    <p className='text-sm italic text-gray-500'>
-                                                                  No documents added yet
-
-                    </p>
+                    <p className='text-sm italic text-gray-500'>No documents added yet</p>
                   )}
 
                 </div>
-
               </div>
-
             </div>
-
           </div>
-
           <div className='flex justify-end gap-x-3'>
-
             <button
               className='px-8 text-sm h-14 bg-[#101010] rounded-2xl'
               onClick={onCancel}
-            >
-                                          Annuler
-            </button>
+            >Annuler</button>
 
             <button
               className='p-px h-14 light-green-to-green-gradient rounded-2xl'
               onClick={handleSave}
             >
 
-              <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
-                                                Sauvegarder la configuration
-
+              <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>Sauvegarder la configuration
                 {!isLoading && (
                   <CheckIcon
                     size={24}
@@ -909,13 +850,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 )}
 
               </div>
-
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       <DocumentEditorPopup
@@ -927,22 +864,11 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
 
       {showDeleteVoiceConfirm && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70'>
-
           <div className='bg-[#1B1B1B] border border-white rounded-2xl p-6 max-w-md w-full mx-4'>
+            <h3 className='text-lg font-medium text-white mb-2'>Supprimer la voix personnalisée</h3>
 
-            <h3 className='text-lg font-medium text-white mb-2'>
-                                          Supprimer la voix personnalisée
-
-            </h3>
-
-            <p className='text-sm text-gray-300 mb-6'>
-                                          Êtes-vous sûr de vouloir supprimer cette voix
-                                          personnalisée ? Cette action est irréversible.
-
-            </p>
-
+            <p className='text-sm text-gray-300 mb-6'>Êtes-vous sûr de vouloir supprimer cette voix personnalisée ? Cette action est irréversible.</p>
             <div className='flex justify-end gap-3'>
-
               <button
                 onClick={() => {
                   setShowDeleteVoiceConfirm(false);
@@ -950,9 +876,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 }}
                 disabled={isDeletingVoice}
                 className='px-6 py-2 text-sm text-white bg-[#101010] border border-white rounded-2xl focus:outline-none hover:bg-[#2B2B2B] disabled:opacity-50'
-              >
-                                                Annuler
-              </button>
+              >Annuler</button>
 
               <button
                 onClick={handleDeleteVoice}
@@ -970,11 +894,8 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 )}
 
               </button>
-
             </div>
-
           </div>
-
         </div>
       )}
 
@@ -1005,10 +926,7 @@ const AdditionalKeyword: FC<AdditionalKeywordProps> = ({
         type='button'
       >
 
-        <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
-                              {keyword}
-
-        </div>
+        <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>{keyword}</div>
 
       </button>
 
@@ -1043,10 +961,7 @@ const Friend: FC<FriendProps> = ({ friend, removeFriend }) => {
         className='h-10 p-px transition-colors blue-to-light-blue-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500'
       >
 
-        <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
-                              {friend}
-
-        </div>
+        <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>{friend}</div>
 
       </button>
 
