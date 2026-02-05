@@ -45,6 +45,7 @@ async def _get_available_voices(user_name: str) -> dict[str, tuple[str, str]]:
 async def create_voice(
     audio_file: Annotated[UploadFile, File(description="Audio file for voice cloning")],
     name: Annotated[str, Form(description="Name for the new voice")],
+    user: Annotated[UserData, Depends(get_current_user)],
 ) -> dict:
     """Create a new custom voice by uploading an audio file.
 
@@ -68,7 +69,7 @@ async def create_voice(
         result = await gradium.voices.create(
             client=client,
             audio_file=tmp_path,
-            name=name,
+            name=user.email + "/" + name,
         )
         return result
 
