@@ -84,6 +84,10 @@ services:
         - "traefik.http.services.backend.loadbalancer.server.port=80"
         - "traefik.http.routers.backend.priority=100"
 
+  redis:
+    image: redis:8-alpine
+    labels:
+      - "traefik.enable=false"
 
 volumes:
   letsencrypt:
