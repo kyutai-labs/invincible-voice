@@ -1,5 +1,6 @@
 import pathlib
 import tempfile
+from logging import getLogger
 from typing import Annotated
 
 import gradium
@@ -9,8 +10,10 @@ from backend.kyutai_constants import TTS_IS_GRADIUM, TTS_VOICE_ID
 from backend.routes.user import get_current_user
 from backend.storage import UserData
 
+logger = getLogger(__name__)
 
-async def _get_voice_uid(voice_name: str, user_name: str) -> str:
+
+async def _get_voice_uid(voice_name: str, user_email: str) -> str:
     """Get the UID for a voice name."""
     if not TTS_IS_GRADIUM:
         return voice_name
@@ -21,6 +24,8 @@ async def _get_voice_uid(voice_name: str, user_name: str) -> str:
 
     voices = await client.voice_get(include_catalog=True)
     for voice in voices:
+        if not voice["name"].startswith(f"{user_email}/"):
+            continue
         if voice["name"] == voice_name:
             return voice["uid"]
     raise HTTPException(status_code=404, detail="Voice not found")
@@ -56,8 +61,8 @@ async def delete_voice(
         base_url="https://eu.api.gradium.ai/api/",
     )
 
-    await gradium.voices.delete(client, voice_uid=voice_uid)
-
+    result = await gradium.voices.delete(client, voice_uid=voice_uid)
+    logger.info(f"{result}")
     return {"message": "Voice deleted successfully", "name": voice_name}
 
 
