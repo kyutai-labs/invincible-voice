@@ -1,6 +1,6 @@
 import os
 
-from cloudpathlib import CloudPath
+from cloudpathlib import AnyPath
 
 
 def is_value_true(value: str, env_var_name: str) -> bool:
@@ -46,7 +46,7 @@ FRAME_TIME_SEC = SAMPLES_PER_FRAME / SAMPLE_RATE  # 0.08
 # TODO: make it so that we can read this from the ASR server?
 STT_DELAY_SEC = 2
 
-USERS_DATA_DIR = CloudPath(os.environ["KYUTAI_USERS_DATA_PATH"])
+USERS_DATA_DIR = AnyPath(os.environ["KYUTAI_USERS_DATA_PATH"])
 
 USERS_AUDIO_DIR = USERS_DATA_DIR / "user_audio"
 USERS_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
