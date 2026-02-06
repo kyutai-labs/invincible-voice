@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import {
+import React, {
   ChangeEvent,
   FC,
   FormEvent,
@@ -13,7 +13,8 @@ import Google from './Google';
 import { AUTH_STATUSES, useAuthContext } from './authContext';
 
 const AuthWrapper: FC<PropsWithChildren> = ({ children = null }) => {
-  const { authStatus, authError, signIn, register, allowPassword } = useAuthContext();
+  const { authStatus, authError, signIn, register, allowPassword } =
+    useAuthContext();
   const [displayRegisterScreen, setDisplayRegisterScreen] = useState(false);
   const toggleRegisterScreen = useCallback(() => {
     setDisplayRegisterScreen((prev) => !prev);
@@ -115,7 +116,7 @@ const SignInScreen: FC<SignInScreenProps> = ({
         </div>
         <h1 className='text-center text-xl font-bold mb-9'>Connexion</h1>
         {allowPassword && (
-          <>
+          <React.Fragment>
             <div className='flex flex-col gap-1'>
               <label
                 htmlFor='auth-email-input'
@@ -158,7 +159,7 @@ const SignInScreen: FC<SignInScreenProps> = ({
               </div>
             </button>
             <p className='font-bold text-sm text-center'>ou</p>
-          </>
+          </React.Fragment>
         )}
         <Google />
       </form>
@@ -265,7 +266,7 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
           Créer votre compte
         </h1>
         {allowPassword && (
-          <>
+          <React.Fragment>
             <div className='flex flex-col gap-1'>
               <label
                 htmlFor='register-email-input'
@@ -321,7 +322,7 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
               </span>
             </button>
             <p className='font-bold text-sm text-center'>ou</p>
-          </>
+          </React.Fragment>
         )}
         <Google />
       </form>
