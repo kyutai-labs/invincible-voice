@@ -24,6 +24,7 @@ dependencies = [
     "pwdlib[argon2]",
     "google-auth",
     "av==14.0.1",
+    "cloudpathlib[s3]>=0.23.0",
 ]
 
 [build-system]

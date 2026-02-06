@@ -1,10 +1,10 @@
 import logging
 import uuid
-from pathlib import Path
 from typing import Literal
 
 import humanize
 import pydantic
+from cloudpathlib import AnyPath
 
 from backend import kyutai_constants
 from backend import openai_realtime_api_events as ora
@@ -111,7 +111,7 @@ def _add_to_llm_ready_conversation(
         llm_ready_conversation[-1].content += f"\n{content}"
 
 
-def get_user_data_path(email: str) -> Path:
+def get_user_data_path(email: str) -> AnyPath:
     return kyutai_constants.USERS_SETTINGS_AND_HISTORY_DIR / f"{email}.json"
 
 
