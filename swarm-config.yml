@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.3.1
+    image: traefik:v3.6.7
     command:
       # Swarm provider configuration
       - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
