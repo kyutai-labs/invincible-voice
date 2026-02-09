@@ -26,6 +26,7 @@ jobs:
           echo "${{ secrets.SSH_KEY_DEPLOYMENT }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan invincible-voice.kyutai.org >> ~/.ssh/known_hosts
+          ssh ${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org "echo SSH connection established"
 
       - name: Deploy to production step
         env:
@@ -38,8 +39,9 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           KYUTAI_LLM_API_KEY: ${{ secrets.KYUTAI_LLM_API_KEY }}
         run: |
-          docker -H ssh://invincible-voice.kyutai.org stack deploy \
+          docker -H ssh://${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org stack deploy \
             -c swarm-config.yml \
             --with-registry-auth \
             --prune \
+            --detach=true \
             invincible-voice
