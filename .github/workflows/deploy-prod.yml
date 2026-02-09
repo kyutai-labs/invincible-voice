@@ -15,11 +15,6 @@ jobs:
       - name: Login with Docker
         run: echo ${{ secrets.SCW_SECRET_KEY_REGISTRY }} | docker login rg.fr-par.scw.cloud/namespace-unruffled-tereshkova -u nologin --password-stdin
 
-      - name: Build and push the docker images
-        env:
-          COMMIT_SHA: ${{ github.sha }}
-        run: docker compose -f swarm-config.yml build --push
-
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -27,6 +22,11 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan invincible-voice.kyutai.org >> ~/.ssh/known_hosts
           ssh ${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org "echo SSH connection established"
+
+      - name: Build and push the docker images
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: docker compose -f swarm-config.yml build --push
 
       - name: Deploy to production step
         env:
