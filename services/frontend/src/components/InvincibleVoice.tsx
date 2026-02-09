@@ -1156,6 +1156,20 @@ const InvincibleVoice = () => {
               </button>
             </div>
           )}
+          {!shouldConnect && !isViewingPastConversation && (
+            <div className='absolute bottom-0 right-0 z-20 p-6 pointer-events-none'>
+              <div className='flex flex-col items-end pointer-events-auto'>
+                <p className='text-xs text-gray-500'>
+                  Text-to-speech and speech-to-text are generously provided by
+                </p>
+                <img
+                  src='/gradium.svg'
+                  alt='Gradium'
+                  className='h-6 mt-1'
+                />
+              </div>
+            </div>
+          )}
           {!hidePanes && (!showVerticalSplit || !shouldConnect) && (
             <div className='relative z-0 flex flex-col h-screen gap-8 px-4 pt-6 pb-4 overflow-y-auto'>
               <div className='flex flex-row items-center justify-end h-10'>
