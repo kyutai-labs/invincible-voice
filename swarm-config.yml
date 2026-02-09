@@ -71,6 +71,9 @@ services:
       - TTS_IS_GRADIUM=true
       - TTS_SERVER=https://eu.api.gradium.ai/api/
       - ALLOW_PASSWORD=false
+      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     deploy:
       labels:
         - "traefik.enable=true"
@@ -84,6 +87,10 @@ services:
         - "traefik.http.services.backend.loadbalancer.server.port=80"
         - "traefik.http.routers.backend.priority=100"
 
+  redis:
+    image: redis:8-alpine
+    labels:
+      - "traefik.enable=false"
 
 volumes:
   letsencrypt:
