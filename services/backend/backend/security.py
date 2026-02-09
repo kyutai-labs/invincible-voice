@@ -5,9 +5,9 @@ from typing import Optional
 import jwt
 from pwdlib import PasswordHash
 
-SECRET_KEY = os.environ.get("SECRET_KEY", None)
-if SECRET_KEY is None:
-    raise Exception("Missing SECRET_KEY env for JWT encoding")
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", None)
+if JWT_SECRET_KEY is None:
+    raise Exception("Missing JWT_SECRET_KEY env for JWT encoding")
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -29,8 +29,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
 
 
 def decode_access_token(token: str) -> dict:
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])

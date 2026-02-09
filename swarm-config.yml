@@ -61,7 +61,7 @@ services:
       - KYUTAI_LLM_API_KEY=${KYUTAI_LLM_API_KEY}
       - KYUTAI_LLM_MODEL=@preset/invincible-voice
       - KYUTAI_USERS_DATA_PATH=/users_data
-      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GRADIUM_API_KEY=${GRADIUM_API_KEY}
       # TODO: allow dynamic voice selection
