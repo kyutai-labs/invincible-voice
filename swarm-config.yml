@@ -32,7 +32,7 @@ services:
           - node.role == manager
 
   frontend:
-    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-frontend:latest
+    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-frontend:${COMMIT_SHA}
     build:
       context: services/frontend/
     deploy:
@@ -46,12 +46,9 @@ services:
         - "traefik.http.routers.frontend.priority=10"
 
   backend:
-    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-backend:latest
+    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-backend:${COMMIT_SHA}
     build:
       context: services/backend
-    # TODO: remove and use bucket instead
-    volumes:
-      - /users_data:/users_data
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379

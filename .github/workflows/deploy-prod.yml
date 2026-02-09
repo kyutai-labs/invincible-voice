@@ -1,0 +1,36 @@
+name: Deploy to prod workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Deploy to prod
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY_DEPLOYMENT }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan invincible-voice.kyutai.org >> ~/.ssh/known_hosts
+
+      - name: Deploy to production step
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GRADIUM_API_KEY: ${{ secrets.GRADIUM_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          KYUTAI_LLM_API_KEY: ${{ secrets.KYUTAI_LLM_API_KEY }}
+        run: |
+          docker -H ssh://invincible-voice.kyutai.org stack deploy \
+            -c swarm-config.yml \
+            --with-registry-auth \
+            --prune \
+            invincible-voice
