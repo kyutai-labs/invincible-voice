@@ -18,24 +18,8 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY_DEPLOYMENT }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-
-          # Debug: Check file size and permissions
-          echo "SSH key file info:"
-          ls -la ~/.ssh/deploy_key
-          echo "File size: $(wc -c < ~/.ssh/deploy_key) bytes"
-          echo "Line count: $(wc -l < ~/.ssh/deploy_key) lines"
-
-          # Debug: Show first and last lines of the key (redacted)
-          echo "First line of key:"
-          head -1 ~/.ssh/deploy_key
-          echo "Last line of key:"
-          tail -1 ~/.ssh/deploy_key
-
-          # Debug: Validate key format
-          echo "Validating SSH key format:"
-          ssh-keygen -y -f ~/.ssh/deploy_key > ~/.ssh/deploy_key.pub 2>&1 || echo "Key validation failed!"
+          echo "${{ secrets.SSH_KEY_DEPLOYMENT }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
 
           ssh-keyscan invincible-voice.kyutai.org >> ~/.ssh/known_hosts
           echo "Known hosts:"
@@ -60,7 +44,7 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           KYUTAI_LLM_API_KEY: ${{ secrets.KYUTAI_LLM_API_KEY }}
         run: |
-          docker -H ssh://${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org stack deploy \
+          docker -H ssh://invincible-voice.kyutai.org stack deploy \
             -c swarm-config.yml \
             --with-registry-auth \
             --prune \
