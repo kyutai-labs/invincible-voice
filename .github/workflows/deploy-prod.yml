@@ -39,7 +39,7 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           KYUTAI_LLM_API_KEY: ${{ secrets.KYUTAI_LLM_API_KEY }}
         run: |
-          docker -H ssh://invincible-voice.kyutai.org stack deploy \
+          docker -H ssh://${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org stack deploy \
             -c swarm-config.yml \
             --with-registry-auth \
             --prune \
