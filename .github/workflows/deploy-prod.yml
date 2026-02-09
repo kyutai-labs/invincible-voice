@@ -20,13 +20,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY_DEPLOYMENT }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-
           ssh-keyscan invincible-voice.kyutai.org >> ~/.ssh/known_hosts
-          echo "Known hosts:"
-          cat ~/.ssh/known_hosts
-
-          echo "Attempting SSH connection with verbose output..."
-          ssh -v ${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org "echo SSH connection established"
+          ssh ${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org "echo SSH connection established"
 
       - name: Build and push the docker images
         env:
