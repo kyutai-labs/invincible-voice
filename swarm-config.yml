@@ -38,7 +38,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.frontend.rule=(Host(`invincible-voice.kyutai.org`) || Host(`localhost`)) && PathPrefix(`/`)"
+        - "traefik.http.routers.frontend.rule=Host(`invincible-voice.kyutai.org`) && PathPrefix(`/`)"
         - "traefik.http.routers.frontend.entrypoints=websecure"
         - "traefik.http.routers.frontend.tls=true"
         - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
@@ -74,7 +74,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.backend.rule=(Host(`invincible-voice.kyutai.org`) || Host(`localhost`)) && PathPrefix(`/api`)"
+        - "traefik.http.routers.backend.rule=Host(`invincible-voice.kyutai.org`) && PathPrefix(`/api`)"
         - "traefik.http.routers.backend.middlewares=strip-api"
         - "traefik.http.middlewares.strip-api.replacepathregex.regex=^/api/(.*)"
         - "traefik.http.middlewares.strip-api.replacepathregex.replacement=/$$1"
