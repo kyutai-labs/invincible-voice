@@ -179,7 +179,7 @@ async def receive_loop(
             await handler.set_desired_responses_length(message)
 
         elif isinstance(message, ora.ResponseSelectedByWriter):
-            handler.chatbot.select_response(message.text, message.id)
+            await handler.select_response(message.text, message.id)
 
         else:
             logger.info("Ignoring message:", str(message)[:100])

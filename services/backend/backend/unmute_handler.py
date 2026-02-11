@@ -170,6 +170,10 @@ class UnmuteHandler(AsyncStreamHandler):
             # If there was a generated response before, it likely didn't have the keywords
             await self._generate_response()
 
+    async def select_response(self, message_content: str, id_: uuid.UUID):
+        self.chatbot.select_response(message_content, id_)
+        await self._generate_response()
+
     async def _generate_response(self):
         # Empty message to signal we've started responding.
         # Do it here in the lock to avoid race conditions
