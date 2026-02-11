@@ -182,7 +182,6 @@ const ResponseOptions: FC<ResponseOptionsProps> = ({
                   response.isComplete &&
                   Boolean(onEdit)
                 }
-                isFrozen={isFrozen}
                 onSelect={onSelect}
                 responseText={response.text}
                 setEditingIndex={setEditingIndex}
@@ -313,7 +312,6 @@ interface BaseResponseOptionProps {
   index: number;
   isComplete: boolean;
   isEditable: boolean;
-  isFrozen: boolean;
   onSelect: (id: string) => void;
   responseText: string;
   setEditingIndex: (index: number | null) => void;
@@ -326,7 +324,6 @@ const BaseResponseOption: FC<BaseResponseOptionProps> = ({
   index,
   isComplete,
   isEditable,
-  isFrozen,
   onSelect,
   responseText,
   setEditingIndex,
@@ -352,8 +349,8 @@ const BaseResponseOption: FC<BaseResponseOptionProps> = ({
       className={cn(
         'p-px text-left rounded-tr-sm rounded-b-2xl rounded-tl-2xl transition-all duration-200 h-16 black-to-light-green-via-white-gradient group relative focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50',
         {
-          'cursor-pointer': isFrozen && responseText.trim() && isComplete,
-          'cursor-wait': !isFrozen || !responseText.trim() || !isComplete,
+          'cursor-pointer': responseText.trim() && isComplete,
+          'cursor-wait': !responseText.trim() || !isComplete,
         },
       )}
       disabled={!responseText.trim() || !isComplete}
