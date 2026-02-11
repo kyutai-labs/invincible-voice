@@ -9,10 +9,14 @@ from starlette.responses import Response
 
 from backend.kyutai_constants import (
     KYUTAI_API_KEY,
+    REDIS_HOST,
+    REDIS_PORT,
     TTS_IS_GRADIUM,
+    TTS_LOCK_TTL_SECONDS,
     TTS_SERVER,
     TTS_VOICE_ID,
 )
+from backend.libs.redis_lock import RedisLockManager
 from backend.routes.user import get_current_user
 from backend.routes.voices import _get_available_voices
 from backend.storage import UserData
@@ -26,6 +30,12 @@ tts_router = APIRouter(prefix="/v1/tts", tags=["TTS"])
 async def text_to_speech(
     request: TTSRequest, user: Annotated[UserData, Depends(get_current_user)]
 ) -> Response:
+    if len(request.text) == 0:
+        raise HTTPException(status_code=400, detail="Text cannot be empty")
+    if len(request.text) > 1000:
+        raise HTTPException(
+            status_code=400, detail="Text cannot be longer than 1000 characters"
+        )
     # Use voice from request if provided, otherwise use user's saved voice or default
     if request.voice_name is not None:
         list_of_voices = await _get_available_voices(user.email)
@@ -46,23 +56,35 @@ async def text_to_speech(
         client = gradium.client.GradiumClient(
             base_url="https://eu.api.gradium.ai/api/",
         )
-        # Gradium streaming response
-        stream = await client.tts_stream(
-            {"voice_id": voice_id, "output_format": "pcm"}, text=request.text
+        tts_lock_manager = RedisLockManager(
+            REDIS_HOST, REDIS_PORT, TTS_LOCK_TTL_SECONDS
         )
+        lock = tts_lock_manager.acquire_lock(user.email, "tts")
+        await lock.__aenter__()
+        try:
+            # Gradium streaming response
+            stream = await client.tts_stream(
+                {"voice_id": voice_id, "output_format": "pcm"}, text=request.text
+            )
 
-        async def pcm_audio_generator():
-            async for chunk in stream.iter_bytes():
-                yield chunk
+            async def pcm_audio_generator():
+                try:
+                    async for chunk in stream.iter_bytes():
+                        yield chunk
+                finally:
+                    await lock.__aexit__(None, None, None)
 
-        return StreamingResponse(
-            pcm_audio_generator(),
-            media_type="application/octet-stream",
-            headers={
-                "Accept-Ranges": "bytes",
-                "Cache-Control": "no-cache",
-            },
-        )
+            return StreamingResponse(
+                pcm_audio_generator(),
+                media_type="application/octet-stream",
+                headers={
+                    "Accept-Ranges": "bytes",
+                    "Cache-Control": "no-cache",
+                },
+            )
+        except Exception:
+            await lock.__aexit__(None, None, None)
+            raise
 
     query = {
         "text": request.text,

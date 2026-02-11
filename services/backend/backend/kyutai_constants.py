@@ -33,7 +33,7 @@ LLM_MODEL = os.environ["KYUTAI_LLM_MODEL"]
 # Redis Configuration for Locking
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
-TTS_LOCK_TTL_SECONDS = int(os.getenv("TTS_LOCK_TTL_SECONDS", "300"))
+TTS_LOCK_TTL_SECONDS = int(os.getenv("TTS_LOCK_TTL_SECONDS", "30"))
 STT_LOCK_TTL_SECONDS = int(os.getenv("STT_LOCK_TTL_SECONDS", "600"))
 
 # Also checked on the frontend, see constant of the same name

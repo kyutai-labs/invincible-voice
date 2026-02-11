@@ -12,13 +12,9 @@ import backend.openai_realtime_api_events as ora
 from backend import metrics as mt
 from backend.kyutai_constants import (
     MAX_VOICE_FILE_SIZE_MB,
-    REDIS_HOST,
-    REDIS_PORT,
-    TTS_LOCK_TTL_SECONDS,
 )
 from backend.libs.files import LimitUploadSizeForPath
 from backend.libs.health import get_health
-from backend.libs.tts_lock import TTSLockMiddleware
 from backend.routes import auth_router, tts_router, user_router, voices_router
 
 app = FastAPI(openapi_prefix="/api")
@@ -45,14 +41,6 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
-# Add Redis-based TTS lock middleware
-app.add_middleware(
-    TTSLockMiddleware,
-    redis_host=REDIS_HOST,
-    redis_port=REDIS_PORT,
-    lock_ttl_seconds=TTS_LOCK_TTL_SECONDS,
 )
 
 app.include_router(user_router)
