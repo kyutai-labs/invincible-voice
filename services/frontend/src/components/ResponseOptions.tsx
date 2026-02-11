@@ -182,7 +182,6 @@ const ResponseOptions: FC<ResponseOptionsProps> = ({
                   response.isComplete &&
                   Boolean(onEdit)
                 }
-                isFrozen={isFrozen}
                 onSelect={onSelect}
                 responseText={response.text}
                 setEditingIndex={setEditingIndex}
@@ -313,7 +312,6 @@ interface BaseResponseOptionProps {
   index: number;
   isComplete: boolean;
   isEditable: boolean;
-  isFrozen: boolean;
   onSelect: (id: string) => void;
   responseText: string;
   setEditingIndex: (index: number | null) => void;
@@ -326,7 +324,6 @@ const BaseResponseOption: FC<BaseResponseOptionProps> = ({
   index,
   isComplete,
   isEditable,
-  isFrozen,
   onSelect,
   responseText,
   setEditingIndex,
