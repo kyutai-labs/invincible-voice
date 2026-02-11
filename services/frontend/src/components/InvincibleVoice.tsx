@@ -379,6 +379,20 @@ const InvincibleVoice = () => {
             ? '00000000-0000-4000-8000-000000000001'
             : '00000000-0000-4000-8000-000000000002';
 
+        // Flush any pending speaker message to chat history first
+        if (currentSpeakerMessage.trim()) {
+          setRawChatHistory((prev) => [
+            ...prev,
+            {
+              role: 'user',
+              content: currentSpeakerMessage,
+              timestamp: currentSpeakerMessageStartTime || Date.now(),
+            },
+          ]);
+          setCurrentSpeakerMessage('');
+          setCurrentSpeakerMessageStartTime(null);
+        }
+
         setRawChatHistory((prev) => [
           ...prev,
           {
@@ -405,6 +419,20 @@ const InvincibleVoice = () => {
         const selectedResponse = allResponses.find((r) => r.id === responseId);
         if (!selectedResponse) {
           return;
+        }
+
+        // Flush any pending speaker message to chat history first
+        if (currentSpeakerMessage.trim()) {
+          setRawChatHistory((prev) => [
+            ...prev,
+            {
+              role: 'user',
+              content: currentSpeakerMessage,
+              timestamp: currentSpeakerMessageStartTime || Date.now(),
+            },
+          ]);
+          setCurrentSpeakerMessage('');
+          setCurrentSpeakerMessageStartTime(null);
         }
 
         setRawChatHistory((prev) => [
@@ -446,6 +474,8 @@ const InvincibleVoice = () => {
       sendMessage,
       sendCurrentKeywords,
       clearResponses,
+      currentSpeakerMessage,
+      currentSpeakerMessageStartTime,
     ],
   );
   const handleWordBubbleClick = useCallback(

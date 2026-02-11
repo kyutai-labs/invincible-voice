@@ -36,6 +36,7 @@ class GradiumSetupMessage(BaseModel):
     type: Literal["setup"] = "setup"
     model_name: str
     input_format: str
+    close_ws_on_eos: bool = False
 
 
 class GradiumVADPrediction(BaseModel):
