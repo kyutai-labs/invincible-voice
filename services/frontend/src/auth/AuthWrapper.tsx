@@ -97,13 +97,13 @@ const SignInScreen: FC<SignInScreenProps> = ({
         className='flex flex-col gap-4 w-full bg-[#101010] px-11 py-9 rounded-4xl'
         onSubmit={onSubmit}
       >
-        <div className='flex flex-row items-center justify-center shrink-0 gap-2 pb-2 text-xs'>
+        <div className='flex flex-row items-center justify-center shrink gap-2 pb-2 text-xs'>
           <Image
             src='/logo_invincible.png'
             alt='Invincible Logo'
-            width={56}
-            height={56}
-            className='rounded-lg'
+            width={150}
+            height={150}
+            className='-mt-1'
           />
           by
           <Image
@@ -249,9 +249,9 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
           <Image
             src='/logo_invincible.png'
             alt='Invincible Logo'
-            width={56}
-            height={56}
-            className='rounded-lg'
+            width={150}
+            height={150}
+            className='-mt-1'
           />
           by
           <Image

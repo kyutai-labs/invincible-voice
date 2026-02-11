@@ -112,9 +112,9 @@ const ConversationHistory = ({
         <Image
           src='/logo_invincible.png'
           alt='Invincible Logo'
-          width={56}
-          height={56}
-          className='rounded-lg'
+          width={150}
+          height={150}
+          className='-mt-1'
         />
         <Image
           src='/logo_kyutai.svg'
