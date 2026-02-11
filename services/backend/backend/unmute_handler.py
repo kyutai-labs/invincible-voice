@@ -374,6 +374,9 @@ class UnmuteHandler(AsyncStreamHandler):
         ) - self.stt_last_message_time
         self.debug_dict["time_since_last_message"] = time_since_last_message
 
+        if time_since_last_message > 2.5:
+            return True
+
         if stt.pause_prediction.value > 0.6:
             self.debug_dict["timing"]["pause_detection"] = time_since_last_message
             logger.info(
@@ -382,7 +385,9 @@ class UnmuteHandler(AsyncStreamHandler):
             return True
         else:
             logger.info(
-                "No pause here, pause_prediction: %.2f", stt.pause_prediction.value
+                "No pause here, pause_prediction: %.2f, time since last message:"
+                + str(time_since_last_message),
+                stt.pause_prediction.value,
             )
             return False
 
