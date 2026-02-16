@@ -128,7 +128,8 @@ async def create_voice(
             name=user.email + "/" + name,
         )
 
-        # TODO: add detection
+        # TODO: add error detection, currently we just return the result
+        # it's not great because we get 200 instead of an error.
 
         return result
 
