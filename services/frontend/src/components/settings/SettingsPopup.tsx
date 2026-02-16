@@ -285,7 +285,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
         const validExtensions = ['.mp3', '.wav'];
         const fileName = file.name.toLowerCase();
         if (!validExtensions.some((ext) => fileName.endsWith(ext))) {
-          setVoiceUploadError('Veuillez fournir un fichier audio valide (MP3, WAV)');
+          setVoiceUploadError(
+            'Veuillez fournir un fichier audio valide (MP3, WAV)',
+          );
           return;
         }
         setVoiceUploadFile(file);
