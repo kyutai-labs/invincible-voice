@@ -282,8 +282,10 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {
-        if (!file.name.toLowerCase().endsWith('.wav')) {
-          setVoiceUploadError('Veuillez fournir un fichier WAV');
+        const validExtensions = ['.mp3', '.wav'];
+        const fileName = file.name.toLowerCase();
+        if (!validExtensions.some((ext) => fileName.endsWith(ext))) {
+          setVoiceUploadError('Veuillez fournir un fichier audio valide (MP3, WAV)');
           return;
         }
         setVoiceUploadFile(file);
@@ -559,13 +561,13 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       htmlFor='voice-upload-file-input'
                       className='text-xs font-medium text-gray-300'
                     >
-                      Fichier audio (WAV)
+                      Fichier audio (MP3, WAV)
                     </label>
 
                     <input
                       id='voice-upload-file-input'
                       type='file'
-                      accept='.wav'
+                      accept='.mp3,.wav'
                       onChange={handleVoiceFileChange}
                       className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green file:mr-4 file:py-1 file:px-4 file:rounded-lg file:border-0 file:bg-[#39F2AE] file:text-black file:text-sm file:cursor-pointer'
                     />

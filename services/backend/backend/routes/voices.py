@@ -115,7 +115,9 @@ async def create_voice(
     )
 
     # Save uploaded file to a temporary file since gradium.voices.create requires a file path
-    with tempfile.NamedTemporaryFile(suffix=".wav") as tmp:
+    # Preserve the original file extension for proper format handling
+    original_ext = pathlib.Path(audio_file.filename).suffix
+    with tempfile.NamedTemporaryFile(suffix=original_ext) as tmp:
         content = await audio_file.read()
         tmp.write(content)
         tmp_path = pathlib.Path(tmp.name)
@@ -125,6 +127,9 @@ async def create_voice(
             audio_file=tmp_path,
             name=user.email + "/" + name,
         )
+
+        # TODO: add detection
+
         return result
 
 
