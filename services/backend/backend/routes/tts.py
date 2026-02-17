@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Annotated, AsyncIterator
 
 import gradium
@@ -21,6 +22,8 @@ from backend.routes.user import get_current_user
 from backend.routes.voices import _get_available_voices
 from backend.storage import UserData
 from backend.typing import TTSRequest
+
+logger = getLogger(__name__)
 
 bearer_scheme = HTTPBearer()
 tts_router = APIRouter(prefix="/v1/tts", tags=["TTS"])
@@ -46,9 +49,14 @@ async def text_to_speech(
             )
         voice_id = list_of_voices[request.voice_name][0]
     elif user.user_settings.voice is not None:
-        voice_id = (await _get_available_voices(user.email))[user.user_settings.voice][
-            0
-        ]
+        available_voices = await _get_available_voices(user.email)
+        if user.user_settings.voice in available_voices:
+            voice_id = available_voices[user.user_settings.voice][0]
+        else:
+            logger.warning(
+                f"The voice {user.user_settings.voice} does not exist. This should not happen."
+            )
+            voice_id = TTS_VOICE_ID
     else:
         voice_id = TTS_VOICE_ID
 

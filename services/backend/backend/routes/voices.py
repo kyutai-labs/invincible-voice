@@ -63,6 +63,14 @@ async def delete_voice(
 
     result = await gradium.voices.delete(client, voice_uid=voice_uid)
     logger.info(f"{result}")
+
+    if user.user_settings.voice == voice_name:
+        logger.info(
+            "User is deleting the current voice, replacing with the default voice."
+        )
+        user.user_settings.voice = None
+        user.save()
+
     return {"message": "Voice deleted successfully", "name": voice_name}
 
 
