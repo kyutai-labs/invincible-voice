@@ -17,11 +17,11 @@ from backend import metrics as mt
 from backend.exceptions import MissingServiceAtCapacity
 from backend.kyutai_constants import (
     FRAME_TIME_SEC,
+    KYUTAI_STT_URL,
     SAMPLE_RATE,
     STT_DELAY_SEC,
     STT_IS_GRADIUM,
 )
-from backend.service_discovery import ServiceWithStartup
 from backend.stt.exponential_moving_average import ExponentialMovingAverage
 from backend.timer import Stopwatch
 from backend.websocket_utils import WebsocketState
@@ -149,14 +149,9 @@ STTMessageAdapter = TypeAdapter(STTMessage)
 GradiumSTTMessageAdapter = TypeAdapter(GradiumSTTMessage)
 
 
-class SpeechToText(ServiceWithStartup):
-    def __init__(
-        self, stt_instance: str | None = None, delay_sec: float = STT_DELAY_SEC
-    ):
-        # stt_instance should always be provided by service discovery via STT_URL
-        if stt_instance is None:
-            raise ValueError("stt_instance must be provided")
-        self.stt_instance = stt_instance
+class SpeechToText:
+    def __init__(self, delay_sec: float = STT_DELAY_SEC):
+        self.stt_instance = KYUTAI_STT_URL
         self.delay_sec = delay_sec
         self.websocket: websockets.ClientConnection | None = None
         self.sent_samples = 0

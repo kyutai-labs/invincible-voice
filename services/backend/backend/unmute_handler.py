@@ -30,7 +30,6 @@ from backend.llm.llm_utils import (
     get_openai_client,
 )
 from backend.quest_manager import Quest, QuestManager
-from backend.service_discovery import find_instance
 from backend.storage import UserData, get_user_data_from_storage
 from backend.stt.speech_to_text import (
     SpeechToText,
@@ -424,7 +423,9 @@ class UnmuteHandler(AsyncStreamHandler):
 
     async def start_up_stt(self):
         async def _init() -> SpeechToText:
-            return await find_instance("stt", SpeechToText)
+            instance = SpeechToText()
+            await instance.start_up()
+            return instance
 
         async def _run(stt: SpeechToText):
             await self._stt_loop(stt)

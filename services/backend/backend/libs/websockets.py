@@ -82,7 +82,7 @@ async def report_websocket_exception(websocket: WebSocket, exc: Exception):
 
 
 async def run_route(websocket: WebSocket, handler: UnmuteHandler):
-    health = await get_health(None)
+    health = await get_health()
     if not health.ok:
         logger.info("Health check failed, closing WebSocket connection.")
         await websocket.close(

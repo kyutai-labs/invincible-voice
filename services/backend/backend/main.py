@@ -62,7 +62,7 @@ def root():
 
 @app.get("/v1/health")
 async def health():
-    health = await get_health(None)
+    health = await get_health()
     mt.HEALTH_OK.observe(health.ok)
     return health
 
