@@ -95,6 +95,8 @@ async def _get_available_voices(user_name: str) -> dict[str, tuple[str, str]]:
     result = {}
     for voice in voices:
         if voice.get("is_catalog", False):
+            if "de Gaulle" in voice["name"]:
+                continue
             result[voice["name"]] = (voice["uid"], voice.get("language") or "unknown")
         else:
             # For custome voices, it's username/voice_name
