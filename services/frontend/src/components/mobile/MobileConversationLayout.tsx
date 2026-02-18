@@ -21,6 +21,7 @@ import HorizontalScrollableList from '@/components/ui/HorizontalScrollableList';
 import { ResponseSize, STATIC_MESSAGES } from '@/constants';
 import { cn } from '@/utils/cn';
 import { UserData } from '@/utils/userData';
+import { useTranslations } from '@/i18n';
 
 interface PendingKeyword {
   id: string;
@@ -63,6 +64,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
   onResponseSelect,
   onConnectButtonPress,
 }) => {
+  const t = useTranslations();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingText, setEditingText] = useState<string>('');
   const isFrozen = useMemo(() => frozenResponses !== null, [frozenResponses]);
@@ -162,7 +164,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
         items={userData?.user_settings?.friends || []}
         onItemClick={onWordBubbleClick}
         itemClassName='!bg-blue-700 hover:!bg-blue-600 !border-blue-500'
-        emptyMessage='No friends added yet. Add them in settings.'
+        emptyMessage={t('settings.noFriendsAdded')}
       />
       <div className='border-b border-gray-700 px-4'>
         <KeywordsSuggestion

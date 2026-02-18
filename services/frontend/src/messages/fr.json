@@ -11,7 +11,7 @@
     "configureAssistant": "Configurez votre assistant conversationnel",
     "cloneYourVoice": "Cloner votre propre voix",
     "testYourVoice": "Tester votre voix",
-    "noFriendsAdded": "Aucun ami ajouté pour le moment",
+    "noFriendsAdded": "Aucun ami ajouté pour le moment. Ajoutez-les dans les paramètres.",
     "noDocumentsAdded": "Aucun document ajouté pour le moment"
   },
   "conversation": {

@@ -1394,7 +1394,7 @@ const InvincibleVoice = () => {
                           {(!userData?.user_settings?.friends ||
                             userData.user_settings.friends.length === 0) && (
                             <p className='p-4 text-xs italic text-gray-500'>
-                              No friends added yet. Add them in settings.
+                              {t('settings.noFriendsAdded')}
                             </p>
                           )}
                         </div>
@@ -1480,7 +1480,7 @@ const InvincibleVoice = () => {
                         {(!userData?.user_settings?.friends ||
                           userData.user_settings.friends.length === 0) && (
                           <p className='text-xs italic text-gray-500'>
-                            No friends added yet. Add them in settings.
+                            {t('settings.noFriendsAdded')}
                           </p>
                         )}
                       </div>

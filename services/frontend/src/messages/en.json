@@ -11,7 +11,7 @@
     "configureAssistant": "Configure your chat assistant",
     "cloneYourVoice": "Clone your own voice",
     "testYourVoice": "Test your voice",
-    "noFriendsAdded": "No friends added yet",
+    "noFriendsAdded": "No friends added yet. Add them in settings.",
     "noDocumentsAdded": "No documents added yet"
   },
   "conversation": {
