@@ -62,7 +62,9 @@
     "voiceUploadInvalidFile": "Veuillez fournir un fichier audio valide (MP3, WAV)",
     "anErrorOccurred": "Une erreur s'est produite",
     "deleteDocument": "Supprimer le document",
-    "testVoiceMessage": "Bonjour, votre voix ressemblera à cela. Vous pouvez aussi cloner votre propre voix en fournissant un enregistrement audio de vous."
+    "testVoiceMessage": "Bonjour, votre voix ressemblera à cela. Vous pouvez aussi cloner votre propre voix en fournissant un enregistrement audio de vous.",
+    "expectedTranscriptionLanguage": "Langue de transcription attendue",
+    "letSpeechToTextGuess": "Laisser la reconnaissance vocale deviner"
   },
   "conversation": {
     "yesterday": "Hier",

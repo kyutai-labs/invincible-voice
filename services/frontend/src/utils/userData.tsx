@@ -48,6 +48,7 @@ export interface UserSettings {
   friends: string[];
   documents: Document[];
   voice?: string;
+  expected_transcription_language?: string | null;
 }
 
 /**

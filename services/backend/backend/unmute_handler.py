@@ -422,7 +422,9 @@ class UnmuteHandler(AsyncStreamHandler):
 
     async def start_up_stt(self):
         async def _init() -> SpeechToText:
-            instance = SpeechToText()
+            instance = SpeechToText(
+                self.chatbot.user_data.user_settings.expected_transcription_language
+            )
             await instance.start_up()
             return instance
 

@@ -62,7 +62,9 @@
     "voiceUploadInvalidFile": "Bitte geben Sie eine gültige Audiodatei (MP3, WAV) an",
     "anErrorOccurred": "Ein Fehler ist aufgetreten",
     "deleteDocument": "Dokument löschen",
-    "testVoiceMessage": "Hallo, Ihre Stimme wird so klingen. Sie können auch Ihre eigene Stimme klonen, indem Sie eine Audioaufnahme von sich selbst bereitstellen."
+    "testVoiceMessage": "Hallo, Ihre Stimme wird so klingen. Sie können auch Ihre eigene Stimme klonen, indem Sie eine Audioaufnahme von sich selbst bereitstellen.",
+    "expectedTranscriptionLanguage": "Erwartete Transkriptionssprache",
+    "letSpeechToTextGuess": "Spracherkennung selbst erraten lassen"
   },
   "conversation": {
     "yesterday": "Gestern",

@@ -70,7 +70,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   const handleInputChange = useCallback(
     (
       field: keyof UserSettings,
-      value: string | string[] | Document[] | boolean,
+      value: string | string[] | Document[] | boolean | null,
     ) => {
       setFormData((prev) => ({
         ...prev,
@@ -376,6 +376,16 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     [],
   );
 
+  const handleLanguageChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      handleInputChange(
+        'expected_transcription_language',
+        event.target.value === '' ? null : event.target.value,
+      );
+    },
+    [handleInputChange],
+  );
+
   useEffect(() => {
     setFormData({
       ...userSettings,
@@ -590,6 +600,31 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 </div>
               </div>
             )}
+          </div>
+
+          <div className='flex flex-col gap-2'>
+            <label
+              htmlFor='settings-language-select'
+              className='text-sm font-medium text-white'
+            >
+              {t('settings.expectedTranscriptionLanguage')}
+            </label>
+
+            <select
+              id='settings-language-select'
+              value={formData.expected_transcription_language || ''}
+              onChange={handleLanguageChange}
+              className='w-full px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green'
+            >
+              <option value=''>
+                {t('settings.letSpeechToTextGuess')}
+              </option>
+              <option value='en'>English</option>
+              <option value='fr'>Français</option>
+              <option value='de'>Deutsch</option>
+              <option value='es'>Español</option>
+              <option value='pt'>Português</option>
+            </select>
           </div>
 
           <div className='flex flex-col flex-1 gap-2'>
