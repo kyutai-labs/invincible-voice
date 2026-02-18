@@ -231,9 +231,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   // Handle voice creation
   const handleCreateVoice = useCallback(async () => {
     if (!voiceUploadFile || !voiceUploadName.trim()) {
-      setVoiceUploadError(
-        'Veuillez fournir un fichier audio et un nom pour la voix',
-      );
+      setVoiceUploadError(t('settings.voiceUploadError'));
       return;
     }
 
@@ -287,9 +285,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
         const validExtensions = ['.mp3', '.wav'];
         const fileName = file.name.toLowerCase();
         if (!validExtensions.some((ext) => fileName.endsWith(ext))) {
-          setVoiceUploadError(
-            'Veuillez fournir un fichier audio valide (MP3, WAV)',
-          );
+          setVoiceUploadError(t('settings.voiceUploadInvalidFile'));
           return;
         }
         setVoiceUploadFile(file);
@@ -430,7 +426,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 value={formData.name}
                 onChange={onChangeName}
                 className='w-full px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green'
-                placeholder='Le nom avec lequel vous souhaitez communiquer'
+                placeholder={t('settings.yourNamePlaceholder')}
               />
             </div>
           </div>
@@ -440,7 +436,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               htmlFor='settings-voice-select'
               className='text-sm font-medium text-white'
             >
-              Voix
+              {t('common.voice')}
             </label>
 
             <div className='flex gap-2'>
@@ -451,7 +447,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 disabled={isLoadingVoices}
                 className='flex-1 px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green disabled:opacity-50'
               >
-                <option value=''>Par défaut</option>
+                <option value=''>{t('common.default')}</option>
 
                 {availableVoices &&
                   Object.entries(availableVoices)
@@ -496,7 +492,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       setShowDeleteVoiceConfirm(true);
                     }}
                     className='px-3 py-2 text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-red-500 hover:bg-[#2B2B2B] hover:border-[#FF6459]'
-                    title='Supprimer cette voix'
+                    title={t('common.delete')}
                   >
                     <XCircle
                       size={16}
@@ -524,7 +520,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       htmlFor='voice-upload-name-input'
                       className='text-xs font-medium text-gray-300'
                     >
-                      Nom de la voix
+                      {t('settings.voiceName')}
                     </label>
 
                     <input
@@ -533,7 +529,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       value={voiceUploadName}
                       onChange={(e) => setVoiceUploadName(e.target.value)}
                       className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green'
-                      placeholder='Ma voix'
+                      placeholder={t('settings.voiceNamePlaceholder')}
                     />
                   </div>
 
@@ -542,7 +538,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       htmlFor='voice-upload-file-input'
                       className='text-xs font-medium text-gray-300'
                     >
-                      Fichier audio (MP3, WAV)
+                      {t('settings.audioFile')}
                     </label>
 
                     <input
@@ -569,7 +565,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       }}
                       className='flex-1 px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green hover:bg-[#2B2B2B]'
                     >
-                      Annuler
+                      {t('common.cancel')}
                     </button>
 
                     <button
@@ -588,7 +584,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                           className='animate-spin mx-auto'
                         />
                       ) : (
-                        'Créer la voix'
+                        t('settings.createVoice')
                       )}
                     </button>
                   </div>
@@ -634,7 +630,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                   ))}
                   {formData.additional_keywords.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
-                      Pas de mots-clés ajoutés
+                      {t('settings.noKeywordsAdded')}
                     </p>
                   )}
                 </div>
@@ -656,7 +652,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     }}
                   >
                     <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                      Ajouter
+                      {t('common.add')}
                       <Plus
                         width={24}
                         height={24}
@@ -669,7 +665,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             </div>
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
               <div className='block mb-1 text-sm font-medium text-white'>
-                Amis
+                {t('common.friends')}
               </div>
               <div className='flex flex-col w-full gap-0.5'>
                 <div className='flex flex-wrap gap-1.5 min-h-6 max-h-28 overflow-y-auto overflow-x-hidden py-2'>
@@ -704,7 +700,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     }}
                   >
                     <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                      Ajouter
+                      {t('common.add')}
                       <Plus
                         width={24}
                         height={24}
@@ -718,7 +714,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
               <div className='flex flex-row items-center justify-between w-full mb-2'>
                 <div className='block mb-1 text-sm font-medium text-white'>
-                  Documents
+                  {t('common.documents')}
                 </div>
                 <button
                   onClick={handleAddDocument}
@@ -764,7 +760,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               className='px-8 text-sm h-14 bg-[#101010] rounded-2xl'
               onClick={onCancel}
             >
-              Annuler
+              {t('common.cancel')}
             </button>
 
             <button
@@ -802,12 +798,11 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70'>
           <div className='bg-[#1B1B1B] border border-white rounded-2xl p-6 max-w-md w-full mx-4'>
             <h3 className='text-lg font-medium text-white mb-2'>
-              Supprimer la voix personnalisée
+              {t('settings.deleteVoiceTitle')}
             </h3>
 
             <p className='text-sm text-gray-300 mb-6'>
-              Êtes-vous sûr de vouloir supprimer cette voix personnalisée ?
-              Cette action est irréversible.
+              {t('settings.deleteVoiceMessage')}
             </p>
             <div className='flex justify-end gap-3'>
               <button
@@ -818,7 +813,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 disabled={isDeletingVoice}
                 className='px-6 py-2 text-sm text-white bg-[#101010] border border-white rounded-2xl focus:outline-none hover:bg-[#2B2B2B] disabled:opacity-50'
               >
-                Annuler
+                {t('common.cancel')}
               </button>
 
               <button
@@ -832,7 +827,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     className='animate-spin'
                   />
                 ) : (
-                  'Supprimer'
+                  t('common.delete')
                 )}
               </button>
             </div>
@@ -873,7 +868,7 @@ const AdditionalKeyword: FC<AdditionalKeywordProps> = ({
         type='button'
         onClick={onClickRemove}
         className='absolute flex items-center justify-center w-4 h-4 text-sm text-white transition-opacity bg-red-500 rounded-full opacity-0 -top-1 -right-1 hover:bg-[#FF6459] group-hover:opacity-100'
-        title='Remove keyword'
+        title={t('common.delete')}
       >
         ×
       </button>
@@ -906,7 +901,7 @@ const Friend: FC<FriendProps> = ({ friend, removeFriend }) => {
         type='button'
         onClick={onClickRemove}
         className='absolute flex items-center justify-center w-4 h-4 text-sm text-white transition-opacity bg-red-500 rounded-full opacity-0 -top-1 -right-1 hover:bg-[#FF6459] group-hover:opacity-100'
-        title='Remove friend'
+        title={t('common.delete')}
       >
         ×
       </button>
@@ -952,7 +947,7 @@ const DocumentCard: FC<DocumentProps> = ({
 
       <div className='flex gap-2'>
         <button
-          aria-label='editer'
+          aria-label={t('common.edit')}
           className='size-10 cursor-pointer flex items-center justify-center rounded-xl bg-[#101010]/25'
           onClick={handleEditDocument}
         >
@@ -964,7 +959,7 @@ const DocumentCard: FC<DocumentProps> = ({
         </button>
 
         <button
-          aria-label='supprimer'
+          aria-label={t('common.delete')}
           className='size-10 cursor-pointer flex items-center justify-center rounded-xl bg-[#101010]/25'
           onClick={handleRemoveDocument}
         >

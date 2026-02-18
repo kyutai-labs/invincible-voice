@@ -12,7 +12,22 @@
     "confirmPassword": "Confirmez votre mot de passe",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "emailOrPasswordIncorrect": "Email ou mot de passe incorrect",
-    "or": "ou"
+    "or": "ou",
+    "add": "Ajouter",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "save": "Sauvegarder",
+    "edit": "Modifier",
+    "title": "Titre",
+    "content": "Contenu",
+    "unknown": "Inconnu",
+    "up": "En ligne",
+    "down": "Hors ligne",
+    "default": "Par défaut",
+    "friends": "Amis",
+    "documents": "Documents",
+    "voice": "Voix",
+    "name": "Nom"
   },
   "settings": {
     "additionalKeywords": "Mots-clés supplémentaires",
@@ -23,16 +38,28 @@
     "responsesLoading": "Génération des réponses…",
     "audioWillBeReady": "L'audio sera prêt à la fin.",
     "yourName": "Votre nom",
+    "yourNamePlaceholder": "Le nom avec lequel vous souhaitez communiquer",
     "signOut": "Se déconnecter",
     "addDocument": "Ajouter un document",
     "changeSettings": "Changer les paramètres",
     "configureAssistant": "Configurez votre assistant conversationnel",
     "cloneYourVoice": "Cloner votre propre voix",
     "testYourVoice": "Tester votre voix",
+    "createVoice": "Créer la voix",
     "noFriendsAdded": "Aucun ami ajouté pour le moment. Ajoutez-les dans les paramètres.",
     "noDocumentsAdded": "Aucun document ajouté pour le moment",
     "saveConfiguration": "Sauvegarder la configuration",
-    "promptPlaceholder": "Saisissez votre prompt"
+    "promptPlaceholder": "Saisissez votre prompt",
+    "voiceName": "Nom de la voix",
+    "voiceNamePlaceholder": "Ma voix",
+    "audioFile": "Fichier audio (MP3, WAV)",
+    "deleteVoiceTitle": "Supprimer la voix personnalisée",
+    "deleteVoiceMessage": "Êtes-vous sûr de vouloir supprimer cette voix personnalisée ? Cette action est irréversible.",
+    "noKeywordsAdded": "Pas de mots-clés ajoutés",
+    "voiceUploadError": "Veuillez fournir un fichier audio et un nom pour la voix",
+    "voiceUploadInvalidFile": "Veuillez fournir un fichier audio valide (MP3, WAV)",
+    "anErrorOccurred": "Une erreur s'est produite",
+    "deleteDocument": "Supprimer le document"
   },
   "conversation": {
     "startChatting": "Démarrer la conversation",
@@ -45,6 +72,31 @@
     "lockResponses": "Vérouiller les réponses",
     "unlockResponses": "Dévérouiller les réponses",
     "contextQuestion": "Tu peux donner ton prénom pour aider le logiciel à comprendre le contexte? Merci!",
-    "repeatQuestion": "Peux-tu répéter ? Le logiciel n'a pas très bien compris."
+    "repeatQuestion": "Peux-tu répéter ? Le logiciel n'a pas très bien compris.",
+    "deleteConversation": "Supprimer la conversation",
+    "noConversationsYet": "Aucune conversation pour le moment",
+    "startFirstConversation": "Commencez votre première conversation pour la voir ici",
+    "editResponse": "Modifier la réponse",
+    "decreaseResponseSize": "Diminuer la taille de la réponse",
+    "increaseResponseSize": "Augmenter la taille de la réponse",
+    "freezeResponses": "Geler les réponses pour en sélectionner plusieurs",
+    "clickToPlayAudio": "Clic pour lire l'audio"
+  },
+  "documentEditor": {
+    "editDocument": "Editer un document",
+    "newDocument": "Nouveau document",
+    "documentTitlePlaceholder": "Entrez le titre du document",
+    "documentContentPlaceholder": "Entrez le contenu du document",
+    "cancel": "Annuler",
+    "save": "Sauvegarder"
+  },
+  "connection": {
+    "couldNotConnect": "Connexion impossible :(",
+    "serviceStatus": "État du service :",
+    "backend": "Backend",
+    "stt": "STT",
+    "llm": "LLM",
+    "tts": "TTS",
+    "upButWithErrors": "En ligne, mais avec erreurs"
   }
 }

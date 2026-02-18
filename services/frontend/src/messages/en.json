@@ -12,7 +12,22 @@
     "confirmPassword": "Confirm your password",
     "passwordMismatch": "Passwords do not match",
     "emailOrPasswordIncorrect": "Email or password is incorrect",
-    "or": "or"
+    "or": "or",
+    "add": "Add",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save",
+    "edit": "Edit",
+    "title": "Title",
+    "content": "Content",
+    "unknown": "Unknown",
+    "up": "Up",
+    "down": "Down",
+    "default": "Default",
+    "friends": "Friends",
+    "documents": "Documents",
+    "voice": "Voice",
+    "name": "Name"
   },
   "settings": {
     "additionalKeywords": "Additional keywords",
@@ -23,16 +38,28 @@
     "responsesLoading": "Generating responses…",
     "audioWillBeReady": "Audio will be ready when complete.",
     "yourName": "Your name",
+    "yourNamePlaceholder": "The name you want to communicate with",
     "signOut": "Sign out",
     "addDocument": "Add a document",
     "changeSettings": "Change settings",
     "configureAssistant": "Configure your chat assistant",
     "cloneYourVoice": "Clone your own voice",
     "testYourVoice": "Test your voice",
+    "createVoice": "Create voice",
     "noFriendsAdded": "No friends added yet. Add them in settings.",
     "noDocumentsAdded": "No documents added yet",
     "saveConfiguration": "Save configuration",
-    "promptPlaceholder": "Enter your prompt"
+    "promptPlaceholder": "Enter your prompt",
+    "voiceName": "Voice name",
+    "voiceNamePlaceholder": "My voice",
+    "audioFile": "Audio file (MP3, WAV)",
+    "deleteVoiceTitle": "Delete custom voice",
+    "deleteVoiceMessage": "Are you sure you want to delete this custom voice? This action is irreversible.",
+    "noKeywordsAdded": "No keywords added yet",
+    "voiceUploadError": "Please provide an audio file and a name for the voice",
+    "voiceUploadInvalidFile": "Please provide a valid audio file (MP3, WAV)",
+    "anErrorOccurred": "An error occurred",
+    "deleteDocument": "Delete document"
   },
   "conversation": {
     "startChatting": "Start chatting",
@@ -45,6 +72,31 @@
     "lockResponses": "Lock responses",
     "unlockResponses": "Unlock responses",
     "contextQuestion": "Can you provide your first name to help the software understand the context? Thank you!",
-    "repeatQuestion": "Can you repeat? The software didn't understand very well."
+    "repeatQuestion": "Can you repeat? The software didn't understand very well.",
+    "deleteConversation": "Delete conversation",
+    "noConversationsYet": "No conversations yet",
+    "startFirstConversation": "Start your first conversation to see it here",
+    "editResponse": "Edit response",
+    "decreaseResponseSize": "Decrease response size",
+    "increaseResponseSize": "Increase response size",
+    "freezeResponses": "Freeze the responses so you can select multiple ones",
+    "clickToPlayAudio": "Click to play audio"
+  },
+  "documentEditor": {
+    "editDocument": "Edit document",
+    "newDocument": "New document",
+    "documentTitlePlaceholder": "Enter document title",
+    "documentContentPlaceholder": "Enter document content",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "connection": {
+    "couldNotConnect": "Couldn't connect :(",
+    "serviceStatus": "Service status:",
+    "backend": "Backend",
+    "stt": "STT",
+    "llm": "LLM",
+    "tts": "TTS",
+    "upButWithErrors": "Up, but with errors"
   }
 }
