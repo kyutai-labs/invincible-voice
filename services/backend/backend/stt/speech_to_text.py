@@ -263,6 +263,7 @@ class SpeechToText:
                     model_name="default",
                     input_format="pcm",
                 )
+                logger.info(f"{setup_msg}")
                 await self._send(setup_msg)
                 logger.info("Sent setup message to Gradium STT")
 
