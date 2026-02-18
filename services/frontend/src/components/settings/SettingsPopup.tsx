@@ -506,7 +506,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 ) : (
                   <Play size={16} />
                 )}
-                Tester votre voix
+                {t('settings.testYourVoice')}
               </button>
 
               {formData.voice &&
@@ -535,7 +535,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 onClick={() => setShowVoiceUpload(true)}
                 className='mt-2 px-4 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green hover:bg-[#2B2B2B]'
               >
-                Cloner votre propre voix
+                {t('settings.cloneYourVoice')}
               </button>
             )}
 
@@ -623,7 +623,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
           <div className='flex flex-col flex-1 gap-2'>
             <div className='flex items-center justify-between mb-1'>
               <div className='text-sm font-medium text-white'>
-                Configurez votre assistant conversationnel
+                {t('settings.configureAssistant')}
               </div>
 
               <span className='text-sm text-gray-400'>
@@ -705,7 +705,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                   ))}
                   {formData.friends.length === 0 && (
                     <p className='text-sm italic text-gray-500'>
-                      Aucun ami ajouté pour le moment
+                      {t('settings.noFriendsAdded')}
                     </p>
                   )}
                 </div>
@@ -775,7 +775,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
 
                   {(!formData.documents || formData.documents.length === 0) && (
                     <p className='text-sm italic text-gray-500'>
-                      No documents added yet
+                      {t('settings.noDocumentsAdded')}
                     </p>
                   )}
                 </div>

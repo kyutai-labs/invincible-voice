@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 import ChatBubble from '@/components/icons/ChatBubble';
 import NewConversation from '@/components/icons/NewConversation';
+import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
 import {
   Conversation,
@@ -96,6 +97,7 @@ const ConversationHistory = ({
   onNewConversation,
   onDeleteConversation,
 }: ConversationHistoryProps) => {
+  const t = useTranslations();
   const sortedConversations = useMemo(() => {
     const newConversationArray = structuredClone(conversations);
     newConversationArray.sort((a, b) => {
@@ -156,7 +158,7 @@ const ConversationHistory = ({
           className='sticky shrink-0 p-px bottom-6 w-[calc(100%-3rem)] left-6 green-to-purple-via-blue-gradient rounded-2xl h-14 cursor-pointer'
         >
           <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-2xl text-sm'>
-            Nouvelle discussion
+            {t('conversation.newChat')}
             <NewConversation
               width={24}
               height={24}

@@ -2,6 +2,15 @@
   "common": {},
   "settings": {
     "additionalKeywords": "Mots-clés supplémentaires",
-    "changeSettings": "Changer les paramètres"
+    "changeSettings": "Changer les paramètres",
+    "configureAssistant": "Configurez votre assistant conversationnel",
+    "cloneYourVoice": "Cloner votre propre voix",
+    "testYourVoice": "Tester votre voix",
+    "noFriendsAdded": "Aucun ami ajouté pour le moment",
+    "noDocumentsAdded": "Aucun document ajouté pour le moment"
+  },
+  "conversation": {
+    "startChatting": "Démarrer la conversation",
+    "newChat": "Nouvelle discussion"
   }
 }

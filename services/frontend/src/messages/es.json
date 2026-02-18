@@ -1,0 +1,16 @@
+{
+  "common": {},
+  "settings": {
+    "additionalKeywords": "Palabras clave adicionales",
+    "changeSettings": "Cambiar configuración",
+    "configureAssistant": "Configura tu asistente de chat",
+    "cloneYourVoice": "Clonar tu propia voz",
+    "testYourVoice": "Probar tu voz",
+    "noFriendsAdded": "No hay amigos añadidos todavía",
+    "noDocumentsAdded": "No hay documentos añadidos todavía"
+  },
+  "conversation": {
+    "startChatting": "Empezar a chatear",
+    "newChat": "Nueva conversación"
+  }
+}

@@ -1178,7 +1178,7 @@ const InvincibleVoice = () => {
                 className='shrink-0 p-px cursor-pointer pointer-events-auto green-to-purple-via-blue-gradient rounded-2xl h-14'
               >
                 <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-8'>
-                  Démarrer la conversation
+                  {t('conversation.startChatting')}
                   <NewConversation
                     width={24}
                     height={24}

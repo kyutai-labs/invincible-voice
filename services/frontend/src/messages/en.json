@@ -2,6 +2,15 @@
   "common": {},
   "settings": {
     "additionalKeywords": "Additional keywords",
-    "changeSettings": "Change settings"
+    "changeSettings": "Change settings",
+    "configureAssistant": "Configure your chat assistant",
+    "cloneYourVoice": "Clone your own voice",
+    "testYourVoice": "Test your voice",
+    "noFriendsAdded": "No friends added yet",
+    "noDocumentsAdded": "No documents added yet"
+  },
+  "conversation": {
+    "startChatting": "Start chatting",
+    "newChat": "New chat"
   }
 }
