@@ -1,9 +1,27 @@
 {
-  "common": {},
+  "common": {
+    "noAccount": "¿No tienes una cuenta?",
+    "createAccount": "Crear una cuenta",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "createYourAccount": "Crea tu cuenta",
+    "yourEmail": "Tu correo electrónico",
+    "yourPassword": "Tu contraseña",
+    "createYourPassword": "Crea tu contraseña",
+    "confirmPassword": "Confirma tu contraseña",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "emailOrPasswordIncorrect": "Correo electrónico o contraseña incorrectos",
+    "or": "o"
+  },
   "settings": {
     "additionalKeywords": "Palabras clave adicionales",
     "addKeywordPlaceholder": "Añade tu palabra clave",
     "addFriendPlaceholder": "Introduce el nombre de un amigo",
+    "suggestions": "Sugerencias",
+    "keywordsLoading": "Generando palabras clave…",
+    "responsesLoading": "Generando respuestas…",
+    "audioWillBeReady": "El audio estará listo cuando se complete.",
     "yourName": "Tu nombre",
     "signOut": "Cerrar sesión",
     "addDocument": "Añadir un documento",
@@ -12,10 +30,21 @@
     "cloneYourVoice": "Clonar tu propia voz",
     "testYourVoice": "Probar tu voz",
     "noFriendsAdded": "No hay amigos añadidos todavía. Añádelos en configuración.",
-    "noDocumentsAdded": "No hay documentos añadidos todavía"
+    "noDocumentsAdded": "No hay documentos añadidos todavía",
+    "saveConfiguration": "Guardar configuración",
+    "promptPlaceholder": "Introduce tu prompt"
   },
   "conversation": {
     "startChatting": "Empezar a chatear",
-    "newChat": "Nueva conversación"
+    "newChat": "Nueva conversación",
+    "stopConversation": "Terminar la conversación",
+    "readyToChat": "Listo para chatear",
+    "startSpeaking": "Empieza a hablar y tu voz será transcrita. InvincibleVoice sugerirá respuestas para ayudar a comunicar.",
+    "emptyConversation": "Conversación vacía",
+    "noMessages": "Esta conversación no tiene mensajes.",
+    "lockResponses": "Bloquear respuestas",
+    "unlockResponses": "Desbloquear respuestas",
+    "contextQuestion": "¿Puedes dar tu nombre para ayudar al software a entender el contexto? ¡Gracias!",
+    "repeatQuestion": "¿Puedes repetir? El software no entendió muy bien."
   }
 }

@@ -612,7 +612,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               value={formData.prompt}
               onChange={onChangePrompt}
               className='flex-1 w-full min-h-0 px-6 py-4 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
-              placeholder='Enter your prompt'
+              placeholder={t('settings.promptPlaceholder')}
             />
           </div>
         </div>
@@ -772,7 +772,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               onClick={handleSave}
             >
               <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
-                Sauvegarder la configuration
+                {t('settings.saveConfiguration')}
                 {!isLoading && (
                   <CheckIcon
                     size={24}

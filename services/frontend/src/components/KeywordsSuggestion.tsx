@@ -1,6 +1,7 @@
 'use client';
 
 import { FC, Fragment, useCallback, useMemo } from 'react';
+import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
 
 interface Keyword {
@@ -22,6 +23,7 @@ const KeywordsSuggestion: FC<KeywordsSuggestionProps> = ({
   alwaysShow = false,
   mobile = false,
 }) => {
+  const t = useTranslations();
   const validKeywords = useMemo(
     () => keywords.filter((keyword) => keyword.text.trim()),
     [keywords],
@@ -75,7 +77,7 @@ const KeywordsSuggestion: FC<KeywordsSuggestionProps> = ({
         </div>
         {isPending && (
           <div className='mt-2 text-xs text-center text-gray-500'>
-            Génération des mots-clés…
+            {t('settings.keywordsLoading')}
           </div>
         )}
       </div>
@@ -84,7 +86,7 @@ const KeywordsSuggestion: FC<KeywordsSuggestionProps> = ({
 
   return (
     <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
-      <div className='mb-1 text-sm font-medium text-white'>Suggestions</div>
+      <div className='mb-1 text-sm font-medium text-white'>{t('settings.suggestions')}</div>
       <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
         {displayKeywords.map((keyword) => (
           <DesktopKeyword
@@ -95,7 +97,7 @@ const KeywordsSuggestion: FC<KeywordsSuggestionProps> = ({
         ))}
         {isPending && (
           <div className='mt-2 text-xs text-center text-gray-500'>
-            Génération des mots-clés…
+            {t('settings.keywordsLoading')}
           </div>
         )}
       </div>

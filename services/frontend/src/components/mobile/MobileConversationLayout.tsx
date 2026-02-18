@@ -72,6 +72,25 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
     () => frozenResponses || pendingResponses,
     [frozenResponses, pendingResponses],
   );
+  const staticContextOption = useMemo(
+    () => ({
+      id: 'static-context-question',
+      text: t('conversation.contextQuestion'),
+      isComplete: true,
+      messageId: '00000000-0000-4000-8000-000000000001',
+    }),
+    [t],
+  );
+  const staticRepeatOption = useMemo(
+    () => ({
+      id: 'static-repeat-question',
+      text: t('conversation.repeatQuestion'),
+      isComplete: true,
+      messageId: '00000000-0000-4000-8000-000000000002',
+    }),
+    [t],
+  );
+
   const allResponses = useMemo(
     () => [
       ...Array.from({ length: 4 }, (_, index) => {
@@ -85,20 +104,10 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
           }
         );
       }),
-      {
-        id: 'static-context-question',
-        text: STATIC_MESSAGES.CONTEXT_QUESTION,
-        isComplete: true,
-        messageId: '00000000-0000-4000-8000-000000000001',
-      },
-      {
-        id: 'static-repeat-question',
-        text: STATIC_MESSAGES.REPEAT_QUESTION,
-        isComplete: true,
-        messageId: '00000000-0000-4000-8000-000000000002',
-      },
+      staticContextOption,
+      staticRepeatOption,
     ],
-    [responsesToShow],
+    [responsesToShow, staticContextOption, staticRepeatOption],
   );
   const onMessageChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {

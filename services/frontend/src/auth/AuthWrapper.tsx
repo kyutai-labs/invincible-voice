@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import Google from './Google';
 import { AUTH_STATUSES, useAuthContext } from './authContext';
+import { useTranslations } from '@/i18n';
 
 const AuthWrapper: FC<PropsWithChildren> = ({ children = null }) => {
   const { authStatus, authError, signIn, register, allowPassword } =
@@ -68,6 +69,7 @@ const SignInScreen: FC<SignInScreenProps> = ({
   onSignIn,
   onSwitchToRegister,
 }) => {
+  const t = useTranslations();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const onSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -114,7 +116,7 @@ const SignInScreen: FC<SignInScreenProps> = ({
             className='-ml-8'
           />
         </div>
-        <h1 className='text-center text-xl font-bold mb-9'>Connexion</h1>
+        <h1 className='text-center text-xl font-bold mb-9'>{t('common.signIn')}</h1>
         {allowPassword && (
           <React.Fragment>
             <div className='flex flex-col gap-1'>
@@ -122,7 +124,7 @@ const SignInScreen: FC<SignInScreenProps> = ({
                 htmlFor='auth-email-input'
                 className='block mb-1 text-sm font-medium'
               >
-                Votre email
+                {t('common.yourEmail')}
               </label>
               <input
                 id='auth-email-input'
@@ -137,7 +139,7 @@ const SignInScreen: FC<SignInScreenProps> = ({
                 htmlFor='auth-password-input'
                 className='block mb-1 text-sm font-medium'
               >
-                Votre mot de passe
+                {t('common.yourPassword')}
               </label>
               <input
                 id='auth-password-input'
@@ -148,31 +150,31 @@ const SignInScreen: FC<SignInScreenProps> = ({
               />
             </div>
             <p className='block h-4 italic text-xs'>
-              {authError ? 'Email ou mot de passe incorrecte' : ''}
+              {authError ? t('common.emailOrPasswordIncorrect') : ''}
             </p>
             <button
               type='submit'
               className='shrink-0 p-px mt-4 font-bold cursor-pointer pointer-events-auto green-to-purple-via-blue-gradient rounded-2xl h-14'
             >
               <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-8'>
-                Connexion
+                {t('common.signIn')}
               </div>
             </button>
-            <p className='font-bold text-sm text-center'>ou</p>
+            <p className='font-bold text-sm text-center'>{t('common.or')}</p>
           </React.Fragment>
         )}
         <Google />
       </form>
       <div className='flex flex-col gap-2 w-full bg-[#101010] px-11 py-9 rounded-4xl font-bold'>
         <p className='mb-4 font-bold text-sm text-center'>
-          Vous n’avez pas encore de compte ?
+          {t('common.noAccount')}
         </p>
         <button
           onClick={onSwitchToRegister}
           className='shrink-0 p-px cursor-pointer pointer-events-auto rounded-2xl h-14'
         >
           <span className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-8'>
-            Créer un compte
+            {t('common.createAccount')}
           </span>
         </button>
       </div>
@@ -191,6 +193,7 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
   onRegister,
   onSwitchToSignIn,
 }) => {
+  const t = useTranslations();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -220,23 +223,23 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
     (event: ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({ ...prev, password: event.target.value }));
       if (formData.confirmPassword !== event.target.value) {
-        setError('Les mots de passe ne correspondent pas.');
+        setError(t('common.passwordMismatch'));
       } else {
         setError('');
       }
     },
-    [formData, setFormData, setError],
+    [formData, setFormData, setError, t],
   );
   const onChangeConfirmPassword = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({ ...prev, confirmPassword: event.target.value }));
       if (formData.password !== event.target.value) {
-        setError('Les mots de passe ne correspondent pas.');
+        setError(t('common.passwordMismatch'));
       } else {
         setError('');
       }
     },
-    [formData, setFormData, setError],
+    [formData, setFormData, setError, t],
   );
 
   return (
@@ -263,7 +266,7 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
           />
         </div>
         <h1 className='text-center text-xl font-bold mb-9'>
-          Créer votre compte
+          {t('common.createYourAccount')}
         </h1>
         {allowPassword && (
           <React.Fragment>
@@ -272,7 +275,7 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
                 htmlFor='register-email-input'
                 className='block mb-1 text-sm font-medium'
               >
-                Votre email
+                {t('common.yourEmail')}
               </label>
               <input
                 id='register-email-input'
@@ -287,7 +290,7 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
                 htmlFor='register-password-input'
                 className='block mb-1 text-sm font-medium'
               >
-                Créez votre mot de passe
+                {t('common.createYourPassword')}
               </label>
               <input
                 id='register-password-input'
@@ -302,7 +305,7 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
                 htmlFor='register-confirm-password-input'
                 className='block mb-1 text-sm font-medium'
               >
-                Confirmez votre mot de passe
+                {t('common.confirmPassword')}
               </label>
               <input
                 id='register-confirm-password-input'
@@ -318,24 +321,24 @@ const RegisterScreen: FC<RegisterScreenProps> = ({
               className='shrink-0 p-px font-bold cursor-pointer pointer-events-auto green-to-purple-via-blue-gradient rounded-2xl h-14'
             >
               <span className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-8'>
-                Créer mon compte
+                {t('common.signUp')}
               </span>
             </button>
-            <p className='font-bold text-sm text-center'>ou</p>
+            <p className='font-bold text-sm text-center'>{t('common.or')}</p>
           </React.Fragment>
         )}
         <Google />
       </form>
       <div className='flex flex-col gap-2 w-full bg-[#101010] px-11 py-9 rounded-4xl font-bold'>
         <p className='mb-4 font-bold text-sm text-center'>
-          Vous avez déjà un compte ?
+          {t('common.alreadyHaveAccount')}
         </p>
         <button
           onClick={onSwitchToSignIn}
           className='shrink-0 p-px cursor-pointer pointer-events-auto rounded-2xl h-14'
         >
           <span className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-8'>
-            Me connecter
+            {t('common.signIn')}
           </span>
         </button>
       </div>

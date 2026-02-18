@@ -1,9 +1,27 @@
 {
-  "common": {},
+  "common": {
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create an account",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "createYourAccount": "Create your account",
+    "yourEmail": "Your email",
+    "yourPassword": "Your password",
+    "createYourPassword": "Create your password",
+    "confirmPassword": "Confirm your password",
+    "passwordMismatch": "Passwords do not match",
+    "emailOrPasswordIncorrect": "Email or password is incorrect",
+    "or": "or"
+  },
   "settings": {
     "additionalKeywords": "Additional keywords",
     "addKeywordPlaceholder": "Add your keyword",
     "addFriendPlaceholder": "Enter a friend's name",
+    "suggestions": "Suggestions",
+    "keywordsLoading": "Generating keywords…",
+    "responsesLoading": "Generating responses…",
+    "audioWillBeReady": "Audio will be ready when complete.",
     "yourName": "Your name",
     "signOut": "Sign out",
     "addDocument": "Add a document",
@@ -12,10 +30,21 @@
     "cloneYourVoice": "Clone your own voice",
     "testYourVoice": "Test your voice",
     "noFriendsAdded": "No friends added yet. Add them in settings.",
-    "noDocumentsAdded": "No documents added yet"
+    "noDocumentsAdded": "No documents added yet",
+    "saveConfiguration": "Save configuration",
+    "promptPlaceholder": "Enter your prompt"
   },
   "conversation": {
     "startChatting": "Start chatting",
-    "newChat": "New chat"
+    "newChat": "New chat",
+    "stopConversation": "Stop the conversation",
+    "readyToChat": "Ready to chat",
+    "startSpeaking": "Start speaking and your voice will be transcribed. InvincibleVoice will suggest responses to help communicate.",
+    "emptyConversation": "Empty conversation",
+    "noMessages": "This conversation has no messages.",
+    "lockResponses": "Lock responses",
+    "unlockResponses": "Unlock responses",
+    "contextQuestion": "Can you provide your first name to help the software understand the context? Thank you!",
+    "repeatQuestion": "Can you repeat? The software didn't understand very well."
   }
 }

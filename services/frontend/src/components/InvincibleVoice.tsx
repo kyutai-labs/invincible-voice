@@ -50,8 +50,8 @@ import { ChatMessage } from '@/types/chatHistory';
 import { base64EncodeOpus } from '@/utils/audioUtil';
 import {
   convertConversationToChat,
-  STATIC_CONTEXT_OPTION,
-  STATIC_REPEAT_OPTION,
+  getStaticContextOption,
+  getStaticRepeatOption,
 } from '@/utils/conversationUtils';
 import { calculateTotalTokens, formatTokenCount } from '@/utils/tokenUtils';
 import { ttsCache } from '@/utils/ttsCache';
@@ -132,6 +132,15 @@ const InvincibleVoice = () => {
   const [healthStatus, setHealthStatus] = useState<HealthStatus | null>(null);
   const [errors, setErrors] = useState<ErrorItem[]>([]);
   const bearerToken = useMemo(() => new Cookies().get('bearerToken'), []);
+
+  const staticContextOption = useMemo(
+    () => getStaticContextOption(t),
+    [t],
+  );
+  const staticRepeatOption = useMemo(
+    () => getStaticRepeatOption(t),
+    [t],
+  );
   const newConversationUrl = useMemo(() => {
     // Create timezone-aware datetime for local_time parameter
     const localTime = new Date().toISOString();
@@ -374,8 +383,8 @@ const InvincibleVoice = () => {
       ) {
         const staticText =
           responseId === 'static-context-question'
-            ? STATIC_MESSAGES.CONTEXT_QUESTION
-            : STATIC_MESSAGES.REPEAT_QUESTION;
+            ? t('conversation.contextQuestion')
+            : t('conversation.repeatQuestion');
         const staticMessageId =
           responseId === 'static-context-question'
             ? '00000000-0000-4000-8000-000000000001'
@@ -1212,7 +1221,7 @@ const InvincibleVoice = () => {
                     title='Stop Conversation'
                   >
                     <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
-                      Arrêter la conversation
+                      {t('conversation.stopConversation')}
                       <Pause
                         width={24}
                         height={24}
@@ -1494,7 +1503,7 @@ const InvincibleVoice = () => {
                       <div className='grid grid-cols-2 gap-2 pb-2'>
                         <button
                           onClick={() =>
-                            handleResponseSelection(STATIC_CONTEXT_OPTION.id)
+                            handleResponseSelection(staticContextOption.id)
                           }
                           className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
                         >
@@ -1506,14 +1515,14 @@ const InvincibleVoice = () => {
                             </div>
                             <div className='flex-1 pr-2'>
                               <p className='overflow-hidden text-xs leading-tight text-gray-100'>
-                                {STATIC_CONTEXT_OPTION.text}
+                                {staticContextOption.text}
                               </p>
                             </div>
                           </div>
                         </button>
                         <button
                           onClick={() =>
-                            handleResponseSelection(STATIC_REPEAT_OPTION.id)
+                            handleResponseSelection(staticRepeatOption.id)
                           }
                           className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
                         >
@@ -1525,7 +1534,7 @@ const InvincibleVoice = () => {
                             </div>
                             <div className='flex-1 pr-2'>
                               <p className='overflow-hidden text-xs leading-tight text-gray-100'>
-                                {STATIC_REPEAT_OPTION.text}
+                                {staticRepeatOption.text}
                               </p>
                             </div>
                           </div>

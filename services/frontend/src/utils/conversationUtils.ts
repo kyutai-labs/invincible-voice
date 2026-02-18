@@ -1,4 +1,4 @@
-import { STATIC_MESSAGE_UUIDS, STATIC_MESSAGES } from '@/constants';
+import { STATIC_MESSAGE_UUIDS } from '@/constants';
 import { ChatMessage } from '@/types/chatHistory';
 import { Conversation, isSpeakerMessage, isWriterMessage } from './userData';
 
@@ -28,16 +28,20 @@ export function convertConversationToChat(
   });
 }
 
-export const STATIC_CONTEXT_OPTION = {
+export const getStaticContextOption = (
+  t: (key: string) => string,
+) => ({
   id: 'static-context-question',
-  text: STATIC_MESSAGES.CONTEXT_QUESTION,
+  text: t('conversation.contextQuestion'),
   isComplete: true,
   messageId: STATIC_MESSAGE_UUIDS.CONTEXT_QUESTION,
-};
+});
 
-export const STATIC_REPEAT_OPTION = {
+export const getStaticRepeatOption = (
+  t: (key: string) => string,
+) => ({
   id: 'static-repeat-question',
-  text: STATIC_MESSAGES.REPEAT_QUESTION,
+  text: t('conversation.repeatQuestion'),
   isComplete: true,
   messageId: STATIC_MESSAGE_UUIDS.REPEAT_QUESTION,
-};
+});

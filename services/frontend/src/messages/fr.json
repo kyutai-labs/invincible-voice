@@ -1,9 +1,27 @@
 {
-  "common": {},
+  "common": {
+    "noAccount": "Vous n'avez pas encore de compte ?",
+    "createAccount": "Créer un compte",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "createYourAccount": "Créer votre compte",
+    "yourEmail": "Votre email",
+    "yourPassword": "Votre mot de passe",
+    "createYourPassword": "Créez votre mot de passe",
+    "confirmPassword": "Confirmez votre mot de passe",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "emailOrPasswordIncorrect": "Email ou mot de passe incorrect",
+    "or": "ou"
+  },
   "settings": {
     "additionalKeywords": "Mots-clés supplémentaires",
     "addKeywordPlaceholder": "Ajoutez votre mot-clé",
     "addFriendPlaceholder": "Entrez le nom d'un ami",
+    "suggestions": "Suggestions",
+    "keywordsLoading": "Génération des mots-clés…",
+    "responsesLoading": "Génération des réponses…",
+    "audioWillBeReady": "L'audio sera prêt à la fin.",
     "yourName": "Votre nom",
     "signOut": "Se déconnecter",
     "addDocument": "Ajouter un document",
@@ -12,10 +30,21 @@
     "cloneYourVoice": "Cloner votre propre voix",
     "testYourVoice": "Tester votre voix",
     "noFriendsAdded": "Aucun ami ajouté pour le moment. Ajoutez-les dans les paramètres.",
-    "noDocumentsAdded": "Aucun document ajouté pour le moment"
+    "noDocumentsAdded": "Aucun document ajouté pour le moment",
+    "saveConfiguration": "Sauvegarder la configuration",
+    "promptPlaceholder": "Saisissez votre prompt"
   },
   "conversation": {
     "startChatting": "Démarrer la conversation",
-    "newChat": "Nouvelle discussion"
+    "newChat": "Nouvelle discussion",
+    "stopConversation": "Arrêter la conversation",
+    "readyToChat": "Prêt à discuter",
+    "startSpeaking": "Commencez à parler et votre voix sera transcrite. InvincibleVoice suggérera des réponses pour aider à communiquer.",
+    "emptyConversation": "Conversation vide",
+    "noMessages": "Cette conversation n'a aucun message.",
+    "lockResponses": "Vérouiller les réponses",
+    "unlockResponses": "Dévérouiller les réponses",
+    "contextQuestion": "Tu peux donner ton prénom pour aider le logiciel à comprendre le contexte? Merci!",
+    "repeatQuestion": "Peux-tu répéter ? Le logiciel n'a pas très bien compris."
   }
 }

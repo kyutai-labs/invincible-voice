@@ -19,9 +19,12 @@ interface ConversationHistoryProps {
   onDeleteConversation: (index: number) => void;
 }
 
-const formatConversationPreview = (conversation: Conversation): string => {
+const formatConversationPreview = (
+  conversation: Conversation,
+  t: (key: string) => string,
+): string => {
   if (conversation.messages.length === 0) {
-    return 'Empty conversation';
+    return t('conversation.emptyConversation');
   }
 
   const firstMessage = conversation.messages[0];
@@ -32,7 +35,7 @@ const formatConversationPreview = (conversation: Conversation): string => {
     return firstMessage.content;
   }
 
-  return 'Conversation';
+  return t('conversation.newChat');
 };
 
 const getConversationMessageCount = (conversation: Conversation): string => {
@@ -148,6 +151,7 @@ const ConversationHistory = ({
               onDeleteConversation={onDeleteConversation}
               onSelectConversation={onConversationSelect}
               selectedConversationIndex={selectedConversationIndex}
+              t={t}
             />
           ))
         )}
@@ -179,6 +183,7 @@ interface ConversationCardProps {
   onDeleteConversation: (index: number) => void;
   onSelectConversation: (index: number) => void;
   selectedConversationIndex: number | null;
+  t: (key: string) => string;
 }
 
 const ConversationCard = ({
@@ -187,6 +192,7 @@ const ConversationCard = ({
   onDeleteConversation,
   onSelectConversation,
   selectedConversationIndex,
+  t,
 }: ConversationCardProps) => {
   const originalIndex = useMemo(() => {
     return conversations.findIndex(
@@ -239,7 +245,7 @@ const ConversationCard = ({
             </div>
           </div>
           <div className='px-5 text-sm font-medium line-clamp-2'>
-            {formatConversationPreview(conversation)}
+            {formatConversationPreview(conversation, t)}
           </div>
         </div>
       </button>
