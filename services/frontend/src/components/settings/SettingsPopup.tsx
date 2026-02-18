@@ -13,6 +13,7 @@ import { useAuthContext } from '@/auth/authContext';
 import Edit from '@/components/icons/Edit';
 import Plus from '@/components/icons/Plus';
 import Trash from '@/components/icons/Trash';
+import { useTranslations } from '@/i18n';
 import { estimateTokens, formatTokenCount } from '@/utils/tokenUtils';
 import { playTTSStream } from '@/utils/ttsUtil';
 import {
@@ -36,6 +37,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   onSave,
   onCancel,
 }) => {
+  const t = useTranslations();
   const { signOut } = useAuthContext();
   const [formData, setFormData] = useState<UserSettings>(userSettings);
   const [isLoading, setIsLoading] = useState(false);
@@ -642,7 +644,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
           <div className='flex flex-col grow h-full gap-2'>
             <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
               <div className='block mb-1 text-sm font-medium text-white'>
-                Mots-clés supplémentaires
+                {t('settings.additionalKeywords')}
               </div>
               <div className='flex flex-col w-full gap-0.5'>
                 <div className='flex flex-wrap gap-1.5 min-h-6 max-h-28 overflow-y-auto overflow-x-hidden py-2'>
