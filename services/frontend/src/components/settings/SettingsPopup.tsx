@@ -214,8 +214,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     if (!formData.voice) return;
     setIsPlayingVoice(true);
     try {
-      const testText =
-        'Bonjour, votre voix ressemblera à cela. Vous pouvez aussi cloner votre propre voix en fournissant un enregistrement audio de vous.';
+      const testText = t('settings.testVoiceMessage');
       await playTTSStream({
         text: testText,
         messageId: crypto.randomUUID(),
@@ -226,7 +225,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     } finally {
       setIsPlayingVoice(false);
     }
-  }, [formData.voice]);
+  }, [formData.voice, t]);
 
   // Handle voice creation
   const handleCreateVoice = useCallback(async () => {

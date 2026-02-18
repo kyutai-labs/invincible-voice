@@ -61,7 +61,8 @@
     "voiceUploadError": "Por favor, proporciona un archivo de audio y un nombre para la voz",
     "voiceUploadInvalidFile": "Por favor, proporciona un archivo de audio válido (MP3, WAV)",
     "anErrorOccurred": "Ocurrió un error",
-    "deleteDocument": "Eliminar documento"
+    "deleteDocument": "Eliminar documento",
+    "testVoiceMessage": "Hola, tu voz sonará así. También puedes clonar tu propia voz proporcionando una grabación de audio de ti mismo."
   },
   "conversation": {
     "yesterday": "Ayer",
