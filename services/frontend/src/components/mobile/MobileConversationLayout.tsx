@@ -187,7 +187,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
         <div className='flex gap-2'>
           <textarea
             className='flex-1 p-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm'
-            placeholder='Type your message here…'
+            placeholder={t('conversation.typeMessagePlaceholder')}
             rows={2}
             value={textInput}
             onChange={onMessageChange}
@@ -198,7 +198,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
             onClick={onSendMessage}
             disabled={!textInput.trim()}
           >
-            Send
+            {t('conversation.sendMessage')}
           </button>
         </div>
       </div>
@@ -434,7 +434,7 @@ const BaseResponse: FC<BaseReponseProps> = ({
               </Fragment>
             ) : (
               <span className='text-gray-400 italic'>
-                Waiting for response…
+                {t('conversation.waitingForResponse')}
               </span>
             )}
           </p>

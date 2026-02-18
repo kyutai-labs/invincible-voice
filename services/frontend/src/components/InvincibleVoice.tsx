@@ -1331,7 +1331,9 @@ const InvincibleVoice = () => {
                           </div>
                           <textarea
                             className='flex-1 p-2 text-sm text-white placeholder-gray-400 bg-gray-800 border border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                            placeholder='Type your message here…'
+                            placeholder={t(
+                              'conversation.typeMessagePlaceholder',
+                            )}
                             rows={2}
                             value={textInput}
                             onChange={onChangeTextInput}
@@ -1342,7 +1344,7 @@ const InvincibleVoice = () => {
                             onClick={handleSendMessage}
                             disabled={!textInput.trim()}
                           >
-                            Send
+                            {t('conversation.sendMessage')}
                           </button>
                         </div>
                       </div>
@@ -1378,7 +1380,7 @@ const InvincibleVoice = () => {
                             userData.user_settings.additional_keywords
                               .length === 0) && (
                             <p className='p-4 text-xs italic text-gray-500'>
-                              No keywords added yet. Add them in settings.
+                              {t('settings.noKeywordsAdded')}
                             </p>
                           )}
                         </div>
@@ -1418,7 +1420,7 @@ const InvincibleVoice = () => {
                   <Fragment>
                     <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
                       <div className='mb-1 text-sm font-medium text-white'>
-                        Mots-clés
+                        {t('conversation.keywords')}
                       </div>
                       <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
                         {userData?.user_settings?.additional_keywords?.map(
@@ -1461,7 +1463,7 @@ const InvincibleVoice = () => {
                     )}
                     <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
                       <div className='mb-1 text-sm font-medium text-white'>
-                        Amis
+                        {t('common.friends')}
                       </div>
                       <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
                         {userData?.user_settings?.friends?.map((friend) => (
@@ -1536,7 +1538,7 @@ const InvincibleVoice = () => {
                       </div>
                       <textarea
                         className='grow w-full min-h-0 px-6 py-4 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
-                        placeholder='Type your message here…'
+                        placeholder={t('conversation.typeMessagePlaceholder')}
                         rows={2}
                         value={textInput}
                         onChange={onChangeTextInput}
@@ -1548,7 +1550,7 @@ const InvincibleVoice = () => {
                         disabled={!textInput.trim()}
                       >
                         <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
-                          Envoyer
+                          {t('conversation.sendMessage')}
                           <Reply
                             width={24}
                             height={24}

@@ -87,7 +87,11 @@
     "decreaseResponseSize": "Diminuir tamanho da resposta",
     "increaseResponseSize": "Aumentar tamanho da resposta",
     "freezeResponses": "Congelar as respostas para selecionar várias",
-    "clickToPlayAudio": "Clique para reproduzir áudio"
+    "clickToPlayAudio": "Clique para reproduzir áudio",
+    "keywords": "Palavras-chave",
+    "sendMessage": "Enviar",
+    "typeMessagePlaceholder": "Digite sua mensagem aqui…",
+    "waitingForResponse": "Aguardando resposta…"
   },
   "documentEditor": {
     "editDocument": "Editar documento",

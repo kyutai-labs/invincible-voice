@@ -87,7 +87,11 @@
     "decreaseResponseSize": "Decrease response size",
     "increaseResponseSize": "Increase response size",
     "freezeResponses": "Freeze the responses so you can select multiple ones",
-    "clickToPlayAudio": "Click to play audio"
+    "clickToPlayAudio": "Click to play audio",
+    "keywords": "Keywords",
+    "sendMessage": "Send",
+    "typeMessagePlaceholder": "Type your message here…",
+    "waitingForResponse": "Waiting for response…"
   },
   "documentEditor": {
     "editDocument": "Edit document",

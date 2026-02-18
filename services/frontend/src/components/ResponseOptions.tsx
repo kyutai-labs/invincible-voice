@@ -342,6 +342,7 @@ const BaseResponseOption: FC<BaseResponseOptionProps> = ({
   setEditingText,
   shortcut,
 }) => {
+  const t = useTranslations();
   const onClickEdit = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation();
@@ -387,7 +388,7 @@ const BaseResponseOption: FC<BaseResponseOptionProps> = ({
               </Fragment>
             ) : (
               <span className='italic text-gray-400'>
-                Waiting for response…
+                {t('conversation.waitingForResponse')}
               </span>
             )}
           </p>
