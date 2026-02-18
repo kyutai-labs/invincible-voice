@@ -17,7 +17,7 @@ const debug = (...args) => {
 class AudioOutputProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
-    debug("AudioOutputProcessor created", currentFrame, sampleRate);
+    debug('AudioOutputProcessor created', currentFrame, sampleRate);
 
     // Buffer length definitions
     const frameSize = asSamples(80);
@@ -39,8 +39,8 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
     this.initState();
 
     this.port.onmessage = (event) => {
-      if (event.data.type == "reset") {
-        debug("Reset audio processor state.");
+      if (event.data.type == 'reset') {
+        debug('Reset audio processor state.');
         this.initState();
         return;
       }
@@ -52,18 +52,18 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
       if (this.pidx < 20) {
         debug(
           this.timestamp(),
-          "Got packet",
+          'Got packet',
           this.pidx++,
           asMs(this.currentSamples()),
-          asMs(frame.length)
+          asMs(frame.length),
         );
       }
       if (this.currentSamples() >= this.totalMaxBufferSamples()) {
         debug(
           this.timestamp(),
-          "Dropping packets",
+          'Dropping packets',
           asMs(this.currentSamples()),
-          asMs(this.totalMaxBufferSamples())
+          asMs(this.totalMaxBufferSamples()),
         );
         const target = this.initialBufferSamples + this.partialBufferSamples;
         while (
@@ -74,7 +74,7 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
           let to_remove = this.currentSamples() - target;
           to_remove = Math.min(
             first.length - this.offsetInFirstBuffer,
-            to_remove
+            to_remove,
           );
           this.offsetInFirstBuffer += to_remove;
           this.timeInStream += to_remove / sampleRate;
@@ -83,13 +83,13 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
             this.offsetInFirstBuffer = 0;
           }
         }
-        debug(this.timestamp(), "Packet dropped", asMs(this.currentSamples()));
+        debug(this.timestamp(), 'Packet dropped', asMs(this.currentSamples()));
         this.maxBufferSamples += this.maxBufferSamplesIncrement;
         this.maxBufferSamples = Math.min(
           this.maxMaxBufferWithIncrements,
-          this.maxBufferSamples
+          this.maxBufferSamples,
         );
-        debug("Increased maxBuffer to", asMs(this.maxBufferSamples));
+        debug('Increased maxBuffer to', asMs(this.maxBufferSamples));
       }
       this.port.postMessage({
         totalAudioPlayed: this.totalAudioPlayed,
@@ -178,9 +178,9 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
     if (this.firstOut) {
       debug(
         this.timestamp(),
-        "Audio resumed",
+        'Audio resumed',
         asMs(this.currentSamples()),
-        this.remainingPartialBufferSamples
+        this.remainingPartialBufferSamples,
       );
     }
     let out_idx = 0;
@@ -189,11 +189,11 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
       const first = this.frames[0];
       const to_copy = Math.min(
         first.length - this.offsetInFirstBuffer,
-        output.length - out_idx
+        output.length - out_idx,
       );
       const subArray = first.subarray(
         this.offsetInFirstBuffer,
-        this.offsetInFirstBuffer + to_copy
+        this.offsetInFirstBuffer + to_copy,
       );
       output.set(subArray, out_idx);
       anyAudio =
@@ -217,13 +217,13 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
     if (out_idx < output.length && !anyAudio) {
       // At the end of a turn, we will get some padding of 0, so we only
       // incease the buffer if we got some audio, e.g. we truly lagged in the middle of something.
-      debug(this.timestamp(), "Missed some audio", output.length - out_idx);
+      debug(this.timestamp(), 'Missed some audio', output.length - out_idx);
       this.partialBufferSamples += this.partialBufferIncrement;
       this.partialBufferSamples = Math.min(
         this.partialBufferSamples,
-        this.maxPartialWithIncrements
+        this.maxPartialWithIncrements,
       );
-      debug("Increased partial buffer to", asMs(this.partialBufferSamples));
+      debug('Increased partial buffer to', asMs(this.partialBufferSamples));
       // We ran out of a buffer, let's revert to the started state to replenish it.
       this.resetStart();
       for (let i = 0; i < out_idx; i++) {
@@ -236,4 +236,4 @@ class AudioOutputProcessor extends AudioWorkletProcessor {
     return true;
   }
 }
-registerProcessor("audio-output-processor", AudioOutputProcessor);
+registerProcessor('audio-output-processor', AudioOutputProcessor);

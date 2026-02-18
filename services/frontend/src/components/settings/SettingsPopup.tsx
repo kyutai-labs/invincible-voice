@@ -616,9 +616,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               onChange={handleLanguageChange}
               className='w-full px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green'
             >
-              <option value=''>
-                {t('settings.letSpeechToTextGuess')}
-              </option>
+              <option value=''>{t('settings.letSpeechToTextGuess')}</option>
               <option value='en'>English</option>
               <option value='fr'>Français</option>
               <option value='de'>Deutsch</option>

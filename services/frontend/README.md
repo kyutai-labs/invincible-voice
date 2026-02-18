@@ -51,6 +51,7 @@ npm test -- --coverage
 ## Architecture
 
 The frontend is built with:
+
 - **Next.js 15** - React framework with App Router
 - **React 19** - UI library with modern hooks
 - **TypeScript** - Type safety and better developer experience
@@ -130,6 +131,7 @@ The frontend uses these environment variables:
 ## Contributing
 
 When making changes:
+
 1. Run tests: `npm test`
 2. Run linting: `pnpm lint`
 3. Test the WebSocket connection manually
