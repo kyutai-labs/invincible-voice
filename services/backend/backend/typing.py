@@ -42,6 +42,7 @@ class UserSettings(pydantic.BaseModel):
 
 class GoogleAuthRequest(pydantic.BaseModel):
     token: str
+    language: str
 
 
 class HealthStatus(pydantic.BaseModel):

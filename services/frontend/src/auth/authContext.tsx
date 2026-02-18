@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react';
 import Cookies from 'universal-cookie';
+import { useLocale } from '../i18n/I18nContext';
 import { addAuthHeaders } from './authUtils';
 
 export const AUTH_STATUSES = {
@@ -53,6 +54,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
   const [allowPassword, setAllowPassword] = useState<boolean>(true);
   const [googleClientId, setGoogleClientId] = useState<string>('');
   const router = useRouter();
+  const locale = useLocale();
   const signOut = useCallback(() => {
     new Cookies().remove('bearerToken');
     setAuthStatus(AUTH_STATUSES.NOT_LOGGED);
@@ -87,7 +89,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token: googleToken }),
+          body: JSON.stringify({ token: googleToken, language: locale }),
         });
         if (response.ok) {
           const data = await response.json();
@@ -102,24 +104,27 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
         router.replace('/');
       }
     },
-    [router],
+    [router, locale],
   );
-  const register = useCallback(async (email: string, password: string) => {
-    try {
-      const body = new FormData();
-      body.append('username', email);
-      body.append('password', password);
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        body,
-      });
-      if (response.ok) {
-        const data = await response.json();
-        new Cookies().set('bearerToken', data.access_token, { path: '/' });
-        setAuthStatus(AUTH_STATUSES.LOGGED);
-      }
-    } catch {}
-  }, []);
+  const register = useCallback(
+    async (email: string, password: string) => {
+      try {
+        const body = new FormData();
+        body.append('username', email);
+        body.append('password', password);
+        const response = await fetch(`/api/auth/register?language=${locale}`, {
+          method: 'POST',
+          body,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          new Cookies().set('bearerToken', data.access_token, { path: '/' });
+          setAuthStatus(AUTH_STATUSES.LOGGED);
+        }
+      } catch {}
+    },
+    [locale],
+  );
 
   const memoizedValue = useMemo(
     () => ({

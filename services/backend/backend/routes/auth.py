@@ -42,25 +42,53 @@ def login(
 
 
 def get_new_user(
-    email: str, hashed_password: str = "", google_sub: str | None = None
+    email: str,
+    language: str,
+    hashed_password: str = "",
+    google_sub: str | None = None,
 ) -> UserData:
+    # Default name and keywords based on language
+    default_names = {
+        "en": "New user",
+        "fr": "Nouvel utilisateur",
+        "de": "Neuer Benutzer",
+        "es": "Nuevo usuario",
+        "pt": "Novo usuário",
+    }
+
+    default_keywords = {
+        "en": ["eat", "sleep", "go out", "discuss", "think", "cinema", "theater"],
+        "fr": [
+            "manger",
+            "dormir",
+            "sortir",
+            "discuter",
+            "réfléchir",
+            "cinéma",
+            "théâtre",
+        ],
+        "de": [
+            "essen",
+            "schlafen",
+            "ausgehen",
+            "diskutieren",
+            "nachdenken",
+            "kino",
+            "theater",
+        ],
+        "es": ["comer", "dormir", "salir", "discutir", "pensar", "cine", "teatro"],
+        "pt": ["comer", "dormir", "sair", "discutir", "pensar", "cinema", "teatro"],
+    }
+
     return UserData(
         user_id=uuid.uuid4(),
         email=email,
         google_sub=google_sub,
         hashed_password=hashed_password,
         user_settings=UserSettings(
-            name="New name",
+            name=default_names[language],
             prompt="",
-            additional_keywords=[
-                "manger",
-                "dormir",
-                "sortir",
-                "discuter",
-                "reflechir",
-                "cinema",
-                "theatre",
-            ],
+            additional_keywords=default_keywords[language],
             friends=[],
         ),
         conversations=[],
@@ -70,6 +98,7 @@ def get_new_user(
 @auth_router.post("/register")
 def register(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    language: str,
 ):
     if not ALLOW_PASSWORD:
         raise HTTPException(
@@ -84,7 +113,7 @@ def register(
         )
 
     hashed_password = hash_password(form_data.password)
-    user = get_new_user(form_data.username, hashed_password=hashed_password)
+    user = get_new_user(form_data.username, language, hashed_password=hashed_password)
     user.save()
 
     token = create_access_token({"sub": form_data.username})
@@ -108,7 +137,7 @@ def google_login(data: GoogleAuthRequest):
                 detail="Account exists, login with password",
             )
     except UserDataNotFoundError:
-        user = get_new_user(email, google_sub=google_user["sub"])
+        user = get_new_user(email, data.language, google_sub=google_user["sub"])
         user.save()
 
     jwt_token = create_access_token({"sub": user.email})
