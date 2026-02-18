@@ -9,9 +9,9 @@ import React, {
   useCallback,
   useState,
 } from 'react';
+import { useTranslations } from '@/i18n';
 import Google from './Google';
 import { AUTH_STATUSES, useAuthContext } from './authContext';
-import { useTranslations } from '@/i18n';
 
 const AuthWrapper: FC<PropsWithChildren> = ({ children = null }) => {
   const { authStatus, authError, signIn, register, allowPassword } =
@@ -116,7 +116,9 @@ const SignInScreen: FC<SignInScreenProps> = ({
             className='-ml-8'
           />
         </div>
-        <h1 className='text-center text-xl font-bold mb-9'>{t('common.signIn')}</h1>
+        <h1 className='text-center text-xl font-bold mb-9'>
+          {t('common.signIn')}
+        </h1>
         {allowPassword && (
           <React.Fragment>
             <div className='flex flex-col gap-1'>

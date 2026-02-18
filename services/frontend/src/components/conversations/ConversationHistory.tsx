@@ -44,7 +44,10 @@ const getConversationMessageCount = (conversation: Conversation): string => {
     : conversation.messages.length.toString();
 };
 
-const formatConversationDate = (conversation: Conversation): string => {
+const formatConversationDate = (
+  conversation: Conversation,
+  t: (key: string) => string,
+): string => {
   if (!conversation.start_time) {
     return '';
   }
@@ -71,7 +74,7 @@ const formatConversationDate = (conversation: Conversation): string => {
       });
     }
     if (diffInDays === 1) {
-      return 'Yesterday';
+      return t('conversation.yesterday');
     }
     if (diffInDays < 7) {
       return date.toLocaleDateString([], { weekday: 'short' });
@@ -136,9 +139,9 @@ const ConversationHistory = ({
               size={48}
               className='mx-auto mb-2 opacity-50'
             />
-            <p className='text-sm'>No conversations yet</p>
+            <p className='text-sm'>{t('conversation.noConversationsYet')}</p>
             <p className='mt-1 text-xs text-gray-600'>
-              Start your first conversation to see it here
+              {t('conversation.startFirstConversation')}
             </p>
           </div>
         ) : (
@@ -241,7 +244,7 @@ const ConversationCard = ({
               </span>
             </div>
             <div className='text-sm text-white/55'>
-              {formatConversationDate(conversation)}
+              {formatConversationDate(conversation, t)}
             </div>
           </div>
           <div className='px-5 text-sm font-medium line-clamp-2'>
@@ -254,7 +257,7 @@ const ConversationCard = ({
         className={cn('absolute right-2 top-2 group-hover:visible', {
           invisible: !isSelected,
         })}
-        title='Delete conversation'
+        title={t('conversation.deleteConversation')}
       >
         <X size={16} />
       </button>

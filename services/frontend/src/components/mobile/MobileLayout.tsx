@@ -4,6 +4,7 @@ import { Settings, Menu } from 'lucide-react';
 import { FC, useCallback, useState } from 'react';
 import ConversationHistory from '@/components/conversations/ConversationHistory';
 import SquareButton from '@/components/ui/SquareButton';
+import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
 import { Conversation } from '@/utils/userData';
 
@@ -26,6 +27,7 @@ export const MobileNoConversation: FC<MobileNoConversationProps> = ({
   onConnectButtonPress,
   onSettingsOpen,
 }) => {
+  const t = useTranslations();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const onToggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -91,7 +93,7 @@ export const MobileNoConversation: FC<MobileNoConversationProps> = ({
           aria-label='Start conversation'
           className='w-24 h-24 bg-blue-500 border-blue-400 hover:bg-blue-600 rounded-full border-2 transition-all duration-300 flex items-center justify-center shadow-lg hover:scale-105'
           onClick={onConnectButtonPress}
-          title='Start Conversation'
+          title={t('conversation.startChatting')}
         >
           <svg
             className='text-white w-12 h-12'

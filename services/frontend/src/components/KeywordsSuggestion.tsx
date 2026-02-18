@@ -86,7 +86,9 @@ const KeywordsSuggestion: FC<KeywordsSuggestionProps> = ({
 
   return (
     <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
-      <div className='mb-1 text-sm font-medium text-white'>{t('settings.suggestions')}</div>
+      <div className='mb-1 text-sm font-medium text-white'>
+        {t('settings.suggestions')}
+      </div>
       <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
         {displayKeywords.map((keyword) => (
           <DesktopKeyword

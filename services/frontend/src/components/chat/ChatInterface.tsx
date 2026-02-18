@@ -1,14 +1,14 @@
 'use client';
 
 import { useRef, useEffect, Fragment, useCallback, useMemo, FC } from 'react';
-import { ChatMessage } from '@/types/chatHistory';
+import { useTranslations } from '@/i18n';
+import type { ChatMessage } from '@/types/chatHistory';
 import { playTTSStream } from '@/utils/ttsUtil';
 import {
   Conversation,
   isSpeakerMessage,
   isWriterMessage,
 } from '@/utils/userData';
-import { useTranslations } from '@/i18n';
 import SpeakerMessage from './SpeakerMessage';
 import WriterMessage from './WriterMessage';
 
@@ -124,13 +124,17 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
     >
       {processedMessages.length === 0 && !isViewingPastConversation && (
         <div className='py-4 text-center text-gray-400'>
-          <p className='mb-2 text-base font-medium'>{t('conversation.readyToChat')}</p>
+          <p className='mb-2 text-base font-medium'>
+            {t('conversation.readyToChat')}
+          </p>
           <p className='text-xs'>{t('conversation.startSpeaking')}</p>
         </div>
       )}
       {processedMessages.length === 0 && isViewingPastConversation && (
         <div className='py-4 text-center text-gray-400'>
-          <p className='mb-2 text-base font-medium'>{t('conversation.emptyConversation')}</p>
+          <p className='mb-2 text-base font-medium'>
+            {t('conversation.emptyConversation')}
+          </p>
           <p className='text-xs'>{t('conversation.noMessages')}</p>
         </div>
       )}

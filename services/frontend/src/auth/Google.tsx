@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import { useEffect } from 'react';
+import { useTranslations } from '@/i18n';
 import { useAuthContext } from './authContext';
 
 const Google = () => {
   const { googleSignIn, googleClientId } = useAuthContext();
+  const t = useTranslations();
   const clientID = googleClientId;
   const redirect = window.location.origin;
   const response = 'id_token';
@@ -34,7 +36,7 @@ const Google = () => {
           height={16}
           className='mr-2'
         />
-        Se connecter avec Google
+        {t('common.googleSignIn')}
       </div>
     </a>
   );

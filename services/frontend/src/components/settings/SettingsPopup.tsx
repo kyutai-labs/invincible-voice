@@ -275,7 +275,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     } finally {
       setIsCreatingVoice(false);
     }
-  }, [voiceUploadFile, voiceUploadName, handleInputChange]);
+  }, [voiceUploadFile, voiceUploadName, handleInputChange, t]);
 
   // Handle voice file selection
   const handleVoiceFileChange = useCallback(
@@ -292,7 +292,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
         setVoiceUploadError(null);
       }
     },
-    [],
+    [t],
   );
 
   // Handle voice deletion
@@ -849,6 +849,8 @@ const AdditionalKeyword: FC<AdditionalKeywordProps> = ({
   keyword,
   removeKeyword,
 }) => {
+  const t = useTranslations();
+
   const onClickRemove = useCallback(() => {
     removeKeyword(keyword);
   }, [keyword, removeKeyword]);
@@ -882,6 +884,8 @@ interface FriendProps {
 }
 
 const Friend: FC<FriendProps> = ({ friend, removeFriend }) => {
+  const t = useTranslations();
+
   const onClickRemove = useCallback(() => {
     removeFriend(friend);
   }, [friend, removeFriend]);
@@ -922,6 +926,8 @@ const DocumentCard: FC<DocumentProps> = ({
   editDocument,
   removeDocument,
 }) => {
+  const t = useTranslations();
+
   const docTokenCount = useMemo(
     () => estimateTokens(document.content),
     [document.content],

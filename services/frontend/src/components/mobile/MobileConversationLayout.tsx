@@ -18,10 +18,10 @@ import {
 import KeywordsSuggestion from '@/components/KeywordsSuggestion';
 import { PendingResponse } from '@/components/chat/ChatInterface';
 import HorizontalScrollableList from '@/components/ui/HorizontalScrollableList';
-import { ResponseSize, STATIC_MESSAGES } from '@/constants';
+import { ResponseSize } from '@/constants';
+import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
 import { UserData } from '@/utils/userData';
-import { useTranslations } from '@/i18n';
 
 interface PendingKeyword {
   id: string;
@@ -138,7 +138,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
           aria-label='Stop conversation'
           className='w-10 h-10 bg-red-500 border-red-400 hover:bg-red-600 rounded-full border-2 transition-all duration-300 flex items-center justify-center shadow-lg hover:scale-105 shrink-0'
           onClick={onConnectButtonPress}
-          title='Stop Conversation'
+          title={t('conversation.stopConversation')}
         >
           <svg
             className='text-white w-5 h-5'
@@ -208,7 +208,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
             <button
               onClick={onClickPreviousSize}
               className='p-2 bg-gray-700 hover:bg-gray-600 text-white rounded border border-gray-600 transition-colors'
-              title='Decrease response size'
+              title={t('conversation.decreaseResponseSize')}
             >
               <ChevronLeft className='w-3 h-3' />
             </button>
@@ -218,7 +218,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
             <button
               onClick={onClickNextSize}
               className='p-2 bg-gray-700 hover:bg-gray-600 text-white rounded border border-gray-600 transition-colors'
-              title='Increase response size'
+              title={t('conversation.increaseResponseSize')}
             >
               <ChevronRight className='w-3 h-3' />
             </button>
@@ -233,7 +233,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
                   : 'border-gray-300 bg-gray-100 dark:bg-gray-700 hover:border-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400'
               }
             `}
-            title='Freeze the responses so you can select multiple ones'
+            title={t('conversation.freezeResponses')}
           >
             <Snowflake className='w-4 h-4' />
           </button>
@@ -448,7 +448,7 @@ const BaseResponse: FC<BaseReponseProps> = ({
         <button
           className='absolute top-2 right-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer block'
           onClick={onClickEdit}
-          title='Edit response'
+          title={t('conversation.editResponse')}
         >
           <Edit2 className='w-3 h-3 text-gray-600 dark:text-gray-400' />
         </button>

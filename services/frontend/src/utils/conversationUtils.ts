@@ -28,18 +28,14 @@ export function convertConversationToChat(
   });
 }
 
-export const getStaticContextOption = (
-  t: (key: string) => string,
-) => ({
+export const getStaticContextOption = (t: (key: string) => string) => ({
   id: 'static-context-question',
   text: t('conversation.contextQuestion'),
   isComplete: true,
   messageId: STATIC_MESSAGE_UUIDS.CONTEXT_QUESTION,
 });
 
-export const getStaticRepeatOption = (
-  t: (key: string) => string,
-) => ({
+export const getStaticRepeatOption = (t: (key: string) => string) => ({
   id: 'static-repeat-question',
   text: t('conversation.repeatQuestion'),
   isComplete: true,

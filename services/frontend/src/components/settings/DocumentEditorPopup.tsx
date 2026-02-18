@@ -7,9 +7,9 @@ import {
   useCallback,
   ChangeEvent,
 } from 'react';
+import { useTranslations } from '@/i18n';
 import { estimateTokens, formatTokenCount } from '@/utils/tokenUtils';
 import { Document } from '@/utils/userData';
-import { useTranslations } from '@/i18n';
 
 interface DocumentEditorPopupProps {
   document: Document | null;
@@ -83,7 +83,9 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
       <div className='relative border bg-[#121212] border-black rounded-[40px] shadow-custom w-[90%] max-w-4xl h-[80vh] flex flex-col gap-4 px-12 pt-6 pb-8'>
         <div className='flex flex-row justify-between w-full'>
           <h2 className='text-base font-medium text-white'>
-            {document ? t('documentEditor.editDocument') : t('documentEditor.newDocument')}
+            {document
+              ? t('documentEditor.editDocument')
+              : t('documentEditor.newDocument')}
           </h2>
           <button
             className='size-10 cursor-pointer flex items-center justify-center rounded-2xl bg-[#101010] -mr-5 -mt-2'
@@ -97,7 +99,9 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
         </div>
         <div className='flex flex-col grow gap-3 overflow-hidden'>
           <div>
-            <div className='mb-1 text-sm font-medium text-gray-300'>{t('common.title')}</div>
+            <div className='mb-1 text-sm font-medium text-gray-300'>
+              {t('common.title')}
+            </div>
             <input
               type='text'
               value={title}
@@ -110,7 +114,9 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
           </div>
           <div className='flex flex-col flex-1'>
             <div className='flex items-center justify-between mb-1'>
-              <div className='text-sm font-medium text-gray-300'>{t('common.content')}</div>
+              <div className='text-sm font-medium text-gray-300'>
+                {t('common.content')}
+              </div>
               <span className='text-xs text-gray-400'>
                 {formatTokenCount(tokenCount)}
               </span>

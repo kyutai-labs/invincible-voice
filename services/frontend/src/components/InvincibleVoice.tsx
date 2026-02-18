@@ -34,7 +34,6 @@ import ErrorMessages, {
   makeErrorItem,
 } from '@/components/ui/ErrorMessages';
 import {
-  STATIC_MESSAGES,
   ResponseSize,
   RESPONSES_SIZES,
   ORDERED_RESPONSE_SIZES,
@@ -133,14 +132,8 @@ const InvincibleVoice = () => {
   const [errors, setErrors] = useState<ErrorItem[]>([]);
   const bearerToken = useMemo(() => new Cookies().get('bearerToken'), []);
 
-  const staticContextOption = useMemo(
-    () => getStaticContextOption(t),
-    [t],
-  );
-  const staticRepeatOption = useMemo(
-    () => getStaticRepeatOption(t),
-    [t],
-  );
+  const staticContextOption = useMemo(() => getStaticContextOption(t), [t]);
+  const staticRepeatOption = useMemo(() => getStaticRepeatOption(t), [t]);
   const newConversationUrl = useMemo(() => {
     // Create timezone-aware datetime for local_time parameter
     const localTime = new Date().toISOString();
@@ -487,6 +480,7 @@ const InvincibleVoice = () => {
       clearResponses,
       currentSpeakerMessage,
       currentSpeakerMessageStartTime,
+      t,
     ],
   );
   const handleWordBubbleClick = useCallback(
@@ -1154,10 +1148,10 @@ const InvincibleVoice = () => {
           isOpen={isDeleteDialogOpen}
           onClose={toggleDeleteConversationDialog}
           onConfirm={confirmDeleteConversation}
-          title='Delete Conversation'
-          message='Are you sure you want to delete this conversation? This action cannot be undone.'
-          confirmText='Delete'
-          cancelText='Cancel'
+          title={t('conversation.deleteConversation')}
+          message={t('conversation.deleteConversationMessage')}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
         />
       </div>
     );
@@ -1201,7 +1195,7 @@ const InvincibleVoice = () => {
             <div className='absolute bottom-0 right-0 z-20 p-6 pointer-events-none'>
               <div className='flex flex-col items-end pointer-events-auto'>
                 <p className='text-xs text-gray-500'>
-                  Text-to-speech and speech-to-text are generously provided by
+                  {t('common.textToSpeechProvider')}
                 </p>
                 <img
                   src='/gradium.svg'
@@ -1218,7 +1212,7 @@ const InvincibleVoice = () => {
                   <button
                     onClick={onConnectButtonPress}
                     className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
-                    title='Stop Conversation'
+                    title={t('conversation.stopConversation')}
                   >
                     <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
                       {t('conversation.stopConversation')}
@@ -1287,7 +1281,7 @@ const InvincibleVoice = () => {
                           aria-label='stop conversation'
                           onClick={onConnectButtonPress}
                           className='flex items-center justify-center w-10 h-10 transition-all duration-300 bg-red-500 border-2 border-red-400 rounded-full shadow-lg hover:bg-red-600 hover:scale-105'
-                          title='Stop Conversation'
+                          title={t('conversation.stopConversation')}
                         >
                           <svg
                             className='w-5 h-5 text-white'
@@ -1320,7 +1314,7 @@ const InvincibleVoice = () => {
                             <button
                               onClick={handleClickPreviousConversation}
                               className='p-1 text-white transition-colors bg-gray-700 border border-gray-600 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                              title='Decrease response size'
+                              title={t('conversation.decreaseResponseSize')}
                             >
                               <ChevronLeft className='w-3 h-3' />
                             </button>
@@ -1330,7 +1324,7 @@ const InvincibleVoice = () => {
                             <button
                               onClick={handleClickNextConversation}
                               className='p-1 text-white transition-colors bg-gray-700 border border-gray-600 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                              title='Increase response size'
+                              title={t('conversation.increaseResponseSize')}
                             >
                               <ChevronRight className='w-3 h-3' />
                             </button>
@@ -1600,10 +1594,10 @@ const InvincibleVoice = () => {
         isOpen={isDeleteDialogOpen}
         onClose={toggleDeleteConversationDialog}
         onConfirm={confirmDeleteConversation}
-        title='Delete Conversation'
-        message='Are you sure you want to delete this conversation? This action cannot be undone.'
-        confirmText='Delete'
-        cancelText='Cancel'
+        title={t('conversation.deleteConversation')}
+        message={t('conversation.deleteConversationMessage')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
       />
     </div>
   );

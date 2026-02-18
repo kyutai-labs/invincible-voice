@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react';
-import { cn } from '@/utils/cn';
 import { useTranslations } from '@/i18n';
+import { cn } from '@/utils/cn';
 
 export type HealthStatus = {
   connected: 'no' | 'yes_request_ok' | 'yes_request_fail';
@@ -52,12 +52,6 @@ const RenderServiceStatus: FC<RenderServiceStatusProps> = ({
 interface CouldNotConnectProps {
   healthStatus: HealthStatus;
 }
-
-const humanReadableStatus = {
-  no: 'Down',
-  yes_request_ok: 'Up',
-  yes_request_fail: 'Up, but with errors',
-};
 
 const CouldNotConnect: FC<CouldNotConnectProps> = ({ healthStatus }) => {
   const t = useTranslations();

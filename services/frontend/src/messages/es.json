@@ -5,6 +5,7 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
+    "googleSignIn": "Iniciar sesión con Google",
     "createYourAccount": "Crea tu cuenta",
     "yourEmail": "Tu correo electrónico",
     "yourPassword": "Tu contraseña",
@@ -27,7 +28,8 @@
     "friends": "Amigos",
     "documents": "Documentos",
     "voice": "Voz",
-    "name": "Nombre"
+    "name": "Nombre",
+    "textToSpeechProvider": "La conversión de texto a voz y de voz a texto es generosamente proporcionada por"
   },
   "settings": {
     "additionalKeywords": "Palabras clave adicionales",
@@ -62,6 +64,7 @@
     "deleteDocument": "Eliminar documento"
   },
   "conversation": {
+    "yesterday": "Ayer",
     "startChatting": "Empezar a chatear",
     "newChat": "Nueva conversación",
     "stopConversation": "Terminar la conversación",
@@ -74,6 +77,7 @@
     "contextQuestion": "¿Puedes dar tu nombre para ayudar al software a entender el contexto? ¡Gracias!",
     "repeatQuestion": "¿Puedes repetir? El software no entendió muy bien.",
     "deleteConversation": "Eliminar conversación",
+    "deleteConversationMessage": "¿Estás seguro de que quieres eliminar esta conversación? Esta acción no se puede deshacer.",
     "noConversationsYet": "No hay conversaciones todavía",
     "startFirstConversation": "Empieza tu primera conversación para verla aquí",
     "editResponse": "Editar respuesta",

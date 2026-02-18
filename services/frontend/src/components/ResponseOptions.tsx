@@ -16,13 +16,13 @@ import {
 import { PendingResponse } from '@/components/chat/ChatInterface';
 import Lock from '@/components/icons/Lock';
 import Unlock from '@/components/icons/Unlock';
-import { useTranslations } from '@/i18n';
 import {
   ORDERED_RESPONSE_SIZES,
   RESPONSES_SIZES,
   ResponseSize,
   STATIC_MESSAGE_UUIDS,
 } from '@/constants';
+import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
 
 interface ResponseOptionsProps {
@@ -130,11 +130,7 @@ const ResponseOptions: FC<ResponseOptionsProps> = ({
         );
       });
 
-      return [
-        ...dynamicResponses,
-        staticContextOption,
-        staticRepeatOption,
-      ];
+      return [...dynamicResponses, staticContextOption, staticRepeatOption];
     }
 
     return validResponses;
@@ -239,7 +235,7 @@ const ResponseOptions: FC<ResponseOptionsProps> = ({
                     !isFrozen,
                 },
               )}
-              title='Freeze the responses so you can select multiple ones'
+              title={t('conversation.freezeResponses')}
             >
               {isFrozen
                 ? t('conversation.unlockResponses')
