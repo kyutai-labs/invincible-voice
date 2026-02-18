@@ -45,6 +45,7 @@ import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 import { useMicrophoneAccess } from '@/hooks/useMicrophoneAccess';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
 import useWakeLock from '@/hooks/useWakeLock';
+import { useTranslations } from '@/i18n';
 import { ChatMessage } from '@/types/chatHistory';
 import { base64EncodeOpus } from '@/utils/audioUtil';
 import {
@@ -69,6 +70,7 @@ interface PendingKeyword {
 }
 
 const InvincibleVoice = () => {
+  const t = useTranslations();
   const { isDevMode } = useKeyboardShortcuts();
   const isMobile = useMobileDetection();
   const { microphoneAccess, askMicrophoneAccess } = useMicrophoneAccess();
@@ -1260,7 +1262,7 @@ const InvincibleVoice = () => {
                   }}
                 >
                   <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
-                    Changer les paramètres
+                    {t('settings.changeSettings')}
                     <Settings size={20} />
                   </div>
                 </button>

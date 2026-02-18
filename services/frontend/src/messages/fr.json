@@ -1,6 +1,7 @@
 {
   "common": {},
   "settings": {
-    "additionalKeywords": "Mots-clés supplémentaires"
+    "additionalKeywords": "Mots-clés supplémentaires",
+    "changeSettings": "Changer les paramètres"
   }
 }
