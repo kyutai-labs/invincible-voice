@@ -57,7 +57,19 @@ def get_new_user(
     }
 
     default_keywords = {
-        "en": ["eat", "sleep", "go out", "discuss", "think", "cinema", "theater"],
+        "en": [
+            "eat",
+            "sleep",
+            "go out",
+            "discuss",
+            "think",
+            "cinema",
+            "theater",
+            "yes",
+            "no",
+            "hello",
+            "goodbye",
+        ],
         "fr": [
             "manger",
             "dormir",
@@ -66,6 +78,10 @@ def get_new_user(
             "réfléchir",
             "cinéma",
             "théâtre",
+            "oui",
+            "non",
+            "bonjour",
+            "au revoir",
         ],
         "de": [
             "essen",
@@ -75,9 +91,37 @@ def get_new_user(
             "nachdenken",
             "kino",
             "theater",
+            "ja",
+            "nein",
+            "hallo",
+            "auf wiedersehen",
         ],
-        "es": ["comer", "dormir", "salir", "discutir", "pensar", "cine", "teatro"],
-        "pt": ["comer", "dormir", "sair", "discutir", "pensar", "cinema", "teatro"],
+        "es": [
+            "comer",
+            "dormir",
+            "salir",
+            "discutir",
+            "pensar",
+            "cine",
+            "teatro",
+            "sí",
+            "no",
+            "hola",
+            "adiós",
+        ],
+        "pt": [
+            "comer",
+            "dormir",
+            "sair",
+            "discutir",
+            "pensar",
+            "cinema",
+            "teatro",
+            "sim",
+            "não",
+            "olá",
+            "tchau",
+        ],
     }
 
     return UserData(
