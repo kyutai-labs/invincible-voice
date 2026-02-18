@@ -38,6 +38,7 @@ class UserSettings(pydantic.BaseModel):
     friends: list[str]
     documents: list[Document] = pydantic.Field(default_factory=list)
     voice: str | None = None
+    expected_transcription_language: str | None = None
 
 
 class GoogleAuthRequest(pydantic.BaseModel):

@@ -33,6 +33,7 @@ logger = getLogger(__name__)
 
 
 class GradiumSetupMessage(BaseModel):
+    language: str | None
     type: Literal["setup"] = "setup"
     model_name: str
     input_format: str
@@ -150,15 +151,16 @@ GradiumSTTMessageAdapter = TypeAdapter(GradiumSTTMessage)
 
 
 class SpeechToText:
-    def __init__(self, delay_sec: float = STT_DELAY_SEC):
+    def __init__(self, expected_language: str | None):
         self.stt_instance = KYUTAI_STT_URL
-        self.delay_sec = delay_sec
+        self.delay_sec = STT_DELAY_SEC
         self.websocket: websockets.ClientConnection | None = None
         self.sent_samples = 0
         self.received_words = 0
         self.current_time = -STT_DELAY_SEC
         self.time_since_first_audio_sent = Stopwatch(autostart=False)
         self.waiting_first_step: bool = True
+        self.expected_language = expected_language
 
         # In our case, attack  = from speaking to not speaking
         #              release = from not speaking to speaking
@@ -257,7 +259,9 @@ class SpeechToText:
             try:
                 # Send setup message
                 setup_msg = GradiumSetupMessage(
-                    model_name="default", input_format="pcm"
+                    language=self.expected_language,
+                    model_name="default",
+                    input_format="pcm",
                 )
                 await self._send(setup_msg)
                 logger.info("Sent setup message to Gradium STT")
