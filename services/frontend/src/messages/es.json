@@ -2,6 +2,11 @@
   "common": {},
   "settings": {
     "additionalKeywords": "Palabras clave adicionales",
+    "addKeywordPlaceholder": "Añade tu palabra clave",
+    "addFriendPlaceholder": "Introduce el nombre de un amigo",
+    "yourName": "Tu nombre",
+    "signOut": "Cerrar sesión",
+    "addDocument": "Añadir un documento",
     "changeSettings": "Cambiar configuración",
     "configureAssistant": "Configura tu asistente de chat",
     "cloneYourVoice": "Clonar tu propia voz",

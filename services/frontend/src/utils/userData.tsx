@@ -47,7 +47,6 @@ export interface UserSettings {
   additional_keywords: string[];
   friends: string[];
   documents: Document[];
-  thinking_mode: boolean;
   voice?: string;
 }
 

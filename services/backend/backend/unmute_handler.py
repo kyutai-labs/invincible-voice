@@ -203,7 +203,6 @@ class UnmuteHandler(AsyncStreamHandler):
             # if generating_message_i is 2, then we have a system prompt + an empty
             # assistant message signalling that we are generating a response.
             self.openai_client,
-            thinking_mode=self.chatbot.user_data.user_settings.thinking_mode,
             temperature=(
                 FIRST_MESSAGE_TEMPERATURE
                 if generating_message_i == 2

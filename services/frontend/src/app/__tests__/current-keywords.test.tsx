@@ -114,7 +114,6 @@ describe('CurrentKeywords Message Tests', () => {
                 additional_keywords: [],
                 friends: ['friend1', 'friend2'],
                 documents: [],
-                thinking_mode: true,
               },
               conversations: [],
             }),

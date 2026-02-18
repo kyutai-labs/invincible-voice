@@ -2,6 +2,11 @@
   "common": {},
   "settings": {
     "additionalKeywords": "Mots-clés supplémentaires",
+    "addKeywordPlaceholder": "Ajoutez votre mot-clé",
+    "addFriendPlaceholder": "Entrez le nom d'un ami",
+    "yourName": "Votre nom",
+    "signOut": "Se déconnecter",
+    "addDocument": "Ajouter un document",
     "changeSettings": "Changer les paramètres",
     "configureAssistant": "Configurez votre assistant conversationnel",
     "cloneYourVoice": "Cloner votre propre voix",

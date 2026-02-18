@@ -362,12 +362,6 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     },
     [handleInputChange],
   );
-  const onChangeThinkingMode = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      handleInputChange('thinking_mode', event.target.checked);
-    },
-    [handleInputChange],
-  );
   const onChangePrompt = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       handleInputChange('prompt', event.target.value);
@@ -404,7 +398,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             className='text-[#FF6459] underline text-xs'
             onClick={signOut}
           >
-            Se déconnecter
+            {t('settings.signOut')}
           </button>
 
           <button
@@ -427,7 +421,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 htmlFor='settings-name-input'
                 className='text-sm font-medium text-white'
               >
-                Votre nom
+                {t('settings.yourName')}
               </label>
 
               <input
@@ -437,23 +431,6 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 onChange={onChangeName}
                 className='w-full px-6 py-2 text-base text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green'
                 placeholder='Le nom avec lequel vous souhaitez communiquer'
-              />
-            </div>
-
-            <div className='flex items-center gap-2 pt-6'>
-              <label
-                htmlFor='settings-thinking-mode-input'
-                className='text-sm font-medium text-white'
-              >
-                Thinking Mode:
-              </label>
-
-              <input
-                id='settings-thinking-mode-input'
-                type='checkbox'
-                checked={formData.thinking_mode}
-                onChange={onChangeThinkingMode}
-                className='w-4 h-4 text-green-600 bg-[#1B1B1B] rounded focus:ring-green-500 focus:ring-2'
               />
             </div>
           </div>
@@ -668,7 +645,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     onChange={onChangeNewKeywordInput}
                     onKeyDown={handleKeywordInputKeyPress}
                     className='flex-1 px-4 py-1 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green h-10'
-                    placeholder='Ajoutez votre mot-clé'
+                    placeholder={t('settings.addKeywordPlaceholder')}
                   />
                   <button
                     onClick={handleAddKeyword}
@@ -716,7 +693,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                     onChange={onChangeNewFriendInput}
                     onKeyDown={handleFriendInputKeyPress}
                     className='flex-1 px-4 py-1 text-sm text-white bg-[#1B1B1B] border border-white rounded-2xl focus:outline-none focus:border-green h-10'
-                    placeholder="Entrez le nom d'un ami"
+                    placeholder={t('settings.addFriendPlaceholder')}
                   />
                   <button
                     onClick={handleAddFriend}
@@ -751,7 +728,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                   }}
                 >
                   <div className='h-full w-full pl-4 pr-3 flex flex-row bg-[#181818] items-center justify-center gap-1 rounded-xl text-sm'>
-                    Ajouter un document
+                    {t('settings.addDocument')}
                     <Plus
                       width={24}
                       height={24}

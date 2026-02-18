@@ -37,7 +37,6 @@ class UserSettings(pydantic.BaseModel):
     additional_keywords: list[str]
     friends: list[str]
     documents: list[Document] = pydantic.Field(default_factory=list)
-    thinking_mode: bool = False
     voice: str | None = None
 
 

@@ -29,7 +29,6 @@ class VLLMStream:
     def __init__(
         self,
         client: AsyncOpenAI,
-        thinking_mode: bool,
         temperature: float = 1.0,
     ):
         """
