@@ -41,27 +41,13 @@ def login(
     }
 
 
-@auth_router.post("/register")
-def register(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-):
-    if not ALLOW_PASSWORD:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password-based registration is disabled",
-        )
-    user_data_path = get_user_data_path(form_data.username)
-    if user_data_path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
-
-    hashed_password = hash_password(form_data.password)
-    user = UserData(
+def get_new_user(
+    email: str, hashed_password: str = "", google_sub: str | None = None
+) -> UserData:
+    return UserData(
         user_id=uuid.uuid4(),
-        email=form_data.username,
-        google_sub=None,
+        email=email,
+        google_sub=google_sub,
         hashed_password=hashed_password,
         user_settings=UserSettings(
             name="New name",
@@ -79,6 +65,26 @@ def register(
         ),
         conversations=[],
     )
+
+
+@auth_router.post("/register")
+def register(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+):
+    if not ALLOW_PASSWORD:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password-based registration is disabled",
+        )
+    user_data_path = get_user_data_path(form_data.username)
+    if user_data_path.exists():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
+
+    hashed_password = hash_password(form_data.password)
+    user = get_new_user(form_data.username, hashed_password=hashed_password)
     user.save()
 
     token = create_access_token({"sub": form_data.username})
@@ -102,27 +108,7 @@ def google_login(data: GoogleAuthRequest):
                 detail="Account exists, login with password",
             )
     except UserDataNotFoundError:
-        user = UserData(
-            user_id=uuid.uuid4(),
-            email=email,
-            google_sub=google_user["sub"],
-            hashed_password="",
-            user_settings=UserSettings(
-                name="New name",
-                prompt="",
-                additional_keywords=[
-                    "manger",
-                    "dormir",
-                    "sortir",
-                    "discuter",
-                    "reflechir",
-                    "cinema",
-                    "theatre",
-                ],
-                friends=[],
-            ),
-            conversations=[],
-        )
+        user = get_new_user(email, google_sub=google_user["sub"])
         user.save()
 
     jwt_token = create_access_token({"sub": user.email})
@@ -140,5 +126,4 @@ def allow_password() -> dict[str, bool]:
 
 @auth_router.get("/google-client-id")
 def google_client_id() -> dict[str, str]:
-    print(GOOGLE_CLIENT_ID)
     return {"google_client_id": GOOGLE_CLIENT_ID}
