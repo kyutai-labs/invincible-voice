@@ -400,6 +400,7 @@ const BaseResponse: FC<BaseReponseProps> = ({
     },
     [index, response.text, setEditingIndex, setEditingText],
   );
+  const t = useTranslations();
 
   return (
     <div className='relative'>
