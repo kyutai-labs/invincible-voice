@@ -1,4 +1,4 @@
-# Contributing to Kyutai Pocket TTS
+# Contributing to Invincible-voice
 
 We welcome contributions from the community!
 
@@ -24,8 +24,6 @@ Feel free to open PRs. We can only promise that we'll accept PRs that:
 * Fix bugs
 * Add a feature that was previously asked for, in an issue, by a member of our team.
 * Has a high enough quality (this is the purpose of the code review, so don't worry too much about it)
-
-Even if the PR is not accepted because we cannot maintain it, we can still add a note to the README.md about your work and how to use it. We'll just link to your repository. This is the case for example for alternative implementations of Pocket TTS.
 
 ### Issues etiquette
 
