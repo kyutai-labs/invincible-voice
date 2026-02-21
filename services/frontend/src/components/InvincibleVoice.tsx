@@ -23,7 +23,6 @@ import ChatInterface, {
 } from '@/components/chat/ChatInterface';
 import ConfirmationDialog from '@/components/conversations/ConfirmationDialog';
 import ConversationHistory from '@/components/conversations/ConversationHistory';
-import NewConversation from '@/components/icons/NewConversation';
 import Pause from '@/components/icons/Pause';
 import Reply from '@/components/icons/Reply';
 import MobileConversationLayout from '@/components/mobile/MobileConversationLayout';
@@ -33,6 +32,7 @@ import ErrorMessages, {
   ErrorItem,
   makeErrorItem,
 } from '@/components/ui/ErrorMessages';
+import StartConversationButton from '@/components/ui/StartConversationButton';
 import {
   ResponseSize,
   RESPONSES_SIZES,
@@ -1150,19 +1150,10 @@ const InvincibleVoice = () => {
         <div className='relative z-0 grid grow h-screen grid-cols-2 overflow-hidden'>
           {!shouldConnect && !isViewingPastConversation && (
             <div className='absolute inset-0 z-20 flex items-center justify-center pointer-events-none'>
-              <button
+              <StartConversationButton
                 onClick={onConnectButtonPress}
-                className='shrink-0 p-px cursor-pointer pointer-events-auto green-to-purple-via-blue-gradient rounded-2xl h-14'
-              >
-                <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-8'>
-                  {t('conversation.startChatting')}
-                  <NewConversation
-                    width={24}
-                    height={24}
-                    className='shrink-0 text-white'
-                  />
-                </div>
-              </button>
+                label={t('conversation.startChatting')}
+              />
             </div>
           )}
           {!shouldConnect && !isViewingPastConversation && (

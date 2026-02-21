@@ -1,8 +1,12 @@
-/* eslint-disable react/no-array-index-key */
-
 'use client';
 
-import { ChevronLeft, ChevronRight, Snowflake, Edit2 } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Edit2,
+  Pause,
+  Snowflake,
+} from 'lucide-react';
 import {
   useState,
   useRef,
@@ -17,7 +21,6 @@ import {
 } from 'react';
 import KeywordsSuggestion from '@/components/KeywordsSuggestion';
 import { PendingResponse } from '@/components/chat/ChatInterface';
-import HorizontalScrollableList from '@/components/ui/HorizontalScrollableList';
 import { ResponseSize } from '@/constants';
 import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
@@ -132,116 +135,186 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
   }, [onResponseSizeChange]);
 
   return (
-    <div className='w-full h-screen flex flex-col bg-background text-white overflow-hidden'>
-      <div className='flex items-center px-4 py-2 border-b border-gray-700 gap-4'>
+    <div className='w-full h-screen flex flex-col bg-[#121212] text-white overflow-hidden'>
+      {/* Header with stop button */}
+      <div className='flex items-center justify-between px-4 py-3'>
         <button
           aria-label='Stop conversation'
-          className='w-10 h-10 bg-red-500 border-red-400 hover:bg-red-600 rounded-full border-2 transition-all duration-300 flex items-center justify-center shadow-lg hover:scale-105 shrink-0'
+          className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
           onClick={onConnectButtonPress}
           title={t('conversation.stopConversation')}
         >
-          <svg
-            className='text-white w-5 h-5'
-            fill='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path d='M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.21 14.47 16 12 16s-4.52-1.79-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.09-.6-.39-1.14-1-1.14z' />
-          </svg>
+          <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
+            {t('conversation.stopConversation')}
+            <Pause
+              width={24}
+              height={24}
+              className='shrink-0 text-white'
+            />
+          </div>
         </button>
-        <div className='flex-1 overflow-hidden'>
-          {userData?.user_settings?.additional_keywords &&
-          userData.user_settings.additional_keywords.length > 0 ? (
-            <div className='flex gap-2 overflow-x-auto scrollbar-hidden'>
-              {userData.user_settings.additional_keywords.map(
-                (keyword, index) => (
-                  <AdditionalKeyword
-                    key={`${keyword}-${index}`}
-                    keyword={keyword}
-                    onWordBubbleClick={onWordBubbleClick}
-                  />
-                ),
-              )}
-            </div>
-          ) : (
-            <p className='text-xs text-gray-500 italic'>
+      </div>
+
+      {/* Additional Keywords */}
+      <div className='px-4 py-4 bg-[#101010] rounded-[32px] mx-4 mb-3'>
+        <div className='mb-1 text-sm font-medium text-white'>
+          {t('conversation.keywords')}
+        </div>
+        <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
+          {userData?.user_settings?.additional_keywords?.map((word) => (
+            <button
+              key={word}
+              className='h-10 p-px transition-colors cursor-pointer green-to-light-green-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500'
+              onClick={() => onWordBubbleClick(word)}
+            >
+              <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
+                {word}
+              </div>
+            </button>
+          )) || []}
+          {(!userData?.user_settings?.additional_keywords ||
+            userData.user_settings.additional_keywords.length === 0) && (
+            <p className='text-xs italic text-gray-500'>
               No keywords added yet. Add them in settings.
             </p>
           )}
         </div>
       </div>
-      <HorizontalScrollableList
-        items={userData?.user_settings?.friends || []}
-        onItemClick={onWordBubbleClick}
-        itemClassName='!bg-blue-700 hover:!bg-blue-600 !border-blue-500'
-        emptyMessage={t('settings.noFriendsAdded')}
-      />
-      <div className='border-b border-gray-700 px-4'>
+
+      {/* Friends */}
+      <div className='px-4 py-4 bg-[#101010] rounded-[32px] mx-4 mb-3'>
+        <div className='mb-1 text-sm font-medium text-white'>
+          {t('common.friends')}
+        </div>
+        <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
+          {userData?.user_settings?.friends?.map((friend) => (
+            <button
+              key={friend}
+              className='h-10 p-px transition-colors cursor-pointer blue-to-light-blue-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500'
+              onClick={() => onWordBubbleClick(friend)}
+            >
+              <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
+                {friend}
+              </div>
+            </button>
+          ))}
+          {(!userData?.user_settings?.friends ||
+            userData.user_settings.friends.length === 0) && (
+            <p className='text-xs italic text-gray-500'>
+              {t('settings.noFriendsAdded')}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Keywords Suggestion */}
+      <div className='px-4 py-3 bg-[#101010] rounded-[32px] mx-4 mb-3'>
         <KeywordsSuggestion
           keywords={pendingKeywords}
           onSelect={onKeywordSelect}
           alwaysShow
-          mobile
         />
       </div>
-      <div className='px-4 py-2 border-b border-gray-700'>
-        <div className='flex gap-2'>
-          <textarea
-            className='flex-1 p-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm'
-            placeholder={t('conversation.typeMessagePlaceholder')}
-            rows={2}
-            value={textInput}
-            onChange={onMessageChange}
-            onKeyDown={onMessageKeyDown}
-          />
+
+      {/* Text Input Area */}
+      <div className='px-4 py-4 bg-[#101010] rounded-[32px] mx-4 mb-3 flex flex-col gap-2'>
+        <div className='grid grid-cols-2 gap-2 pb-2'>
           <button
-            className='px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 text-sm'
-            onClick={onSendMessage}
-            disabled={!textInput.trim()}
+            onClick={() => onResponseSelect(staticContextOption.id)}
+            className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
           >
-            {t('conversation.sendMessage')}
+            <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
+              <div className='flex items-center'>
+                <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
+                  W
+                </span>
+              </div>
+              <div className='flex-1 pr-2'>
+                <p className='overflow-hidden text-xs leading-tight text-gray-100'>
+                  {staticContextOption.text}
+                </p>
+              </div>
+            </div>
+          </button>
+          <button
+            onClick={() => onResponseSelect(staticRepeatOption.id)}
+            className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
+          >
+            <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
+              <div className='flex items-center'>
+                <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
+                  X
+                </span>
+              </div>
+              <div className='flex-1 pr-2'>
+                <p className='overflow-hidden text-xs leading-tight text-gray-100'>
+                  {staticRepeatOption.text}
+                </p>
+              </div>
+            </div>
           </button>
         </div>
-      </div>
-      <div className='px-4 border-b border-gray-700'>
-        <div className='flex gap-2'>
-          <div className='flex items-center gap-1'>
-            <button
-              onClick={onClickPreviousSize}
-              className='p-2 bg-gray-700 hover:bg-gray-600 text-white rounded border border-gray-600 transition-colors'
-              title={t('conversation.decreaseResponseSize')}
-            >
-              <ChevronLeft className='w-3 h-3' />
-            </button>
-            <span className='px-2 py-2 bg-gray-700 text-white text-sm rounded border border-gray-600 min-w-8 text-center'>
-              {responseSize}
-            </span>
-            <button
-              onClick={onClickNextSize}
-              className='p-2 bg-gray-700 hover:bg-gray-600 text-white rounded border border-gray-600 transition-colors'
-              title={t('conversation.increaseResponseSize')}
-            >
-              <ChevronRight className='w-3 h-3' />
-            </button>
-          </div>
+
+        {/* Response size controls */}
+        <div className='flex items-center gap-2'>
+          <button
+            onClick={onClickPreviousSize}
+            className='p-2 text-white transition-colors bg-gray-700 border border-gray-600 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            title={t('conversation.decreaseResponseSize')}
+          >
+            <ChevronLeft className='w-3 h-3' />
+          </button>
+          <span className='px-2 py-2 bg-gray-700 text-white text-sm rounded border border-gray-600 min-w-8 text-center'>
+            {responseSize}
+          </span>
+          <button
+            onClick={onClickNextSize}
+            className='p-2 text-white transition-colors bg-gray-700 border border-gray-600 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            title={t('conversation.increaseResponseSize')}
+          >
+            <ChevronRight className='w-3 h-3' />
+          </button>
           <button
             onClick={onFreezeToggle}
-            className={`
-              flex-1 px-4 py-2 flex items-center justify-center rounded-lg border-2 transition-all duration-200
-              ${
-                isFrozen
-                  ? 'border-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 hover:border-cyan-500 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400'
-                  : 'border-gray-300 bg-gray-100 dark:bg-gray-700 hover:border-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400'
-              }
-            `}
+            className={cn(
+              'ml-auto px-4 py-2 text-sm rounded-lg border-2 transition-all duration-200',
+              {
+                'border-cyan-400 bg-cyan-900/20 hover:border-cyan-500 hover:bg-cyan-900/30 text-cyan-400':
+                  isFrozen,
+                'border-gray-600 bg-gray-700 hover:border-gray-500 hover:bg-gray-600 text-gray-400':
+                  !isFrozen,
+              },
+            )}
             title={t('conversation.freezeResponses')}
           >
             <Snowflake className='w-4 h-4' />
           </button>
         </div>
+
+        <textarea
+          className='grow w-full min-h-0 px-4 py-3 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
+          placeholder={t('conversation.typeMessagePlaceholder')}
+          rows={2}
+          value={textInput}
+          onChange={onMessageChange}
+          onKeyDown={onMessageKeyDown}
+        />
+        <button
+          onClick={onSendMessage}
+          className='self-end p-px h-14 green-to-purple-via-blue-gradient rounded-2xl w-fit'
+          disabled={!textInput.trim()}
+        >
+          <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
+            {t('conversation.sendMessage')}
+            <Snowflake className='w-5 h-5' />
+          </div>
+        </button>
       </div>
-      <div className='flex-1 overflow-hidden'>
-        <div className='flex gap-2 overflow-x-auto h-full scrollbar-hidden'>
-          <div className='shrink-0 w-full grid grid-rows-4 gap-2 h-full'>
+
+      {/* Response Options */}
+      <div className='flex-1 overflow-hidden px-4'>
+        <div className='flex flex-col gap-2 h-full overflow-y-auto scrollbar-hidden'>
+          <div className='flex flex-col gap-2 h-full'>
             {allResponses.slice(0, 4).map((response, index) => (
               <Fragment key={response.id}>
                 {editingIndex === index && (
@@ -266,16 +339,6 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
               </Fragment>
             ))}
           </div>
-          <div className='shrink-0 w-full grid grid-rows-2 gap-2 h-full'>
-            {allResponses.slice(4, 6).map((response, index) => (
-              <StaticResponse
-                key={response.id}
-                index={index}
-                onResponseSelect={onResponseSelect}
-                response={response}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
@@ -283,29 +346,6 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
 };
 
 export default MobileConversationLayout;
-
-interface AdditionalKeywordProps {
-  keyword: string;
-  onWordBubbleClick: (word: string) => void;
-}
-
-const AdditionalKeyword: FC<AdditionalKeywordProps> = ({
-  keyword,
-  onWordBubbleClick,
-}) => {
-  const onClickKeyword = useCallback(() => {
-    onWordBubbleClick(keyword);
-  }, [onWordBubbleClick, keyword]);
-
-  return (
-    <button
-      onClick={onClickKeyword}
-      className='shrink-0 px-4 py-2 text-white text-sm rounded-full border transition-colors focus:outline-none focus:ring-2 whitespace-nowrap bg-green-700 hover:bg-green-600 border-green-500'
-    >
-      {keyword}
-    </button>
-  );
-};
 
 interface EditingResponseProps {
   editingText: string;
@@ -355,13 +395,13 @@ const EditingResponse: FC<EditingResponseProps> = ({
   }, []);
 
   return (
-    <div className='p-3 rounded-lg border-2 border-green-400 bg-green-50 dark:bg-green-900/20 flex flex-col'>
+    <div className='p-3 rounded-[20px] border-2 border-green-400 bg-[#101010] flex flex-col'>
       <textarea
         ref={ref}
         value={editingText}
         onChange={onChange}
         onKeyDown={onKeyDown}
-        className='flex-1 bg-transparent outline-none resize-none text-xs text-gray-900 dark:text-gray-100'
+        className='flex-1 bg-transparent outline-none resize-none text-sm text-white'
         placeholder='Type your message…'
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
@@ -406,15 +446,15 @@ const BaseResponse: FC<BaseReponseProps> = ({
     <div className='relative'>
       <button
         className={cn(
-          'p-3 text-left rounded-lg border-2 transition-all duration-200 flex flex-col justify-between text-xs relative focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50',
+          'w-full px-4 py-3 text-left rounded-[20px] border-2 transition-all duration-200 flex flex-col gap-2 text-sm',
           {
-            'border-cyan-300 bg-cyan-50 dark:bg-cyan-900/20 hover:border-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900/30':
+            'border-cyan-400 bg-[#101010] hover:border-cyan-500':
               isFrozen && response.text.trim() && response.isComplete,
-            'border-green-300 bg-green-50 dark:bg-green-900/20 hover:border-green-400 hover:bg-green-100 dark:hover:bg-green-900/30':
+            'border-green-500 bg-[#101010] hover:border-green-400':
               !isFrozen && response.text.trim() && response.isComplete,
-            'border-gray-200 bg-gray-50 dark:bg-gray-800':
+            'border-gray-600 bg-[#181818]':
               !isFrozen && response.text.trim() && !response.isComplete,
-            'border-gray-300 bg-gray-100 dark:bg-gray-700':
+            'border-gray-700 bg-[#1B1B1B]':
               !isFrozen && !response.text.trim() && !response.isComplete,
             'cursor-pointer': response.text.trim() && response.isComplete,
             'cursor-default': !response.text.trim() || !response.isComplete,
@@ -423,75 +463,35 @@ const BaseResponse: FC<BaseReponseProps> = ({
         disabled={!response.text.trim() || !response.isComplete}
         onClick={onClickResponse}
       >
-        <div className='flex-1 overflow-hidden pr-8'>
-          <p className='text-xs text-gray-900 dark:text-gray-100 leading-tight wrap-break-word'>
-            {response.text.trim() ? (
-              <Fragment>
-                {response.text}
-                {!response.isComplete && (
-                  <span className='inline-block w-1 h-3 bg-gray-400 ml-1 animate-pulse' />
-                )}
-              </Fragment>
-            ) : (
-              <span className='text-gray-400 italic'>
-                {t('conversation.waitingForResponse')}
-              </span>
-            )}
-          </p>
-        </div>
+        <p className='text-sm text-white leading-tight wrap-break-word'>
+          {response.text.trim() ? (
+            <Fragment>
+              {response.text}
+              {!response.isComplete && (
+                <span className='inline-block w-1 h-3 bg-gray-400 ml-1 animate-pulse' />
+              )}
+            </Fragment>
+          ) : (
+            <span className='text-gray-500 italic text-sm'>
+              {t('conversation.waitingForResponse')}
+            </span>
+          )}
+        </p>
         {response.text.trim() && !response.isComplete && (
-          <div className='flex justify-end mt-2'>
-            <div className='w-3 h-3 border-2 border-green-300 border-t-transparent rounded-full animate-spin' />
+          <div className='flex justify-end mt-1'>
+            <div className='w-3 h-3 border-2 border-green-400 border-t-transparent rounded-full animate-spin' />
           </div>
         )}
       </button>
       {response.text.trim() && response.isComplete && onResponseEdit && (
         <button
-          className='absolute top-2 right-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer block'
+          className='absolute top-2 right-2 p-1 rounded hover:bg-gray-700 transition-colors cursor-pointer block'
           onClick={onClickEdit}
           title={t('conversation.editResponse')}
         >
-          <Edit2 className='w-3 h-3 text-gray-600 dark:text-gray-400' />
+          <Edit2 className='w-3 h-3 text-gray-400' />
         </button>
       )}
     </div>
-  );
-};
-
-interface StaticResponseProps {
-  index: number;
-  onResponseSelect: (responseId: string) => void;
-  response: PendingResponse;
-}
-
-const StaticResponse: FC<StaticResponseProps> = ({
-  index,
-  onResponseSelect,
-  response,
-}) => {
-  const onClickResponse = useCallback(() => {
-    onResponseSelect(response.id);
-  }, [onResponseSelect, response]);
-
-  return (
-    <button
-      key={response.id}
-      onClick={onClickResponse}
-      className={cn(
-        'p-3 text-left rounded-lg border-2 transition-all duration-200 flex flex-col justify-center text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50',
-        {
-          'border-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30':
-            index === 0,
-          'border-purple-300 bg-purple-50 dark:bg-purple-900/20 hover:border-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30':
-            index !== 1,
-        },
-      )}
-    >
-      <div className='flex-1 flex items-center overflow-hidden'>
-        <p className='text-xs text-gray-900 dark:text-gray-100 leading-tight wrap-break-word'>
-          {response.text}
-        </p>
-      </div>
-    </button>
   );
 };

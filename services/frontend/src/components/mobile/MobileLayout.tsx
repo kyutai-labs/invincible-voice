@@ -4,6 +4,7 @@ import { Settings, Menu } from 'lucide-react';
 import { FC, useCallback, useState } from 'react';
 import ConversationHistory from '@/components/conversations/ConversationHistory';
 import SquareButton from '@/components/ui/SquareButton';
+import StartConversationButton from '@/components/ui/StartConversationButton';
 import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
 import { Conversation } from '@/utils/userData';
@@ -89,20 +90,10 @@ export const MobileNoConversation: FC<MobileNoConversationProps> = ({
         </div>
       </div>
       <div className='flex-1 flex items-center justify-center'>
-        <button
-          aria-label='Start conversation'
-          className='w-24 h-24 bg-blue-500 border-blue-400 hover:bg-blue-600 rounded-full border-2 transition-all duration-300 flex items-center justify-center shadow-lg hover:scale-105'
+        <StartConversationButton
           onClick={onConnectButtonPress}
-          title={t('conversation.startChatting')}
-        >
-          <svg
-            className='text-white w-12 h-12'
-            fill='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path d='M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1.5 6.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-2.08c3.02-.43 5.42-2.78 5.91-5.78.09-.6-.39-1.14-1-1.14-.49 0-.9.36-.98.85C16.52 14.21 14.47 16 12 16s-4.52-1.79-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78v2.08z' />
-          </svg>
-        </button>
+          label={t('conversation.startChatting')}
+        />
       </div>
     </div>
   );
