@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { prettyPrintJson } from 'pretty-print-json';
 import {
   useCallback,
@@ -84,10 +84,6 @@ const InvincibleVoice = () => {
     0, 0, 0, 0,
   ]);
   const hidePanes = false;
-  const [showVerticalSplit, setShowVerticalSplit] = useState<boolean>(() => {
-    const saved = localStorage.getItem('invincibleVoice_showVerticalSplit');
-    return saved ? saved === 'true' : false;
-  });
   const [pendingKeywords, setPendingKeywords] = useState<PendingKeyword[]>([]);
   const [keywordTimelines, setKeywordTimelines] = useState<number[]>(
     Array(10).fill(0),
@@ -831,12 +827,6 @@ const InvincibleVoice = () => {
     },
     [handleSendMessage],
   );
-  const handleClickPreviousConversation = useCallback(() => {
-    handleResponseSizeChange('prev');
-  }, [handleResponseSizeChange]);
-  const handleClickNextConversation = useCallback(() => {
-    handleResponseSizeChange('next');
-  }, [handleResponseSizeChange]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -927,15 +917,6 @@ const InvincibleVoice = () => {
           activeElement.getAttribute('contenteditable') === 'true');
 
       if (isInputField) {
-        return;
-      }
-
-      // Handle 'h' key to toggle vertical split mode only when in a conversation
-      if (event.key.toLowerCase() === 'h' && !isInputField) {
-        event.preventDefault();
-        if (shouldConnect) {
-          setShowVerticalSplit((prev) => !prev);
-        }
         return;
       }
 
@@ -1076,13 +1057,6 @@ const InvincibleVoice = () => {
     };
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(
-      'invincibleVoice_showVerticalSplit',
-      JSON.stringify(showVerticalSplit),
-    );
-  }, [showVerticalSplit]);
-
   if (!healthStatus || !backendServerUrl) {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen gap-4'>
@@ -1164,7 +1138,7 @@ const InvincibleVoice = () => {
         setErrors={setErrors}
       />
       <div className='flex flex-row grow h-screen'>
-        {!hidePanes && (!showVerticalSplit || !shouldConnect) && (
+        {!hidePanes && !shouldConnect && (
           <ConversationHistory
             conversations={userData?.conversations || []}
             selectedConversationIndex={selectedConversationIndex}
@@ -1205,7 +1179,7 @@ const InvincibleVoice = () => {
               </div>
             </div>
           )}
-          {!hidePanes && (!showVerticalSplit || !shouldConnect) && (
+          {!hidePanes && !shouldConnect && (
             <div className='relative z-0 flex flex-col h-screen gap-8 px-4 pt-6 pb-4 overflow-y-auto'>
               <div className='flex flex-row items-center justify-end h-10'>
                 {shouldConnect && !isViewingPastConversation && (
@@ -1273,293 +1247,146 @@ const InvincibleVoice = () => {
             )}
             {shouldConnect && !isViewingPastConversation && (
               <Fragment>
-                {showVerticalSplit && (
-                  <div className='flex flex-1 min-h-0'>
-                    <div className='flex flex-col flex-1 min-h-0 border-r border-gray-700'>
-                      <div className='flex items-center justify-between p-2 border-b border-gray-700'>
+                <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
+                  <div className='mb-1 text-sm font-medium text-white'>
+                    {t('conversation.keywords')}
+                  </div>
+                  <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
+                    {userData?.user_settings?.additional_keywords?.map(
+                      (word) => (
                         <button
-                          aria-label='stop conversation'
-                          onClick={onConnectButtonPress}
-                          className='flex items-center justify-center w-10 h-10 transition-all duration-300 bg-red-500 border-2 border-red-400 rounded-full shadow-lg hover:bg-red-600 hover:scale-105'
-                          title={t('conversation.stopConversation')}
+                          key={word}
+                          className='h-10 p-px transition-colors cursor-pointer green-to-light-green-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500'
+                          onClick={() => handleWordBubbleClick(word)}
                         >
-                          <svg
-                            className='w-5 h-5 text-white'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path d='M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.21 14.47 16 12 16s-4.52-1.79-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.09-.6-.39-1.14-1-1.14z' />
-                          </svg>
+                          <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
+                            {word}
+                          </div>
                         </button>
-                      </div>
-                      {userDataError && (
-                        <div className='p-2 border-b border-gray-700'>
-                          <div className='text-right'>
-                            <span className='text-xs text-red-400'>
-                              Failed to load user data
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {settingsBlockedMessage && (
-                        <div className='p-2 border-b border-gray-700'>
-                          <div className='px-2 py-1 text-xs text-yellow-200 border border-yellow-500 rounded bg-yellow-900/20'>
-                            {settingsBlockedMessage}
-                          </div>
-                        </div>
-                      )}
-                      <div className='p-2 border-b border-gray-700'>
-                        <div className='flex gap-2'>
-                          <div className='flex items-center gap-1'>
-                            <button
-                              onClick={handleClickPreviousConversation}
-                              className='p-1 text-white transition-colors bg-gray-700 border border-gray-600 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                              title={t('conversation.decreaseResponseSize')}
-                            >
-                              <ChevronLeft className='w-3 h-3' />
-                            </button>
-                            <span className='px-2 py-1 bg-gray-700 text-white text-sm rounded border border-gray-600 min-w-8 text-center'>
-                              {responseSize}
-                            </span>
-                            <button
-                              onClick={handleClickNextConversation}
-                              className='p-1 text-white transition-colors bg-gray-700 border border-gray-600 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                              title={t('conversation.increaseResponseSize')}
-                            >
-                              <ChevronRight className='w-3 h-3' />
-                            </button>
-                          </div>
-                          <textarea
-                            className='flex-1 p-2 text-sm text-white placeholder-gray-400 bg-gray-800 border border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                            placeholder={t(
-                              'conversation.typeMessagePlaceholder',
-                            )}
-                            rows={2}
-                            value={textInput}
-                            onChange={onChangeTextInput}
-                            onKeyDown={onTextInputKeyDown}
-                          />
-                          <button
-                            className='px-3 py-2 text-sm text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed'
-                            onClick={handleSendMessage}
-                            disabled={!textInput.trim()}
-                          >
-                            {t('conversation.sendMessage')}
-                          </button>
-                        </div>
-                      </div>
-                      <div className='flex-1 min-h-0 p-2'>
-                        <ResponseOptions
-                          responses={pendingResponses}
-                          onSelect={handleResponseSelection}
-                          onEditModeChange={handleEditModeChange}
-                          onEdit={onResponseEdit}
-                          alwaysShow
-                          frozenResponses={frozenResponses}
-                          onFreezeToggle={handleFreezeToggle}
-                          onResponseSizeChange={handleSelectResponseSize}
-                          currentResponseSize={responseSize}
-                        />
-                      </div>
-                    </div>
-                    <div className='flex flex-col flex-1 min-h-0'>
-                      <div className='flex flex-col justify-start flex-1 border-b border-gray-700'>
-                        <div className='flex flex-wrap h-full'>
-                          {userData?.user_settings?.additional_keywords?.map(
-                            (word) => (
-                              <button
-                                key={word}
-                                onClick={() => handleWordBubbleClick(word)}
-                                className='flex-1 min-w-30 py-8 bg-green-700 hover:bg-green-600 text-white text-base border border-green-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 whitespace-nowrap'
-                              >
-                                {word}
-                              </button>
-                            ),
-                          ) || []}
-                          {(!userData?.user_settings?.additional_keywords ||
-                            userData.user_settings.additional_keywords
-                              .length === 0) && (
-                            <p className='p-4 text-xs italic text-gray-500'>
-                              {t('settings.noKeywordsAdded')}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className='flex flex-col justify-start flex-1 border-b border-gray-700'>
-                        <div className='flex flex-wrap h-full px-0.5'>
-                          {userData?.user_settings?.friends?.map((friend) => (
-                            <button
-                              key={friend}
-                              onClick={() => handleWordBubbleClick(friend)}
-                              className='flex-1 min-w-30 py-8 bg-blue-700 hover:bg-blue-600 text-white text-base border border-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 whitespace-nowrap'
-                            >
-                              {friend}
-                            </button>
-                          )) || []}
-                          {(!userData?.user_settings?.friends ||
-                            userData.user_settings.friends.length === 0) && (
-                            <p className='p-4 text-xs italic text-gray-500'>
-                              {t('settings.noFriendsAdded')}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className='flex flex-col flex-1'>
-                        <div className='h-full'>
-                          <KeywordsSuggestion
-                            keywords={pendingKeywords}
-                            onSelect={handleKeywordSelect}
-                            alwaysShow
-                          />
-                        </div>
-                      </div>
+                      ),
+                    ) || []}
+                    {(!userData?.user_settings?.additional_keywords ||
+                      userData.user_settings.additional_keywords.length ===
+                        0) && (
+                      <p className='text-xs italic text-gray-500'>
+                        No keywords added yet. Add them in settings.
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {userDataError && (
+                  <div className='p-2 border-b border-gray-700'>
+                    <div className='text-right'>
+                      <span className='text-xs text-red-400'>
+                        Failed to load user data
+                      </span>
                     </div>
                   </div>
                 )}
-                {!showVerticalSplit && (
-                  <Fragment>
-                    <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
-                      <div className='mb-1 text-sm font-medium text-white'>
-                        {t('conversation.keywords')}
-                      </div>
-                      <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
-                        {userData?.user_settings?.additional_keywords?.map(
-                          (word) => (
-                            <button
-                              key={word}
-                              className='h-10 p-px transition-colors cursor-pointer green-to-light-green-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500'
-                              onClick={() => handleWordBubbleClick(word)}
-                            >
-                              <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
-                                {word}
-                              </div>
-                            </button>
-                          ),
-                        ) || []}
-                        {(!userData?.user_settings?.additional_keywords ||
-                          userData.user_settings.additional_keywords.length ===
-                            0) && (
-                          <p className='text-xs italic text-gray-500'>
-                            No keywords added yet. Add them in settings.
-                          </p>
-                        )}
-                      </div>
+                {settingsBlockedMessage && (
+                  <div className='p-2 border-b border-gray-700'>
+                    <div className='px-2 py-1 text-xs text-yellow-200 border border-yellow-500 rounded bg-yellow-900/20'>
+                      {settingsBlockedMessage}
                     </div>
-                    {userDataError && (
-                      <div className='p-2 border-b border-gray-700'>
-                        <div className='text-right'>
-                          <span className='text-xs text-red-400'>
-                            Failed to load user data
+                  </div>
+                )}
+                <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
+                  <div className='mb-1 text-sm font-medium text-white'>
+                    {t('common.friends')}
+                  </div>
+                  <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
+                    {userData?.user_settings?.friends?.map((friend) => (
+                      <div
+                        key={friend}
+                        className='relative group'
+                      >
+                        <button
+                          key={friend}
+                          onClick={() => handleWordBubbleClick(friend)}
+                          className='h-10 p-px transition-colors cursor-pointer blue-to-light-blue-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        >
+                          <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
+                            {friend}
+                          </div>
+                        </button>
+                      </div>
+                    ))}
+                    {(!userData?.user_settings?.friends ||
+                      userData.user_settings.friends.length === 0) && (
+                      <p className='text-xs italic text-gray-500'>
+                        {t('settings.noFriendsAdded')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <KeywordsSuggestion
+                  keywords={pendingKeywords}
+                  onSelect={handleKeywordSelect}
+                  alwaysShow
+                />
+                <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px] grow flex flex-col gap-2'>
+                  <div className='grid grid-cols-2 gap-2 pb-2'>
+                    <button
+                      onClick={() =>
+                        handleResponseSelection(staticContextOption.id)
+                      }
+                      className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
+                    >
+                      <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
+                        <div className='flex items-center'>
+                          <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
+                            W
                           </span>
                         </div>
-                      </div>
-                    )}
-                    {settingsBlockedMessage && (
-                      <div className='p-2 border-b border-gray-700'>
-                        <div className='px-2 py-1 text-xs text-yellow-200 border border-yellow-500 rounded bg-yellow-900/20'>
-                          {settingsBlockedMessage}
-                        </div>
-                      </div>
-                    )}
-                    <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px]'>
-                      <div className='mb-1 text-sm font-medium text-white'>
-                        {t('common.friends')}
-                      </div>
-                      <div className='flex flex-wrap gap-1.5 min-h-6 max-h-32 overflow-y-auto overflow-x-hidden py-2 px-0.5'>
-                        {userData?.user_settings?.friends?.map((friend) => (
-                          <div
-                            key={friend}
-                            className='relative group'
-                          >
-                            <button
-                              key={friend}
-                              onClick={() => handleWordBubbleClick(friend)}
-                              className='h-10 p-px transition-colors cursor-pointer blue-to-light-blue-gradient rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500'
-                            >
-                              <div className='flex flex-col justify-center px-3 h-full text-sm text-white font-medium bg-[#181818] rounded-2xl'>
-                                {friend}
-                              </div>
-                            </button>
-                          </div>
-                        ))}
-                        {(!userData?.user_settings?.friends ||
-                          userData.user_settings.friends.length === 0) && (
-                          <p className='text-xs italic text-gray-500'>
-                            {t('settings.noFriendsAdded')}
+                        <div className='flex-1 pr-2'>
+                          <p className='overflow-hidden text-xs leading-tight text-gray-100'>
+                            {staticContextOption.text}
                           </p>
-                        )}
-                      </div>
-                    </div>
-                    <KeywordsSuggestion
-                      keywords={pendingKeywords}
-                      onSelect={handleKeywordSelect}
-                      alwaysShow
-                    />
-                    <div className='w-full px-6 py-4 bg-[#101010] rounded-[40px] grow flex flex-col gap-2'>
-                      <div className='grid grid-cols-2 gap-2 pb-2'>
-                        <button
-                          onClick={() =>
-                            handleResponseSelection(staticContextOption.id)
-                          }
-                          className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
-                        >
-                          <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
-                            <div className='flex items-center'>
-                              <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
-                                W
-                              </span>
-                            </div>
-                            <div className='flex-1 pr-2'>
-                              <p className='overflow-hidden text-xs leading-tight text-gray-100'>
-                                {staticContextOption.text}
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleResponseSelection(staticRepeatOption.id)
-                          }
-                          className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
-                        >
-                          <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
-                            <div className='flex items-center'>
-                              <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
-                                X
-                              </span>
-                            </div>
-                            <div className='flex-1 pr-2'>
-                              <p className='overflow-hidden text-xs leading-tight text-gray-100'>
-                                {staticRepeatOption.text}
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      </div>
-                      <textarea
-                        className='grow w-full min-h-0 px-6 py-4 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
-                        placeholder={t('conversation.typeMessagePlaceholder')}
-                        rows={2}
-                        value={textInput}
-                        onChange={onChangeTextInput}
-                        onKeyDown={onTextInputKeyDown}
-                      />
-                      <button
-                        onClick={handleSendMessage}
-                        className='self-end p-px h-14 green-to-purple-via-blue-gradient rounded-2xl w-fit'
-                        disabled={!textInput.trim()}
-                      >
-                        <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
-                          {t('conversation.sendMessage')}
-                          <Reply
-                            width={24}
-                            height={24}
-                          />
                         </div>
-                      </button>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleResponseSelection(staticRepeatOption.id)
+                      }
+                      className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
+                    >
+                      <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
+                        <div className='flex items-center'>
+                          <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
+                            X
+                          </span>
+                        </div>
+                        <div className='flex-1 pr-2'>
+                          <p className='overflow-hidden text-xs leading-tight text-gray-100'>
+                            {staticRepeatOption.text}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                  <textarea
+                    className='grow w-full min-h-0 px-6 py-4 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
+                    placeholder={t('conversation.typeMessagePlaceholder')}
+                    rows={2}
+                    value={textInput}
+                    onChange={onChangeTextInput}
+                    onKeyDown={onTextInputKeyDown}
+                  />
+                  <button
+                    onClick={handleSendMessage}
+                    className='self-end p-px h-14 green-to-purple-via-blue-gradient rounded-2xl w-fit'
+                    disabled={!textInput.trim()}
+                  >
+                    <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
+                      {t('conversation.sendMessage')}
+                      <Reply
+                        width={24}
+                        height={24}
+                      />
                     </div>
-                  </Fragment>
-                )}
+                  </button>
+                </div>
               </Fragment>
             )}
           </div>
