@@ -1138,7 +1138,7 @@ const InvincibleVoice = () => {
         setErrors={setErrors}
       />
       <div className='flex flex-row grow h-screen'>
-        {!hidePanes && !shouldConnect && (
+        {!hidePanes && (
           <ConversationHistory
             conversations={userData?.conversations || []}
             selectedConversationIndex={selectedConversationIndex}
@@ -1179,7 +1179,7 @@ const InvincibleVoice = () => {
               </div>
             </div>
           )}
-          {!hidePanes && !shouldConnect && (
+          {!hidePanes && (
             <div className='relative z-0 flex flex-col h-screen gap-8 px-4 pt-6 pb-4 overflow-y-auto'>
               <div className='flex flex-row items-center justify-end h-10'>
                 {shouldConnect && !isViewingPastConversation && (
