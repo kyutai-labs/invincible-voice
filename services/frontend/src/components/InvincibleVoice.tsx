@@ -36,7 +36,6 @@ import StartConversationButton from '@/components/ui/StartConversationButton';
 import {
   ResponseSize,
   RESPONSES_SIZES,
-  ORDERED_RESPONSE_SIZES,
 } from '@/constants';
 import { useAudioProcessor } from '@/hooks/useAudioProcessor';
 import { useBackendServerUrl } from '@/hooks/useBackendServerUrl';
@@ -340,30 +339,31 @@ const InvincibleVoice = () => {
     },
     [sendMessage],
   );
-  const handleResponseSizeChange = useCallback(
-    (direction: 'prev' | 'next') => {
-      const currentIndex = ORDERED_RESPONSE_SIZES.indexOf(responseSize);
-      let newIndex;
+  // TODO: This function is currently unused on mobile, may be needed in the future
+  // const handleResponseSizeChange = useCallback(
+  //   (direction: 'prev' | 'next') => {
+  //     const currentIndex = ORDERED_RESPONSE_SIZES.indexOf(responseSize);
+  //     let newIndex;
 
-      if (direction === 'next') {
-        newIndex = (currentIndex + 1) % ORDERED_RESPONSE_SIZES.length;
-      } else {
-        newIndex =
-          (currentIndex - 1 + ORDERED_RESPONSE_SIZES.length) %
-          ORDERED_RESPONSE_SIZES.length;
-      }
+  //     if (direction === 'next') {
+  //       newIndex = (currentIndex + 1) % ORDERED_RESPONSE_SIZES.length;
+  //     } else {
+  //       newIndex =
+  //         (currentIndex - 1 + ORDERED_RESPONSE_SIZES.length) %
+  //         ORDERED_RESPONSE_SIZES.length;
+  //     }
 
-      const newSize = ORDERED_RESPONSE_SIZES[newIndex];
-      setResponseSize(newSize);
-      sendMessage(
-        JSON.stringify({
-          type: 'desired.responses.length',
-          length: newSize,
-        }),
-      );
-    },
-    [responseSize, sendMessage],
-  );
+  //     const newSize = ORDERED_RESPONSE_SIZES[newIndex];
+  //     setResponseSize(newSize);
+  //     sendMessage(
+  //       JSON.stringify({
+  //         type: 'desired.responses.length',
+  //         length: newSize,
+  //       }),
+  //     );
+  //   },
+  //   [responseSize, sendMessage],
+  // );
   const handleResponseSelection = useCallback(
     async (responseId: string) => {
       if (
@@ -1082,17 +1082,10 @@ const InvincibleVoice = () => {
         )}
         {shouldConnect && !isViewingPastConversation && (
           <MobileConversationLayout
-            userData={userData}
-            onWordBubbleClick={handleWordBubbleClick}
-            pendingKeywords={pendingKeywords}
-            onKeywordSelect={handleKeywordSelect}
             textInput={textInput}
             onTextInputChange={handleTextInputChange}
             onSendMessage={handleSendMessage}
-            responseSize={responseSize}
-            onResponseSizeChange={handleResponseSizeChange}
             frozenResponses={frozenResponses}
-            onFreezeToggle={handleFreezeToggle}
             pendingResponses={pendingResponses}
             onResponseSelect={handleResponseSelection}
             onResponseEdit={onResponseEdit}
