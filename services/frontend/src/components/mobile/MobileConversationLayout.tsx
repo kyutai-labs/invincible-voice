@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit2, Pause, Snowflake } from 'lucide-react';
+import { Edit2, Pause } from 'lucide-react';
 import {
   useState,
   useRef,
@@ -46,28 +46,10 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
     () => frozenResponses || pendingResponses,
     [frozenResponses, pendingResponses],
   );
-  const staticContextOption = useMemo(
-    () => ({
-      id: 'static-context-question',
-      text: t('conversation.contextQuestion'),
-      isComplete: true,
-      messageId: '00000000-0000-4000-8000-000000000001',
-    }),
-    [t],
-  );
-  const staticRepeatOption = useMemo(
-    () => ({
-      id: 'static-repeat-question',
-      text: t('conversation.repeatQuestion'),
-      isComplete: true,
-      messageId: '00000000-0000-4000-8000-000000000002',
-    }),
-    [t],
-  );
 
   const allResponses = useMemo(
-    () => [
-      ...Array.from({ length: 4 }, (_, index) => {
+    () =>
+      Array.from({ length: 4 }, (_, index) => {
         const existingResponse = responsesToShow[index];
         return (
           existingResponse || {
@@ -78,10 +60,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
           }
         );
       }),
-      staticContextOption,
-      staticRepeatOption,
-    ],
-    [responsesToShow, staticContextOption, staticRepeatOption],
+    [responsesToShow],
   );
   const onMessageChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -122,61 +101,14 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
 
       {/* Text Input Area */}
       <div className='px-4 py-4 bg-[#101010] rounded-[32px] mx-4 mb-3 flex flex-col gap-2'>
-        <div className='grid grid-cols-2 gap-2 pb-2'>
-          <button
-            onClick={() => onResponseSelect(staticContextOption.id)}
-            className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
-          >
-            <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
-              <div className='flex items-center'>
-                <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
-                  W
-                </span>
-              </div>
-              <div className='flex-1 pr-2'>
-                <p className='overflow-hidden text-xs leading-tight text-gray-100'>
-                  {staticContextOption.text}
-                </p>
-              </div>
-            </div>
-          </button>
-          <button
-            onClick={() => onResponseSelect(staticRepeatOption.id)}
-            className='w-full h-full p-px text-left transition-all duration-200 rounded-2xl light-orange-to-orange-gradient group focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50'
-          >
-            <div className='px-3 py-4 overflow-hidden bg-[#1B1B1B] group-hover:bg-[#181818] flex flex-row items-center text-base font-bold rounded-2xl size-full gap-4'>
-              <div className='flex items-center'>
-                <span className='flex flex-col items-center justify-center font-light text-white border border-white rounded-sm size-10 font-base bg-[#101010]'>
-                  X
-                </span>
-              </div>
-              <div className='flex-1 pr-2'>
-                <p className='overflow-hidden text-xs leading-tight text-gray-100'>
-                  {staticRepeatOption.text}
-                </p>
-              </div>
-            </div>
-          </button>
-        </div>
-
         <textarea
-          className='grow w-full min-h-0 px-4 py-3 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
+          className='w-full min-h-[60px] px-4 py-3 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
           placeholder={t('conversation.typeMessagePlaceholder')}
-          rows={2}
+          rows={1}
           value={textInput}
           onChange={onMessageChange}
           onKeyDown={onMessageKeyDown}
         />
-        <button
-          onClick={onSendMessage}
-          className='self-end p-px h-14 green-to-purple-via-blue-gradient rounded-2xl w-fit'
-          disabled={!textInput.trim()}
-        >
-          <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
-            {t('conversation.sendMessage')}
-            <Snowflake className='w-5 h-5' />
-          </div>
-        </button>
       </div>
 
       {/* Response Options */}
