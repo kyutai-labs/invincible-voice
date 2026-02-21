@@ -1,6 +1,5 @@
 'use client';
 
-import { Settings } from 'lucide-react';
 import { prettyPrintJson } from 'pretty-print-json';
 import {
   useCallback,
@@ -32,6 +31,7 @@ import ErrorMessages, {
   ErrorItem,
   makeErrorItem,
 } from '@/components/ui/ErrorMessages';
+import SettingsButton from '@/components/ui/SettingsButton';
 import StartConversationButton from '@/components/ui/StartConversationButton';
 import {
   ResponseSize,
@@ -1072,21 +1072,13 @@ const InvincibleVoice = () => {
   // Mobile layout
   if (isMobile) {
     return (
-      <div className='flex flex-col w-full h-screen text-white bg-background'>
+      <div className='flex flex-col w-full h-screen text-white'>
         <ErrorMessages
           errors={errors}
           setErrors={setErrors}
         />
         {!shouldConnect && !isViewingPastConversation && (
-          <MobileNoConversation
-            conversations={userData?.conversations || []}
-            selectedConversationIndex={selectedConversationIndex}
-            onConversationSelect={handleConversationSelect}
-            onNewConversation={handleNewConversation}
-            onDeleteConversation={handleDeleteConversation}
-            onConnectButtonPress={onConnectButtonPress}
-            onSettingsOpen={handleSettingsOpen}
-          />
+          <MobileNoConversation onConnectButtonPress={onConnectButtonPress} />
         )}
         {shouldConnect && !isViewingPastConversation && (
           <MobileConversationLayout
@@ -1222,18 +1214,11 @@ const InvincibleVoice = () => {
           <div className='relative z-0 flex flex-col h-screen gap-4 px-4 pt-6 overflow-y-auto pb-14'>
             {!shouldConnect && !isViewingPastConversation && (
               <div className='flex flex-row items-center justify-end h-10'>
-                <button
+                <SettingsButton
                   onClick={handleSettingsOpen}
-                  className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
-                  style={{
-                    filter: 'drop-shadow(0rem 0.2rem 0.15rem var(--darkgray))',
-                  }}
-                >
-                  <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
-                    {t('settings.changeSettings')}
-                    <Settings size={20} />
-                  </div>
-                </button>
+                  label={t('settings.changeSettings')}
+                  variant='full'
+                />
               </div>
             )}
             {shouldConnect && !isViewingPastConversation && (
