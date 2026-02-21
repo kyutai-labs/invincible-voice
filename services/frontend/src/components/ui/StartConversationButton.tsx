@@ -14,7 +14,7 @@ const StartConversationButton = ({
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 p-px cursor-pointer green-to-purple-via-blue-gradient rounded-2xl h-14 ${className}`}
+      className={`shrink-0 p-px cursor-pointer pointer-events-auto green-to-purple-via-blue-gradient rounded-2xl h-14 ${className}`}
       type='button'
     >
       <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-8'>
