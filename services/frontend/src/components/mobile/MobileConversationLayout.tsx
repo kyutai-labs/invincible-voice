@@ -80,8 +80,8 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
 
   return (
     <div className='w-full h-screen flex flex-col bg-[#121212] text-white overflow-hidden'>
-      {/* Header with stop button */}
-      <div className='flex items-center justify-between px-4 py-3'>
+      {/* Header with stop button - fixed height */}
+      <div className='flex items-center justify-between px-4 py-3 shrink-0 h-[60px]'>
         <button
           aria-label='Stop conversation'
           className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
@@ -99,47 +99,51 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
         </button>
       </div>
 
-      {/* Text Input Area */}
-      <div className='px-4 py-4 bg-[#101010] rounded-[32px] mx-4 mb-3 flex flex-col gap-2'>
-        <textarea
-          className='w-full min-h-[60px] px-4 py-3 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
-          placeholder={t('conversation.typeMessagePlaceholder')}
-          rows={1}
-          value={textInput}
-          onChange={onMessageChange}
-          onKeyDown={onMessageKeyDown}
-        />
-      </div>
-
-      {/* Response Options */}
-      <div className='flex-1 overflow-hidden px-4'>
-        <div className='flex flex-col gap-2 h-full overflow-y-auto scrollbar-hidden'>
-          <div className='flex flex-col gap-2 h-full'>
-            {allResponses.slice(0, 4).map((response, index) => (
-              <Fragment key={response.id}>
-                {editingIndex === index && (
-                  <EditingResponse
-                    editingText={editingText}
-                    onResponseEdit={onResponseEdit}
-                    setEditingIndex={setEditingIndex}
-                    setEditingText={setEditingText}
-                  />
-                )}
-                {editingIndex !== index && (
-                  <BaseResponse
-                    index={index}
-                    isFrozen={isFrozen}
-                    onResponseEdit={onResponseEdit}
-                    onResponseSelect={onResponseSelect}
-                    response={response}
-                    setEditingIndex={setEditingIndex}
-                    setEditingText={setEditingText}
-                  />
-                )}
-              </Fragment>
-            ))}
+      {/* Main content area - 5 equal slots */}
+      <div className='flex-1 px-4 pb-4 min-h-0 flex flex-col overflow-hidden'>
+        {/* Slot 1: Text Input */}
+        <div className='flex-1 min-h-0'>
+          <div className='w-full h-full px-4 py-2 bg-[#101010] rounded-[32px] flex flex-col'>
+            <textarea
+              className='w-full h-full px-4 py-2 text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green'
+              placeholder={t('conversation.typeMessagePlaceholder')}
+              style={{ fontSize: 'clamp(16px, 3.5vw, 22px)' }}
+              value={textInput}
+              onChange={onMessageChange}
+              onKeyDown={onMessageKeyDown}
+            />
           </div>
         </div>
+
+        {/* Slots 2-5: Responses */}
+        {allResponses.slice(0, 4).map((response, index) => (
+          <div
+            key={response.id}
+            className='flex-1 min-h-0'
+          >
+            <div className='w-full h-full px-4 py-2 bg-[#101010] rounded-[20px]'>
+              {editingIndex === index && (
+                <EditingResponse
+                  editingText={editingText}
+                  onResponseEdit={onResponseEdit}
+                  setEditingIndex={setEditingIndex}
+                  setEditingText={setEditingText}
+                />
+              )}
+              {editingIndex !== index && (
+                <BaseResponse
+                  index={index}
+                  isFrozen={isFrozen}
+                  onResponseEdit={onResponseEdit}
+                  onResponseSelect={onResponseSelect}
+                  response={response}
+                  setEditingIndex={setEditingIndex}
+                  setEditingText={setEditingText}
+                />
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -195,18 +199,17 @@ const EditingResponse: FC<EditingResponseProps> = ({
   }, []);
 
   return (
-    <div className='p-3 rounded-[20px] border-2 border-green-400 bg-[#101010] flex flex-col'>
-      <textarea
-        ref={ref}
-        value={editingText}
-        onChange={onChange}
-        onKeyDown={onKeyDown}
-        className='flex-1 bg-transparent outline-none resize-none text-sm text-white'
-        placeholder='Type your message…'
-        // eslint-disable-next-line jsx-a11y/no-autofocus
-        autoFocus
-      />
-    </div>
+    <textarea
+      ref={ref}
+      value={editingText}
+      onChange={onChange}
+      onKeyDown={onKeyDown}
+      className='w-full h-full bg-transparent outline-none resize-none text-white'
+      style={{ fontSize: 'clamp(16px, 3.5vw, 20px)' }}
+      placeholder='Type your message…'
+      // eslint-disable-next-line jsx-a11y/no-autofocus
+      autoFocus
+    />
   );
 };
 
@@ -243,16 +246,16 @@ const BaseResponse: FC<BaseReponseProps> = ({
   const t = useTranslations();
 
   return (
-    <div className='relative'>
+    <div className='relative w-full h-full'>
       <button
         className={cn(
-          'w-full px-4 py-3 text-left rounded-[20px] border-2 transition-all duration-200 flex flex-col gap-2 text-sm',
+          'w-full h-full px-4 py-3 text-left rounded-[20px] border-2 transition-all duration-200 flex flex-col items-start justify-center overflow-hidden',
           {
-            'border-cyan-400 bg-[#101010] hover:border-cyan-500':
+            'border-cyan-400 bg-[#181818] hover:border-cyan-500':
               isFrozen && response.text.trim() && response.isComplete,
-            'border-green-500 bg-[#101010] hover:border-green-400':
+            'border-green-500 bg-[#181818] hover:border-green-400':
               !isFrozen && response.text.trim() && response.isComplete,
-            'border-gray-600 bg-[#181818]':
+            'border-gray-600 bg-[#1B1B1B]':
               !isFrozen && response.text.trim() && !response.isComplete,
             'border-gray-700 bg-[#1B1B1B]':
               !isFrozen && !response.text.trim() && !response.isComplete,
@@ -263,33 +266,41 @@ const BaseResponse: FC<BaseReponseProps> = ({
         disabled={!response.text.trim() || !response.isComplete}
         onClick={onClickResponse}
       >
-        <p className='text-sm text-white leading-tight wrap-break-word'>
-          {response.text.trim() ? (
-            <Fragment>
-              {response.text}
-              {!response.isComplete && (
-                <span className='inline-block w-1 h-3 bg-gray-400 ml-1 animate-pulse' />
-              )}
-            </Fragment>
-          ) : (
-            <span className='text-gray-500 italic text-sm'>
-              {t('conversation.waitingForResponse')}
-            </span>
-          )}
-        </p>
+        <div className='w-full overflow-hidden text-ellipsis line-clamp-3'>
+          <p
+            className='text-white leading-relaxed wrap-break-word'
+            style={{ fontSize: 'clamp(16px, 3.5vw, 20px)' }}
+          >
+            {response.text.trim() ? (
+              <Fragment>
+                {response.text}
+                {!response.isComplete && (
+                  <span className='inline-block w-1 h-4 bg-gray-400 ml-1 animate-pulse' />
+                )}
+              </Fragment>
+            ) : (
+              <span
+                className='text-gray-500 italic'
+                style={{ fontSize: 'clamp(16px, 3.5vw, 20px)' }}
+              >
+                {t('conversation.waitingForResponse')}
+              </span>
+            )}
+          </p>
+        </div>
         {response.text.trim() && !response.isComplete && (
           <div className='flex justify-end mt-1'>
-            <div className='w-3 h-3 border-2 border-green-400 border-t-transparent rounded-full animate-spin' />
+            <div className='w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin' />
           </div>
         )}
       </button>
       {response.text.trim() && response.isComplete && onResponseEdit && (
         <button
-          className='absolute top-2 right-2 p-1 rounded hover:bg-gray-700 transition-colors cursor-pointer block'
+          className='absolute top-2 right-2 p-2 rounded hover:bg-gray-700 transition-colors cursor-pointer'
           onClick={onClickEdit}
           title={t('conversation.editResponse')}
         >
-          <Edit2 className='w-3 h-3 text-gray-400' />
+          <Edit2 className='w-5 h-5 text-gray-400' />
         </button>
       )}
     </div>
