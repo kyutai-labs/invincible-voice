@@ -79,6 +79,12 @@ def get_me(
     return user
 
 
+@user_router.post("/accept_terms_of_services")
+def accept_terms_of_services(user: Annotated[UserData, Depends(get_current_user)]):
+    user.user_settings.accepted_terms_of_services = True
+    user.save()
+
+
 @user_router.post("/settings")
 def update_user_settings(
     settings: UserSettings,

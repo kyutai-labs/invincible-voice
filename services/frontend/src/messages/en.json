@@ -29,7 +29,11 @@
     "documents": "Documents",
     "voice": "Voice",
     "name": "Name",
-    "textToSpeechProvider": "Text-to-speech and speech-to-text are generously provided by"
+    "textToSpeechProvider": "Text-to-speech and speech-to-text are generously provided by",
+    "termsOfService": "Terms of service",
+    "termsOfServiceContent": "This is an example of terms of service while we wait for the actual legal text.\n1. Acceptance of Terms\nBy accessing or using Invincible Voice, you agree to be bound by these Terms of Service. If you do not agree, please do not use our service.\n2. Use of the Service\nYou agree to use Invincible Voice only for lawful purposes. You may not use the service to distribute harmful content, violate any laws, or infringe on the rights of others.\n3. Account Responsibility\nYou are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized access to your account.\n4. Intellectual Property\nAll content, logos, and software associated with Invincible Voice are the property of Invincible Voice Inc. You may not copy, modify, or distribute our content without written permission.\n5. User Content\nBy submitting content to our platform, you grant Invincible Voice a non-exclusive, royalty-free license to use, display, and distribute that content in connection with our service.\n6. Termination\nWe reserve the right to suspend or terminate your account at our discretion if you violate these terms or engage in conduct we deem harmful to the service or other users.\n7. Disclaimer of Warranties\nInvincible Voice is provided \"as is\" without warranties of any kind. We do not guarantee the service will be uninterrupted, error-free, or free of viruses.\n8. Limitation of Liability\nTo the fullest extent permitted by law, Invincible Voice Inc. shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service.\n9. Privacy\nYour use of the service is also governed by our Privacy Policy, which is incorporated into these Terms by reference.\n10. Changes to Terms\nWe may update these Terms at any time. Continued use of the service after changes are posted constitutes your acceptance of the revised Terms.\n11. Governing Law\nThese Terms are governed by the laws of the State of Delaware, without regard to its conflict of law provisions.\n",
+    "accept": "Accept the terms of service",
+    "refuse": "Refuse the terms of service"
   },
   "settings": {
     "additionalKeywords": "Additional keywords",

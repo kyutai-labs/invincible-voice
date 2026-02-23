@@ -1,9 +1,0 @@
-- name: Olivier
-  good: true
-  instructions:
-    type: invincible_voice
-    language: fr
-  source:
-    source_type: file
-    path_on_server: unmute-prod-website/developer-1.mp3
-    description: Olivier Goy is a french entrepreneur.
