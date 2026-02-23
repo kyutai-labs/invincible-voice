@@ -57,6 +57,9 @@ const MobileSettingsPopup: FC<MobileSettingsPopupProps> = ({
           onChange={setName}
           placeholder={t('settings.yourNamePlaceholder')}
         />
+        <p className='text-xs text-gray-500 text-center mt-1'>
+          {t('settings.moreSettingsAvailable')}
+        </p>
       </div>
 
       <div className='flex flex-col gap-3 mt-6'>
