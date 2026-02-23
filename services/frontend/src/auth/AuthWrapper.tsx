@@ -9,17 +9,34 @@ import React, {
   useCallback,
   useState,
 } from 'react';
+import TermsOfServiceModal from '@/components/TermsOfServiceModal';
 import { useTranslations } from '@/i18n';
 import Google from './Google';
 import { AUTH_STATUSES, useAuthContext } from './authContext';
 
 const AuthWrapper: FC<PropsWithChildren> = ({ children = null }) => {
-  const { authStatus, authError, signIn, register, allowPassword } =
-    useAuthContext();
+  const {
+    authStatus,
+    authError,
+    signIn,
+    register,
+    allowPassword,
+    userData,
+    signOut,
+    acceptTermsOfServices,
+  } = useAuthContext();
   const [displayRegisterScreen, setDisplayRegisterScreen] = useState(false);
   const toggleRegisterScreen = useCallback(() => {
     setDisplayRegisterScreen((prev) => !prev);
   }, []);
+
+  const handleAcceptTerms = useCallback(async () => {
+    await acceptTermsOfServices();
+  }, [acceptTermsOfServices]);
+
+  const handleRefuseTerms = useCallback(() => {
+    signOut();
+  }, [signOut]);
 
   if (authStatus === AUTH_STATUSES.NOT_CHECKED) {
     return (
@@ -48,6 +65,15 @@ const AuthWrapper: FC<PropsWithChildren> = ({ children = null }) => {
           />
         )}
       </div>
+    );
+  }
+
+  if (userData && !userData.user_settings.accepted_terms_of_services) {
+    return (
+      <TermsOfServiceModal
+        onAccept={handleAcceptTerms}
+        onRefuse={handleRefuseTerms}
+      />
     );
   }
 

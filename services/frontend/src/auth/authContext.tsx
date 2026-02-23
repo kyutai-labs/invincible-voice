@@ -11,6 +11,7 @@ import {
 } from 'react';
 import Cookies from 'universal-cookie';
 import { useLocale } from '../i18n/I18nContext';
+import type { UserData } from '../types/user';
 import { addAuthHeaders } from './authUtils';
 
 export const AUTH_STATUSES = {
@@ -27,10 +28,13 @@ interface AuthContextInterface {
   authError: boolean;
   allowPassword: boolean;
   googleClientId: string;
+  userData: UserData | null;
   register: (email: string, password: string) => void;
   signIn: (email: string, password: string) => void;
   googleSignIn: (googleToken: string) => void;
   signOut: () => void;
+  acceptTermsOfServices: () => Promise<void>;
+  fetchUserData: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextInterface>({
@@ -38,10 +42,13 @@ export const AuthContext = createContext<AuthContextInterface>({
   authError: false,
   allowPassword: true,
   googleClientId: '',
+  userData: null,
   register: () => {},
   signIn: () => {},
   googleSignIn: () => {},
   signOut: () => {},
+  acceptTermsOfServices: async () => {},
+  fetchUserData: async () => {},
 });
 
 export const useAuthContext = () => useContext(AuthContext);
@@ -53,33 +60,82 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
   );
   const [allowPassword, setAllowPassword] = useState<boolean>(true);
   const [googleClientId, setGoogleClientId] = useState<string>('');
+  const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
   const locale = useLocale();
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const bearerToken = new Cookies().get('bearerToken');
+      if (!bearerToken) {
+        return;
+      }
+      const response = await fetch(`/api/v1/user/`, {
+        method: 'GET',
+        headers: addAuthHeaders({
+          Authorization: `Bearer ${bearerToken}`,
+          'Content-Type': 'application/json',
+        }),
+      });
+      if (response.ok) {
+        const data: UserData = await response.json();
+        setUserData(data);
+      }
+    } catch {
+      setUserData(null);
+    }
+  }, []);
+
+  const acceptTermsOfServices = useCallback(async () => {
+    try {
+      const bearerToken = new Cookies().get('bearerToken');
+      if (!bearerToken) {
+        return;
+      }
+      const response = await fetch(`/api/v1/user/accept_terms_of_services`, {
+        method: 'POST',
+        headers: addAuthHeaders({
+          Authorization: `Bearer ${bearerToken}`,
+          'Content-Type': 'application/json',
+        }),
+      });
+      if (response.ok) {
+        await fetchUserData();
+      }
+    } catch {}
+  }, [fetchUserData]);
+
   const signOut = useCallback(() => {
     new Cookies().remove('bearerToken');
     setAuthStatus(AUTH_STATUSES.NOT_LOGGED);
+    setUserData(null);
   }, []);
-  const signIn = useCallback(async (email: string, password: string) => {
-    try {
-      setAuthError(false);
-      const body = new FormData();
-      body.append('username', email);
-      body.append('password', password);
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        body,
-      });
-      if (response.ok) {
-        const data = await response.json();
-        new Cookies().set('bearerToken', data.access_token, { path: '/' });
-        setAuthStatus(AUTH_STATUSES.LOGGED);
-      } else {
+
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      try {
+        setAuthError(false);
+        const body = new FormData();
+        body.append('username', email);
+        body.append('password', password);
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          body,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          new Cookies().set('bearerToken', data.access_token, { path: '/' });
+          setAuthStatus(AUTH_STATUSES.LOGGED);
+          await fetchUserData();
+        } else {
+          setAuthError(true);
+        }
+      } catch {
         setAuthError(true);
       }
-    } catch {
-      setAuthError(true);
-    }
-  }, []);
+    },
+    [fetchUserData],
+  );
   const googleSignIn = useCallback(
     async (googleToken: string) => {
       try {
@@ -95,6 +151,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
           const data = await response.json();
           new Cookies().set('bearerToken', data.access_token, { path: '/' });
           setAuthStatus(AUTH_STATUSES.LOGGED);
+          await fetchUserData();
         } else {
           setAuthError(true);
         }
@@ -104,7 +161,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
         router.replace('/');
       }
     },
-    [router, locale],
+    [router, locale, fetchUserData],
   );
   const register = useCallback(
     async (email: string, password: string) => {
@@ -120,32 +177,38 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
           const data = await response.json();
           new Cookies().set('bearerToken', data.access_token, { path: '/' });
           setAuthStatus(AUTH_STATUSES.LOGGED);
+          await fetchUserData();
         }
       } catch {}
     },
-    [locale],
+    [locale, fetchUserData],
   );
-
   const memoizedValue = useMemo(
     () => ({
       authStatus,
       authError,
       allowPassword,
       googleClientId,
-      register,
+      userData,
       signIn,
       googleSignIn,
       signOut,
+      register,
+      acceptTermsOfServices,
+      fetchUserData,
     }),
     [
       authStatus,
       authError,
       allowPassword,
       googleClientId,
-      register,
+      userData,
       signIn,
       googleSignIn,
       signOut,
+      register,
+      acceptTermsOfServices,
+      fetchUserData,
     ],
   );
 
@@ -166,17 +229,19 @@ const AuthProvider: FC<PropsWithChildren> = ({ children = null }) => {
             throw new Error('Unauthorized');
           }
           setAuthStatus(AUTH_STATUSES.LOGGED);
+          await fetchUserData();
         } else {
           setAuthStatus(AUTH_STATUSES.NOT_LOGGED);
         }
       } catch {
         new Cookies().remove('bearerToken');
         setAuthStatus(AUTH_STATUSES.NOT_LOGGED);
+        setUserData(null);
       }
     }
 
     checkAuthStatus();
-  }, []);
+  }, [fetchUserData]);
 
   useEffect(() => {
     async function checkAllowPassword() {
