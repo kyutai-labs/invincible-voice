@@ -26,6 +26,7 @@ import Pause from '@/components/icons/Pause';
 import Reply from '@/components/icons/Reply';
 import MobileConversationLayout from '@/components/mobile/MobileConversationLayout';
 import { MobileNoConversation } from '@/components/mobile/MobileLayout';
+import MobileSettingsPopup from '@/components/settings/MobileSettingsPopup';
 import SettingsPopup from '@/components/settings/SettingsPopup';
 import ErrorMessages, {
   ErrorItem,
@@ -52,10 +53,10 @@ import { calculateTotalTokens, formatTokenCount } from '@/utils/tokenUtils';
 import { ttsCache } from '@/utils/ttsCache';
 import { playTTSStream } from '@/utils/ttsUtil';
 import {
+  deleteConversation,
   getUserData,
   UserData,
   UserSettings,
-  deleteConversation,
 } from '@/utils/userData';
 
 interface PendingKeyword {
@@ -1051,7 +1052,10 @@ const InvincibleVoice = () => {
           setErrors={setErrors}
         />
         {!shouldConnect && !isViewingPastConversation && (
-          <MobileNoConversation onConnectButtonPress={onConnectButtonPress} />
+          <MobileNoConversation
+            onConnectButtonPress={onConnectButtonPress}
+            onSettingsPress={handleSettingsOpen}
+          />
         )}
         {shouldConnect && !isViewingPastConversation && (
           <MobileConversationLayout
@@ -1063,13 +1067,15 @@ const InvincibleVoice = () => {
             onResponseSelect={handleResponseSelection}
             onResponseEdit={onResponseEdit}
             onConnectButtonPress={onConnectButtonPress}
+            onSettingsPress={handleSettingsOpen}
           />
         )}
         {isSettingsOpen && userData && (
           <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50'>
-            <div className='w-full h-full max-w-6xl max-h-full p-4 overflow-y-auto border bg-darkgray border-green'>
-              <SettingsPopup
+            <div className='w-full h-full max-w-md max-h-full p-4 overflow-y-auto border bg-[#1B1B1B] border-green rounded-3xl'>
+              <MobileSettingsPopup
                 userSettings={userData.user_settings}
+                email={userData.email}
                 onSave={handleSettingsSave}
                 onCancel={handleSettingsCancel}
               />
@@ -1355,6 +1361,7 @@ const InvincibleVoice = () => {
           <div className='w-full h-full max-w-7xl max-h-full px-12 pt-6 pb-8 overflow-y-auto border bg-[#121212] border-black rounded-[40px] shadow-custom'>
             <SettingsPopup
               userSettings={userData.user_settings}
+              email={userData.email}
               onSave={handleSettingsSave}
               onCancel={handleSettingsCancel}
             />

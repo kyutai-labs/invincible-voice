@@ -47,14 +47,16 @@ export interface UserSettings {
   additional_keywords: string[];
   friends: string[];
   documents: Document[];
-  voice?: string;
-  expected_transcription_language?: string | null;
+  voice: string | null;
+  expected_transcription_language: string | null;
+  accepted_terms_of_services: boolean;
 }
 
 /**
  * Complete user data structure
  */
 export interface UserData {
+  email: string;
   user_id: string; // UUID as string in TypeScript
   user_settings: UserSettings;
   conversations: Conversation[];
