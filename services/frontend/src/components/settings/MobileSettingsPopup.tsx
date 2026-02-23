@@ -63,6 +63,16 @@ const MobileSettingsPopup: FC<MobileSettingsPopupProps> = ({
       </div>
 
       <div className='flex flex-col gap-3 mt-6'>
+        <div className='w-full flex justify-center'>
+          <a
+            href='https://kyutai.org/privacy-policy'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-sm underline text-gray-400 hover:text-white transition-colors'
+          >
+            {t('common.termsOfService')}
+          </a>
+        </div>
         <button
           className='w-full px-6 py-3 text-[#FF6459] bg-[#1B1B1B] border border-[#FF6459] rounded-2xl font-medium'
           onClick={handleSignOut}

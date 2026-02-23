@@ -790,6 +790,17 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                 </div>
               </div>
             </div>
+
+            <div className='w-full px-6 py-2 flex justify-center'>
+              <a
+                href='https://kyutai.org/privacy-policy'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-sm underline text-gray-400 hover:text-white transition-colors'
+              >
+                {t('common.termsOfService')}
+              </a>
+            </div>
           </div>
           <div className='flex justify-end gap-x-3'>
             <button
