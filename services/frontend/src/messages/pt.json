@@ -68,7 +68,8 @@
     "deleteDocument": "Excluir documento",
     "testVoiceMessage": "Olá, sua voz soará assim. Você também pode clonar sua própria voz fornecendo uma gravação de áudio de si mesmo.",
     "expectedTranscriptionLanguage": "Idioma de transcrição esperado",
-    "letSpeechToTextGuess": "Deixar o reconhecimento de voz adivinhar"
+    "letSpeechToTextGuess": "Deixar o reconhecimento de voz adivinhar",
+    "moreSettingsAvailable": "Mais configurações estão disponíveis na versão de desktop ou tablet do Invincible Voice"
   },
   "conversation": {
     "yesterday": "Ontem",

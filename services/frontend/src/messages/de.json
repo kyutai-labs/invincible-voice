@@ -68,7 +68,8 @@
     "deleteDocument": "Dokument löschen",
     "testVoiceMessage": "Hallo, Ihre Stimme wird so klingen. Sie können auch Ihre eigene Stimme klonen, indem Sie eine Audioaufnahme von sich selbst bereitstellen.",
     "expectedTranscriptionLanguage": "Erwartete Transkriptionssprache",
-    "letSpeechToTextGuess": "Spracherkennung selbst erraten lassen"
+    "letSpeechToTextGuess": "Spracherkennung selbst erraten lassen",
+    "moreSettingsAvailable": "Weitere Einstellungen sind in der Desktop- oder Tablet-Version von Invincible Voice verfügbar"
   },
   "conversation": {
     "yesterday": "Gestern",

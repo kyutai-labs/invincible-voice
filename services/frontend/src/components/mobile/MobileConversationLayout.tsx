@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit2, Pause } from 'lucide-react';
+import { Edit2, Pause, Settings } from 'lucide-react';
 import {
   useState,
   useRef,
@@ -26,6 +26,7 @@ interface MobileConversationLayoutProps {
   onResponseEdit?: (text: string) => void;
   onResponseSelect: (responseId: string) => void;
   onConnectButtonPress: () => void;
+  onSettingsPress: () => void;
 }
 
 const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
@@ -37,6 +38,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
   onResponseEdit = undefined,
   onResponseSelect,
   onConnectButtonPress,
+  onSettingsPress,
 }) => {
   const t = useTranslations();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -95,6 +97,15 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
               height={24}
               className='shrink-0 text-white'
             />
+          </div>
+        </button>
+        <button
+          className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
+          onClick={onSettingsPress}
+          title={t('settings.changeSettings')}
+        >
+          <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center rounded-2xl px-3'>
+            <Settings size={20} />
           </div>
         </button>
       </div>

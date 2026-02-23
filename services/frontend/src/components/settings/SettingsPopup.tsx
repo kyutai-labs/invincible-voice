@@ -17,23 +17,26 @@ import { useTranslations } from '@/i18n';
 import { estimateTokens, formatTokenCount } from '@/utils/tokenUtils';
 import { playTTSStream } from '@/utils/ttsUtil';
 import {
-  UserSettings,
   updateUserSettings,
   Document,
   getVoices,
   createVoice,
   deleteVoice,
 } from '@/utils/userData';
+import type { UserSettings } from '@/utils/userData';
 import DocumentEditorPopup from './DocumentEditorPopup';
+import EmailField from './EmailField';
 
 interface SettingsPopupProps {
   userSettings: UserSettings;
+  email: string;
   onSave: (settings: UserSettings) => void;
   onCancel: () => void;
 }
 
 const SettingsPopup: FC<SettingsPopupProps> = ({
   userSettings,
+  email,
   onSave,
   onCancel,
 }) => {
@@ -420,6 +423,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
 
       <div className='grid grow w-full grid-cols-2 gap-8'>
         <div className='flex flex-col h-full gap-6 pb-4'>
+          <EmailField email={email} />
           <div className='flex flex-row gap-8'>
             <div className='flex flex-col grow gap-2'>
               <label
