@@ -39,6 +39,7 @@ class UserSettings(pydantic.BaseModel):
     documents: list[Document] = pydantic.Field(default_factory=list)
     voice: str | None = None
     expected_transcription_language: str | None = None
+    accepted_terms_of_services: bool = False
 
 
 class GoogleAuthRequest(pydantic.BaseModel):
