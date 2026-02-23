@@ -20,10 +20,16 @@ const TermsOfServiceModal: FC<TermsOfServiceModalProps> = ({
         <h2 className='text-xl font-bold text-center pt-2'>
           {t('common.termsOfService')}
         </h2>
-        <div className='flex-1 overflow-y-auto px-4 py-2 bg-[#1B1B1B] rounded-2xl'>
-          <div className='whitespace-pre-wrap text-sm leading-relaxed'>
-            {t('common.termsOfServiceContent')}
-          </div>
+        <div className='px-4 py-4 text-center text-base leading-relaxed'>
+          {t('common.termsOfServiceMessage')}{' '}
+          <a
+            href='https://kyutai.org/privacy-policy'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='underline hover:text-gray-300'
+          >
+            {t('common.termsOfService')}
+          </a>
         </div>
         <div className='flex gap-4 pt-2'>
           <button
@@ -47,4 +53,5 @@ const TermsOfServiceModal: FC<TermsOfServiceModalProps> = ({
     </div>
   );
 };
+
 export default TermsOfServiceModal;
