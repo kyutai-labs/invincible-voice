@@ -367,9 +367,6 @@ class UnmuteHandler(AsyncStreamHandler):
         if time_since_last_message > 1.7:
             return True
 
-        logger.info(
-            "No pause here, time since last message:" + str(time_since_last_message),
-        )
         return False
 
     async def emit(  # pyright: ignore[reportIncompatibleMethodOverride]
