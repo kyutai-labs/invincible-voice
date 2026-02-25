@@ -1,6 +1,5 @@
 import asyncio
 import datetime as dt
-import math
 import uuid
 from logging import getLogger
 from typing import Any, Literal, cast
@@ -20,9 +19,7 @@ from pydantic import BaseModel
 import backend.openai_realtime_api_events as ora
 from backend import metrics as mt
 from backend.kyutai_constants import (
-    FRAME_TIME_SEC,
     SAMPLE_RATE,
-    SAMPLES_PER_FRAME,
 )
 from backend.llm.chatbot import Chatbot
 from backend.llm.llm_utils import (
@@ -64,6 +61,10 @@ class ErrorFromTTS(Exception):
     pass
 
 
+class ChatbotStateChanged(Exception):
+    pass
+
+
 class GradioUpdate(BaseModel):
     chat_history: list[dict[str, str]]
     debug_dict: dict[str, Any]
@@ -87,7 +88,6 @@ class UnmuteHandler(AsyncStreamHandler):
 
         self.stt_last_message_time: float = 0
         self.stt_end_of_flush_time: float | None = None
-        self.stt_flush_timer = Stopwatch()
 
         self.tts_voice: str | None = None  # Stored separately because TTS is restarted
         if isinstance(user_email_or_data, str):
@@ -211,6 +211,9 @@ class UnmuteHandler(AsyncStreamHandler):
         )
 
         messages = self.chatbot.preprocessed_messages()
+        # we copy the last messages to know if we need to abort in case of a new
+        # word coming
+        start_chatbot_proxy_hash = self.chatbot.proxy_hash()
 
         all_words = []
         error_from_tts = False
@@ -227,6 +230,12 @@ class UnmuteHandler(AsyncStreamHandler):
         logger.info("starting VLLM")
         try:
             async for delta in llm.chat_completion(messages):
+                current_chatbot_proxy_hash = self.chatbot.proxy_hash()
+                if start_chatbot_proxy_hash != current_chatbot_proxy_hash:
+                    # The state of the chat has changed, let's abort and wait
+                    # for the next llm session to start with the updated state.
+                    # This will avoid having the suggestions update too quickly.
+                    raise ChatbotStateChanged()
                 if not all_words:
                     # Logging time to first word
                     logger.info(
@@ -271,6 +280,9 @@ class UnmuteHandler(AsyncStreamHandler):
         except asyncio.CancelledError:
             mt.VLLM_INTERRUPTS.inc()
             raise
+        except ChatbotStateChanged:
+            logger.info("Chatbot state changed, aborting llm quest.")
+            pass
         except Exception as e:
             if not error_from_tts:
                 mt.VLLM_HARD_ERRORS.inc()
@@ -328,33 +340,11 @@ class UnmuteHandler(AsyncStreamHandler):
             self.debug_dict["timing"] = {}
 
         await stt.send_audio(array)
-        if self.stt_end_of_flush_time is None:
-            if self.determine_pause():
-                logger.info("Pause detected")
-                await self.output_queue.put(ora.InputAudioBufferSpeechStopped())
+        if self.determine_pause():
+            logger.info("Pause detected")
+            await self.output_queue.put(ora.InputAudioBufferSpeechStopped())
 
-                self.stt_end_of_flush_time = stt.current_time + stt.delay_sec
-                self.stt_flush_timer = Stopwatch()
-                num_frames = (
-                    int(math.ceil(stt.delay_sec / FRAME_TIME_SEC)) + 1
-                )  # some safety margin.
-                zero = np.zeros(SAMPLES_PER_FRAME, dtype=np.float32)
-                for _ in range(num_frames):
-                    await stt.send_audio(zero)
-        else:
-            # We do not try to detect interruption here, the STT would be processing
-            # a chunk full of 0, so there is little chance the pause score would indicate an interruption.
-            if stt.current_time > self.stt_end_of_flush_time:
-                logger.info(
-                    f"After the flush time, of {stt.current_time - self.stt_end_of_flush_time:.2f} sec"
-                )
-                self.stt_end_of_flush_time = None
-                elapsed = self.stt_flush_timer.time()
-                rtf = stt.delay_sec / elapsed
-                logger.info(
-                    "Flushing finished, took %.1f ms, RTF: %.1f", elapsed * 1000, rtf
-                )
-                await self._generate_response()
+            await self._generate_response()
 
     def determine_pause(self) -> bool:
         stt = self.stt
@@ -372,22 +362,15 @@ class UnmuteHandler(AsyncStreamHandler):
         ) - self.stt_last_message_time
         self.debug_dict["time_since_last_message"] = time_since_last_message
 
-        if time_since_last_message > 2.5:
+        if time_since_last_message > 0.8:
             return True
 
-        if stt.pause_prediction.value > 0.6:
-            self.debug_dict["timing"]["pause_detection"] = time_since_last_message
-            logger.info(
-                f"Pause detected, pause_prediction: {stt.pause_prediction.value:.2f} time since last message: {time_since_last_message:.2f} sec"
-            )
-            return True
-        else:
-            logger.info(
-                "No pause here, pause_prediction: %.2f, time since last message:"
-                + str(time_since_last_message),
-                stt.pause_prediction.value,
-            )
-            return False
+        logger.info(
+            "No pause here, pause_prediction: %.2f, time since last message:"
+            + str(time_since_last_message),
+            stt.pause_prediction.value,
+        )
+        return False
 
     async def emit(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,

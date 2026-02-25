@@ -27,6 +27,17 @@ class Chatbot:
         )
         self.desired_responses_length: Literal["XS", "S", "M", "L", "XL"] = "M"
 
+    def proxy_hash(self) -> int:
+        # to quickly compare if the chatbot state changed
+        return hash(
+            (
+                self.current_keywords,
+                len(self.user_data.conversations[-1].messages),
+                self.user_data.conversations[-1].messages[-1].content,
+                self.desired_responses_length,
+            )
+        )
+
     @property
     def current_conversation(self) -> list[SpeakerMessage | WriterMessage]:
         return self.user_data.conversations[-1].messages
