@@ -364,7 +364,7 @@ class UnmuteHandler(AsyncStreamHandler):
         ) - self.stt_last_message_time
         self.debug_dict["time_since_last_message"] = time_since_last_message
 
-        if time_since_last_message > 1:
+        if time_since_last_message > 1.7:
             return True
 
         logger.info(
