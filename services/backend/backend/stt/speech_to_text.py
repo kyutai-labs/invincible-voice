@@ -22,7 +22,6 @@ from backend.kyutai_constants import (
     STT_DELAY_SEC,
     STT_IS_GRADIUM,
 )
-from backend.stt.exponential_moving_average import ExponentialMovingAverage
 from backend.timer import Stopwatch
 from backend.websocket_utils import WebsocketState
 
@@ -161,13 +160,6 @@ class SpeechToText:
         self.time_since_first_audio_sent = Stopwatch(autostart=False)
         self.waiting_first_step: bool = True
         self.expected_language = expected_language
-
-        # In our case, attack  = from speaking to not speaking
-        #              release = from not speaking to speaking
-        self.pause_prediction = ExponentialMovingAverage(
-            attack_time=0.01, release_time=0.01, initial_value=1.0
-        )
-
         self.shutdown_complete = asyncio.Event()
 
     def state(self) -> WebsocketState:
@@ -375,9 +367,7 @@ class SpeechToText:
                 # Gradium STT message handling
                 async for response in self.websocket:
                     message_dict = json.loads(response)
-                    logger.debug(
-                        f"{my_id} {self.pause_prediction.value} got {message_dict}"
-                    )
+                    logger.debug(f"{my_id} got {message_dict}")
 
                     try:
                         message = GradiumSTTMessageAdapter.validate_python(message_dict)
@@ -415,13 +405,6 @@ class SpeechToText:
 
                         if n_steps_to_wait > 0:
                             n_steps_to_wait -= 1
-                        else:
-                            # Use VAD inactivity probability for pause prediction
-                            if len(message.vad) >= 3:
-                                inactivity_prob = message.vad[-1].inactivity_prob
-                                self.pause_prediction.update(
-                                    dt=FRAME_TIME_SEC, new_value=1.0 - inactivity_prob
-                                )
 
                         logger.debug(
                             f"⏱️  Step {message.step_idx}: duration={message.total_duration_s:.2f}s, vad={message.vad}"
@@ -445,7 +428,7 @@ class SpeechToText:
                 # Kyutai STT message handling
                 async for message_bytes in self.websocket:
                     data = msgpack.unpackb(message_bytes)  # type: ignore
-                    logger.debug(f"{my_id} {self.pause_prediction.value} got {data}")
+                    logger.debug(f"{my_id} got {data}")
                     message: STTMessage = STTMessageAdapter.validate_python(data)
 
                     match message:
@@ -469,10 +452,7 @@ class SpeechToText:
                                 )
                             if n_steps_to_wait > 0:
                                 n_steps_to_wait -= 1
-                            else:
-                                self.pause_prediction.update(
-                                    dt=FRAME_TIME_SEC, new_value=message.prs[2]
-                                )
+
                         case STTMarkerMessage():
                             yield message
                         case STTReadyMessage():

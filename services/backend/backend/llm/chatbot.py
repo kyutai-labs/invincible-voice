@@ -29,11 +29,17 @@ class Chatbot:
 
     def proxy_hash(self) -> int:
         # to quickly compare if the chatbot state changed
+        if len(self.user_data.conversations[-1].messages) == 0:
+            last_message_len = None
+        else:
+            last_message_len = len(
+                self.user_data.conversations[-1].messages[-1].content
+            )
         return hash(
             (
                 self.current_keywords,
                 len(self.user_data.conversations[-1].messages),
-                self.user_data.conversations[-1].messages[-1].content,
+                last_message_len,
                 self.desired_responses_length,
             )
         )
