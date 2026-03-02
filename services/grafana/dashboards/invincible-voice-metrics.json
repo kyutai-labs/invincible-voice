@@ -30,7 +30,12 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
           },
           "mappings": []
         }
@@ -43,16 +48,12 @@
       },
       "id": 1,
       "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "showLegend": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "tooltip": {
+          "mode": "single"
+        }
       },
       "pluginVersion": "10.2.0",
       "targets": [
@@ -62,7 +63,7 @@
         }
       ],
       "title": "Redis STT Locks",
-      "type": "gauge"
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -72,7 +73,12 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
           },
           "mappings": []
         }
@@ -85,16 +91,12 @@
       },
       "id": 2,
       "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "showLegend": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "tooltip": {
+          "mode": "single"
+        }
       },
       "pluginVersion": "10.2.0",
       "targets": [
@@ -104,7 +106,7 @@
         }
       ],
       "title": "Redis TTS Locks",
-      "type": "gauge"
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -114,7 +116,12 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
           },
           "mappings": []
         }
@@ -127,16 +134,12 @@
       },
       "id": 3,
       "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "showLegend": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "tooltip": {
+          "mode": "single"
+        }
       },
       "pluginVersion": "10.2.0",
       "targets": [
@@ -146,7 +149,7 @@
         }
       ],
       "title": "Storage Accounts",
-      "type": "gauge"
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -156,7 +159,12 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
           },
           "mappings": []
         }
@@ -169,16 +177,12 @@
       },
       "id": 4,
       "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "showLegend": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "tooltip": {
+          "mode": "single"
+        }
       },
       "pluginVersion": "10.2.0",
       "targets": [
@@ -188,7 +192,50 @@
         }
       ],
       "title": "Storage Conversations",
-      "type": "gauge"
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
+          },
+          "mappings": []
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "10.2.0",
+      "targets": [
+        {
+          "expr": "storage_messages",
+          "refId": "A"
+        }
+      ],
+      "title": "Storage Messages",
+      "type": "timeseries"
     }
   ],
   "schemaVersion": 41,

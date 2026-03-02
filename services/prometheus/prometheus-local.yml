@@ -1,0 +1,14 @@
+# Local development configuration for Docker Compose
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # For Docker Compose, use static config
+  # Note: This only scrapes one backend replica due to DNS round-robin
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:80']
+        labels:
+          service: 'backend'

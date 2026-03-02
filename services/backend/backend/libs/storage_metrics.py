@@ -16,6 +16,7 @@ def _collect_storage_metrics_sync(storage_dir: AnyPath) -> dict:
         json_files = list(storage_dir.glob("*.json"))
         total_accounts = len(json_files)
         total_conversations = 0
+        total_messages = 0
 
         conversations_per_account = []
         messages_per_conversation = []
@@ -30,6 +31,7 @@ def _collect_storage_metrics_sync(storage_dir: AnyPath) -> dict:
 
                 for conversation in user_data.conversations:
                     messages_count = len(conversation.messages)
+                    total_messages += messages_count
                     messages_per_conversation.append(messages_count)
             except Exception as e:
                 logger.warning(
@@ -41,6 +43,7 @@ def _collect_storage_metrics_sync(storage_dir: AnyPath) -> dict:
         return {
             "total_accounts": total_accounts,
             "total_conversations": total_conversations,
+            "total_messages": total_messages,
             "conversations_per_account": conversations_per_account,
             "messages_per_conversation": messages_per_conversation,
         }
@@ -59,6 +62,7 @@ async def update_storage_metrics(storage_dir: AnyPath):
 
             mt.STORAGE_ACCOUNTS.set(metrics_data["total_accounts"])
             mt.STORAGE_CONVERSATIONS.set(metrics_data["total_conversations"])
+            mt.STORAGE_MESSAGES.set(metrics_data["total_messages"])
 
             for count in metrics_data["conversations_per_account"]:
                 mt.STORAGE_CONVERSATIONS_PER_ACCOUNT.observe(count)

@@ -23,6 +23,9 @@ STORAGE_ACCOUNTS = Gauge("storage_accounts", "Current number of user accounts")
 STORAGE_CONVERSATIONS = Gauge(
     "storage_conversations", "Total number of conversations across all accounts"
 )
+STORAGE_MESSAGES = Gauge(
+    "storage_messages", "Total number of messages across all conversations"
+)
 
 # Distribution bins for conversations per account and messages per conversation
 CONVERSATIONS_PER_ACCOUNT_BINS = [

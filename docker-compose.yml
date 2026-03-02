@@ -97,6 +97,8 @@ services:
     image: invincible-voice-prometheus:latest
     build:
       context: services/prometheus
+      args:
+        CONFIG_FILE: prometheus-local.yml
     volumes:
       - ./volumes/prometheus-data:/prometheus
     labels:

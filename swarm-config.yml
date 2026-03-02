@@ -88,6 +88,7 @@ services:
         - "traefik.http.routers.block-metrics.priority=300"
         - "traefik.http.routers.block-metrics.service=noop@internal"
         - "traefik.http.routers.block-metrics.entrypoints=websecure"
+        - "prometheus-port=80"
 
   redis:
     image: redis:8-alpine
@@ -124,6 +125,7 @@ services:
     image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-prometheus:${COMMIT_SHA}
     volumes:
       - prometheus-data:/prometheus
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       - "traefik.enable=false"
     deploy:
