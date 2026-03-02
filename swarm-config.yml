@@ -153,6 +153,7 @@ services:
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
       - "traefik.http.routers.grafana.middlewares=grafana-strip"
+      - "traefik.http.routers.backend.priority=100"
       - "traefik.http.middlewares.grafana-strip.stripprefix.prefixes=/grafana"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
     deploy:
