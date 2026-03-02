@@ -81,6 +81,10 @@ services:
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=80"
       - "traefik.http.routers.backend.priority=100" # higher priority than frontend
+      - "traefik.http.routers.block-metrics.rule=Path(`/api/metrics`)"
+      - "traefik.http.routers.block-metrics.priority=300"
+      - "traefik.http.routers.block-metrics.service=noop@internal"
+      - "traefik.http.routers.block-metrics.entrypoints=web"
 
   redis:
     image: redis:8-alpine

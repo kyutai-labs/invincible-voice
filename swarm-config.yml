@@ -84,6 +84,10 @@ services:
         - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
         - "traefik.http.services.backend.loadbalancer.server.port=80"
         - "traefik.http.routers.backend.priority=100"
+        - "traefik.http.routers.block-metrics.rule=Host(`invincible-voice.kyutai.org`) && Path(`/api/metrics`)"
+        - "traefik.http.routers.block-metrics.priority=300"
+        - "traefik.http.routers.block-metrics.service=noop@internal"
+        - "traefik.http.routers.block-metrics.entrypoints=websecure"
 
   redis:
     image: redis:8-alpine
