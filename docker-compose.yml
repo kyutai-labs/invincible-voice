@@ -98,7 +98,7 @@ services:
     build:
       context: services/prometheus
     volumes:
-      - prometheus-data:/prometheus
+      - ./volumes/prometheus-data:/prometheus
     labels:
       - "traefik.enable=false"
 
@@ -107,7 +107,7 @@ services:
     build:
       context: services/grafana
     volumes:
-      - grafana-data:/var/lib/grafana
+      - ./volumes/grafana-data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
@@ -120,10 +120,6 @@ services:
       - "traefik.http.routers.grafana.middlewares=grafana-strip"
       - "traefik.http.middlewares.grafana-strip.stripprefix.prefixes=/grafana"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-
-volumes:
-  prometheus-data:
-  grafana-data:
 
 networks:
   default:
