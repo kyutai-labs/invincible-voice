@@ -79,6 +79,8 @@ class VLLMStream:
 
         async with stream:
             async for chunk in stream:
+                if len(chunk.choices) == 0:
+                    continue
                 chunk_content = chunk.choices[0].delta.content
                 if chunk_content is None:
                     continue
