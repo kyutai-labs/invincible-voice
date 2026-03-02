@@ -100,10 +100,7 @@ services:
     volumes:
       - prometheus-data:/prometheus
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=PathPrefix(`/prometheus`)"
-      - "traefik.http.routers.prometheus.entrypoints=web"
-      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.enable=false"
 
   grafana:
     image: invincible-voice-grafana:latest
