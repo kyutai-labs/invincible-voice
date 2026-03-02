@@ -20,7 +20,6 @@
   "graphTooltip": 0,
   "id": 1,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "datasource": {
@@ -33,12 +32,53 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "lineWidth": 2,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
             "fillOpacity": 10,
-            "gradientMode": "opacity"
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
-          "mappings": []
-        }
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -49,16 +89,23 @@
       "id": 1,
       "options": {
         "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": false
         },
         "tooltip": {
-          "mode": "single"
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
-          "expr": "redis_stt_locks",
+          "editorMode": "code",
+          "expr": "max(redis_stt_locks)",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -76,12 +123,53 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "lineWidth": 2,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
             "fillOpacity": 10,
-            "gradientMode": "opacity"
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
-          "mappings": []
-        }
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -92,16 +180,23 @@
       "id": 2,
       "options": {
         "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": false
         },
         "tooltip": {
-          "mode": "single"
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
-          "expr": "redis_tts_locks",
+          "editorMode": "code",
+          "expr": "max(redis_tts_locks)",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -119,12 +214,53 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "lineWidth": 2,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
             "fillOpacity": 10,
-            "gradientMode": "opacity"
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
-          "mappings": []
-        }
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -135,16 +271,23 @@
       "id": 3,
       "options": {
         "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": false
         },
         "tooltip": {
-          "mode": "single"
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
-          "expr": "storage_accounts",
+          "editorMode": "code",
+          "expr": "max(storage_accounts)",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -162,12 +305,53 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "lineWidth": 2,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
             "fillOpacity": 10,
-            "gradientMode": "opacity"
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
-          "mappings": []
-        }
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -178,16 +362,23 @@
       "id": 4,
       "options": {
         "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": false
         },
         "tooltip": {
-          "mode": "single"
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
-          "expr": "storage_conversations",
+          "editorMode": "code",
+          "expr": "max(storage_conversations)",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -205,12 +396,53 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "lineWidth": 2,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
             "fillOpacity": 10,
-            "gradientMode": "opacity"
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
-          "mappings": []
-        }
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -221,16 +453,23 @@
       "id": 5,
       "options": {
         "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": false
         },
         "tooltip": {
-          "mode": "single"
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
-          "expr": "storage_messages",
+          "editorMode": "code",
+          "expr": "max(storage_messages)",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -238,21 +477,19 @@
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": false,
           "text": "Prometheus",
           "value": "Prometheus"
         },
-        "hide": 0,
         "name": "datasource",
         "options": [],
         "query": "prometheus",
-        "queryValue": "",
         "refresh": 1,
         "type": "datasource"
       }
@@ -266,6 +503,5 @@
   "timezone": "browser",
   "title": "Invincible Voice Metrics",
   "uid": "invincible-voice",
-  "version": 1,
-  "weekStart": ""
+  "version": 1
 }
