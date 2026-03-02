@@ -369,7 +369,7 @@ class UnmuteHandler(AsyncStreamHandler):
 
         return False
 
-    async def emit(  # pyright: ignore[reportIncompatibleMethodOverride]
+    async def emit(
         self,
     ) -> HandlerOutput | None:
         output_queue_item = await wait_for_item(self.output_queue)

@@ -45,7 +45,6 @@ uv run fastapi dev backend/main.py  # Dev server
 uv run pytest         # Run tests
 uv run ruff check     # Lint
 uv run ruff format    # Format
-uv run pyright        # Type checking
 ```
 
 ### Pre-commit Hooks (Root Directory)

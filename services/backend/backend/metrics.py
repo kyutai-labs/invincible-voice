@@ -14,6 +14,10 @@ TTFT_BINS_STT_MS = [
 ]
 TTFT_BINS_STT = [x / 1000 for x in TTFT_BINS_STT_MS]
 
+# Redis locks
+REDIS_STT_LOCKS = Gauge("redis_stt_locks", "Current number of active STT locks")
+REDIS_TTS_LOCKS = Gauge("redis_tts_locks", "Current number of active TTS locks")
+
 NUM_WORDS_REQUEST_BINS = [
     50.0,
     100.0,

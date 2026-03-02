@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException
@@ -12,12 +13,13 @@ import backend.openai_realtime_api_events as ora
 from backend import metrics as mt
 from backend.kyutai_constants import (
     MAX_VOICE_FILE_SIZE_MB,
+    REDIS_HOST,
+    REDIS_PORT,
 )
 from backend.libs.files import LimitUploadSizeForPath
 from backend.libs.health import get_health
+from backend.libs.redis_metrics import RedisMetricsBackgroundTask
 from backend.routes import auth_router, tts_router, user_router, voices_router
-
-app = FastAPI(openapi_prefix="/api")
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -25,13 +27,31 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
-
-Instrumentator().instrument(app).expose(app)
 PROFILE_ACTIVE = False
 
 ClientEventAdapter = TypeAdapter(
     Annotated[ora.ClientEvent, Field(discriminator="type")]
 )
+
+
+# Redis metrics background task
+redis_metrics_task = RedisMetricsBackgroundTask(REDIS_HOST, REDIS_PORT)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup/shutdown events."""
+    # Startup
+    await redis_metrics_task.start()
+    yield
+    # Shutdown
+    await redis_metrics_task.stop()
+
+
+app = FastAPI(openapi_prefix="/api", lifespan=lifespan)
+
+# Instrument Prometheus metrics
+Instrumentator().instrument(app).expose(app)
 
 # Allow CORS for local development
 CORS_ALLOW_ORIGINS = ["http://localhost", "http://localhost:3000"]
