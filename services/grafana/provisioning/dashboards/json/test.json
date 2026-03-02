@@ -1,0 +1,27 @@
+{
+  "overwrite": true,
+  "dashboard": {
+    "id": null,
+    "uid": "test-dashboard",
+    "title": "Test Dashboard",
+    "tags": ["test"],
+    "timezone": "browser",
+    "schemaVersion": 36,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Test Panel",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up",
+            "refId": "A",
+            "legendFormat": "Up"
+          }
+        ]
+      }
+    ]
+  }
+}

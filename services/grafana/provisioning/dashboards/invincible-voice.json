@@ -1,6 +1,8 @@
 {
+  "overwrite": true,
   "dashboard": {
     "id": null,
+    "uid": "invincible-voice-metrics",
     "title": "Invincible Voice Metrics",
     "tags": ["invincible-voice"],
     "timezone": "browser",
