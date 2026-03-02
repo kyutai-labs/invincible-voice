@@ -51,3 +51,15 @@ jobs:
       - name: Build frontend
         working-directory: services/frontend
         run: pnpm build
+
+  build-docker-images:
+    name: Build docker images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the docker images
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          BACKEND_REPLICAS_COUNT: 8
+        run: docker compose -f swarm-config.yml build
