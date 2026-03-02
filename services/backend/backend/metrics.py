@@ -18,6 +18,48 @@ TTFT_BINS_STT = [x / 1000 for x in TTFT_BINS_STT_MS]
 REDIS_STT_LOCKS = Gauge("redis_stt_locks", "Current number of active STT locks")
 REDIS_TTS_LOCKS = Gauge("redis_tts_locks", "Current number of active TTS locks")
 
+# Storage metrics
+STORAGE_ACCOUNTS = Gauge("storage_accounts", "Current number of user accounts")
+STORAGE_CONVERSATIONS = Gauge(
+    "storage_conversations", "Total number of conversations across all accounts"
+)
+
+# Distribution bins for conversations per account and messages per conversation
+CONVERSATIONS_PER_ACCOUNT_BINS = [
+    0.0,
+    1.0,
+    2.0,
+    5.0,
+    10.0,
+    25.0,
+    50.0,
+    100.0,
+    250.0,
+    500.0,
+]
+MESSAGES_PER_CONVERSATION_BINS = [
+    0.0,
+    5.0,
+    10.0,
+    20.0,
+    50.0,
+    100.0,
+    200.0,
+    500.0,
+    1000.0,
+]
+
+STORAGE_CONVERSATIONS_PER_ACCOUNT = Histogram(
+    "storage_conversations_per_account",
+    "Distribution of conversations per account",
+    buckets=CONVERSATIONS_PER_ACCOUNT_BINS,
+)
+STORAGE_MESSAGES_PER_CONVERSATION = Histogram(
+    "storage_messages_per_conversation",
+    "Distribution of messages per conversation",
+    buckets=MESSAGES_PER_CONVERSATION_BINS,
+)
+
 NUM_WORDS_REQUEST_BINS = [
     50.0,
     100.0,

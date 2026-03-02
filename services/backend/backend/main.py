@@ -15,10 +15,12 @@ from backend.kyutai_constants import (
     MAX_VOICE_FILE_SIZE_MB,
     REDIS_HOST,
     REDIS_PORT,
+    USERS_SETTINGS_AND_HISTORY_DIR,
 )
 from backend.libs.files import LimitUploadSizeForPath
 from backend.libs.health import get_health
 from backend.libs.redis_metrics import RedisMetricsBackgroundTask
+from backend.libs.storage_metrics import StorageMetricsBackgroundTask
 from backend.routes import auth_router, tts_router, user_router, voices_router
 
 logger = logging.getLogger(__name__)
@@ -34,8 +36,9 @@ ClientEventAdapter = TypeAdapter(
 )
 
 
-# Redis metrics background task
+# Background metrics tasks
 redis_metrics_task = RedisMetricsBackgroundTask(REDIS_HOST, REDIS_PORT)
+storage_metrics_task = StorageMetricsBackgroundTask(USERS_SETTINGS_AND_HISTORY_DIR)
 
 
 @asynccontextmanager
@@ -43,8 +46,10 @@ async def lifespan(app: FastAPI):
     """Lifespan context manager for startup/shutdown events."""
     # Startup
     await redis_metrics_task.start()
+    await storage_metrics_task.start()
     yield
     # Shutdown
+    await storage_metrics_task.stop()
     await redis_metrics_task.stop()
 
 
