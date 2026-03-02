@@ -123,6 +123,8 @@ services:
 
   prometheus:
     image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-prometheus:${COMMIT_SHA}
+    build:
+      context: services/prometheus
     volumes:
       - prometheus-data:/prometheus
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -134,6 +136,8 @@ services:
 
   grafana:
     image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-grafana:${COMMIT_SHA}
+    build:
+      context: services/grafana
     volumes:
       - grafana-data:/var/lib/grafana
     environment:
