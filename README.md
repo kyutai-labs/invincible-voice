@@ -8,13 +8,16 @@ technologies to enable fluid conversations.
 
 Get more context about this project on [our official page](https://www.invincible-voice.com/).
 
+While this page shows the source code, if you're interested in using the system, check out the
+[online demo](https://invincible-voice.kyutai.org/).
+
 ## How it works
 
 It is very similar to the [Unmute project](https://github.com/kyutai-labs/unmute); The main difference is that, instead of having the TTS reads out whatever the LLM answers, we ask the LLM to provide multiple possible answers and the TTS only utters the one selected by the user. This experimental system has more features than just this, in particular in the ways the LLM can be personnalized and the UI allows additional guidance of its answers, but this is the core idea.
 
 ## 🚀 Getting Started
 
-We plan to open soon an online version of the system, with TTS freely provived by Gradium. In the meantime, we explain below how to insall and run it locally, for developpers to start exploring it right away.
+If you just want to try it out, you can head to the [online demo](https://invincible-voice.kyutai.org/). If you want to run it locally, continue reading!
 
 We provide two ways of doing this (see below); we recommend starting with the Gradium STT/TTS + Cerebras LLM option, as it is easier to set up, and moving to the fully self-hosted option (Kyutai STT/TTS + vLLM) once you are more confortable with the project.
 
