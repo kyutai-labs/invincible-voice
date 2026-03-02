@@ -115,6 +115,7 @@ services:
       - GF_SERVER_ROOT_URL=/grafana
     labels:
       - "traefik.enable=true"
+      - "pub_port=80"
       - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
       - "traefik.http.routers.grafana.entrypoints=web"
       - "traefik.http.routers.grafana.middlewares=grafana-strip"

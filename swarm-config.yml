@@ -141,6 +141,7 @@ services:
       - GF_SERVER_ROOT_URL=https://invincible-voice.kyutai.org/grafana
     labels:
       - "traefik.enable=true"
+      - "pub_port=80"
       - "traefik.http.routers.grafana.rule=Host(`invincible-voice.kyutai.org`) && PathPrefix(`/grafana`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
