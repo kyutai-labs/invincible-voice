@@ -1,0 +1,358 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Invincible Voice Metrics",
+    "tags": ["invincible-voice"],
+    "timezone": "browser",
+    "schemaVersion": 36,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Active Sessions",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "targets": [
+          {
+            "expr": "sum(worker_active_sessions)",
+            "legendFormat": "Active"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Total Sessions",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(worker_sessions)",
+            "legendFormat": "Total"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Total Accounts",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "max(storage_accounts)",
+            "legendFormat": "Accounts"
+          }
+        ],
+        "description": "Take max since all replicas read the same storage"
+      },
+      {
+        "id": 4,
+        "title": "Total Conversations",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "max(storage_conversations)",
+            "legendFormat": "Conversations"
+          }
+        ],
+        "description": "Take max since all replicas read the same storage"
+      },
+      {
+        "id": 5,
+        "title": "STT Locks",
+        "type": "gauge",
+        "gridPos": {"x": 0, "y": 4, "w": 6, "h": 4},
+        "options": {
+          "orientation": "horizontal"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 100,
+            "unit": "short"
+          }
+        },
+        "targets": [
+          {
+            "expr": "max(redis_stt_locks)",
+            "legendFormat": "STT"
+          }
+        ],
+        "description": "Max value since all replicas query Redis"
+      },
+      {
+        "id": 6,
+        "title": "TTS Locks",
+        "type": "gauge",
+        "gridPos": {"x": 6, "y": 4, "w": 6, "h": 4},
+        "options": {
+          "orientation": "horizontal"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 100,
+            "unit": "short"
+          }
+        },
+        "targets": [
+          {
+            "expr": "max(redis_tts_locks)",
+            "legendFormat": "TTS"
+          }
+        ],
+        "description": "Max value since all replicas query Redis"
+      },
+      {
+        "id": 7,
+        "title": "Health Status",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 4, "w": 6, "h": 4},
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(worker_health_ok[1m]))",
+            "legendFormat": "OK Rate"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Force Disconnects",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 4, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(worker_force_disconnects)",
+            "legendFormat": "Disconnects"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Session Duration",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 8, "w": 12, "h": 6},
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        },
+        "targets": [
+          {
+            "expr": "rate(worker_session_duration_sum[5m]) / rate(worker_session_duration_count[5m])",
+            "legendFormat": "Avg Duration"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "STT Audio Duration",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 8, "w": 12, "h": 6},
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        },
+        "targets": [
+          {
+            "expr": "rate(worker_stt_audio_duration_sum[5m]) / rate(worker_stt_audio_duration_count[5m])",
+            "legendFormat": "Avg STT Duration"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "STT Words",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 14, "w": 8, "h": 6},
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        },
+        "targets": [
+          {
+            "expr": "rate(worker_stt_recv_words[5m])",
+            "legendFormat": "Words/sec (Received)"
+          },
+          {
+            "expr": "rate(worker_stt_sent_frames[5m])",
+            "legendFormat": "Frames/sec (Sent)"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "STT Active Sessions",
+        "type": "timeseries",
+        "gridPos": {"x": 8, "y": 14, "w": 8, "h": 6},
+        "targets": [
+          {
+            "expr": "sum(worker_stt_active_sessions)",
+            "legendFormat": "Active Sessions"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "STT Time to First Token",
+        "type": "timeseries",
+        "gridPos": {"x": 16, "y": 14, "w": 8, "h": 6},
+        "targets": [
+          {
+            "expr": "rate(worker_stt_ttft_sum[5m]) / rate(worker_stt_ttft_count[5m])",
+            "legendFormat": "Avg TTFT"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "LLM Words Throughput",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 20, "w": 12, "h": 6},
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        },
+        "targets": [
+          {
+            "expr": "rate(worker_vllm_sent_words[5m])",
+            "legendFormat": "Words/sec (Sent)"
+          },
+          {
+            "expr": "rate(worker_vllm_recv_words[5m])",
+            "legendFormat": "Words/sec (Received)"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "LLM Active Sessions",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 20, "w": 12, "h": 6},
+        "targets": [
+          {
+            "expr": "sum(worker_vllm_active_sessions)",
+            "legendFormat": "Active Sessions"
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "LLM Generation Latency",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 26, "w": 12, "h": 6},
+        "targets": [
+          {
+            "expr": "rate(worker_vllm_gen_duration_sum[5m]) / rate(worker_vllm_gen_duration_count[5m])",
+            "legendFormat": "Avg Gen Duration"
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "LLM Interrupts & Errors",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 26, "w": 12, "h": 6},
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        },
+        "targets": [
+          {
+            "expr": "rate(worker_vllm_interrupt[5m])",
+            "legendFormat": "Interrupts/sec"
+          },
+          {
+            "expr": "rate(worker_vllm_hard_errors[5m])",
+            "legendFormat": "Errors/sec"
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Conversations per Account Distribution",
+        "type": "heatmap",
+        "gridPos": {"x": 0, "y": 32, "w": 12, "h": 6},
+        "options": {
+          "calculate": false,
+          "color": {
+            "mode": "spectrum"
+          }
+        },
+        "targets": [
+          {
+            "expr": "rate(storage_conversations_per_account_bucket[5m])",
+            "format": "heatmap",
+            "legendFormat": "{{le}}"
+          }
+        ],
+        "description": "Distribution of conversations per user account (avg across replicas)"
+      },
+      {
+        "id": 19,
+        "title": "Messages per Conversation Distribution",
+        "type": "heatmap",
+        "gridPos": {"x": 12, "y": 32, "w": 12, "h": 6},
+        "options": {
+          "calculate": false,
+          "color": {
+            "mode": "spectrum"
+          }
+        },
+        "targets": [
+          {
+            "expr": "rate(storage_messages_per_conversation_bucket[5m])",
+            "format": "heatmap",
+            "legendFormat": "{{le}}"
+          }
+        ],
+        "description": "Distribution of messages per conversation (avg across replicas)"
+      },
+      {
+        "id": 20,
+        "title": "Frames Traffic",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 38, "w": 12, "h": 6},
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        },
+        "targets": [
+          {
+            "expr": "rate(worker_stt_sent_frames[5m])",
+            "legendFormat": "Sent Frames/sec"
+          },
+          {
+            "expr": "rate(worker_stt_recv_frames[5m])",
+            "legendFormat": "Recv Frames/sec"
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "title": "Word Counts by Type",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 38, "w": 12, "h": 6},
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        },
+        "targets": [
+          {
+            "expr": "rate(worker_stt_recv_words[5m])",
+            "legendFormat": "STT Words/sec"
+          },
+          {
+            "expr": "rate(worker_vllm_sent_words[5m])",
+            "legendFormat": "VLLM Sent Words/sec"
+          },
+          {
+            "expr": "rate(worker_vllm_recv_words[5m])",
+            "legendFormat": "VLLM Recv Words/sec"
+          }
+        ]
+      }
+    ]
+  }
+}

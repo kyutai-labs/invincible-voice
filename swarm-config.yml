@@ -120,10 +120,46 @@ services:
       placement:
         constraints: [node.role == manager]
 
+  prometheus:
+    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-prometheus:${COMMIT_SHA}
+    volumes:
+      - prometheus-data:/prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`invincible-voice.kyutai.org`) && PathPrefix(`/prometheus`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+    deploy:
+      replicas: 1
+
+  grafana:
+    image: rg.fr-par.scw.cloud/namespace-unruffled-tereshkova/invincible-voice-grafana:${COMMIT_SHA}
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-https://invincible-voice.kyutai.org/grafana}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`invincible-voice.kyutai.org`) && PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.grafana.middlewares=grafana-strip"
+      - "traefik.http.middlewares.grafana-strip.stripprefix.prefixes=/grafana"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    deploy:
+      replicas: 1
 
 volumes:
   letsencrypt:
   portainer_data:
+  prometheus-data:
+  grafana-data:
 
 networks:
   agent_network:

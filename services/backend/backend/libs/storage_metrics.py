@@ -8,7 +8,7 @@ from backend.storage import UserData
 
 logger = logging.getLogger(__name__)
 
-STORAGE_METRIC_POLL_INTERVAL_SECONDS = 120  # Scan storage every 120 seconds
+STORAGE_METRIC_POLL_INTERVAL_SECONDS = 180
 
 
 def _collect_storage_metrics_sync(storage_dir: AnyPath) -> dict:
