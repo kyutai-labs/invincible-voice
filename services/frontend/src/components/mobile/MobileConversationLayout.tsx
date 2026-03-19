@@ -71,11 +71,14 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
         paddingBottom: keyboardHeight > 0 ? `${keyboardHeight}px` : undefined,
       }}
     >
+      {/* Safe area spacer for notch/status bar */}
+      <div style={{ height: 'var(--safe-area-inset-top)' }} className='shrink-0' />
+
       {/* Header with stop button - fixed height */}
       <div className='flex items-center justify-between px-4 py-3 shrink-0 h-[60px]'>
         <button
           aria-label='Stop conversation'
-          className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
+          className='shrink-0 h-11 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
           onClick={onConnectButtonPress}
           title={t('conversation.stopConversation')}
         >
@@ -89,7 +92,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
           </div>
         </button>
         <button
-          className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
+          className='shrink-0 h-11 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
           onClick={onSettingsPress}
           title={t('settings.changeSettings')}
         >
@@ -102,7 +105,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
       {/* Tab bar */}
       <div className='flex border-b border-gray-700 shrink-0'>
         <button
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`flex-1 py-3 min-h-[44px] text-sm font-medium transition-colors ${
             activePanel === 'chat'
               ? 'text-blue-400 border-b-2 border-blue-400'
               : 'text-gray-400 hover:text-gray-200'
@@ -112,7 +115,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
           Chat
         </button>
         <button
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`flex-1 py-3 min-h-[44px] text-sm font-medium transition-colors ${
             activePanel === 'responses'
               ? 'text-blue-400 border-b-2 border-blue-400'
               : 'text-gray-400 hover:text-gray-200'
@@ -163,6 +166,9 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Safe area spacer for home indicator */}
+      <div style={{ height: 'var(--safe-area-inset-bottom)' }} className='shrink-0' />
     </div>
   );
 };

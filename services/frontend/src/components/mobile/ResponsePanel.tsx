@@ -63,7 +63,7 @@ const ResponsePanel: FC<ResponsePanelProps> = ({
       <div className='px-4 py-2 border-b border-gray-700 shrink-0 flex items-center justify-end'>
         <button
           className={cn(
-            'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+            'px-3 py-1.5 min-h-[44px] rounded-lg text-sm font-medium transition-colors',
             isFrozen
               ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500'
               : 'bg-gray-800 text-gray-400 border border-gray-600 hover:text-gray-200',
@@ -210,7 +210,7 @@ const BaseResponse: FC<BaseResponseProps> = ({
     <div className='relative w-full h-full'>
       <button
         className={cn(
-          'w-full h-full px-4 py-3 text-left rounded-[20px] border-2 transition-all duration-200 flex flex-col items-start justify-center overflow-hidden',
+          'w-full h-full min-h-[44px] px-4 py-3 text-left rounded-[20px] border-2 transition-all duration-200 flex flex-col items-start justify-center overflow-hidden',
           {
             'border-cyan-400 bg-[#181818] hover:border-cyan-500':
               isFrozen && response.text.trim() && response.isComplete,
@@ -257,7 +257,7 @@ const BaseResponse: FC<BaseResponseProps> = ({
       </button>
       {response.text.trim() && response.isComplete && onResponseEdit && (
         <button
-          className='absolute top-2 right-2 p-2 rounded hover:bg-gray-700 transition-colors cursor-pointer'
+          className='absolute top-1 right-1 w-11 h-11 flex items-center justify-center rounded hover:bg-gray-700 transition-colors cursor-pointer'
           onClick={onClickEdit}
           title={t('conversation.editResponse')}
         >
