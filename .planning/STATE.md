@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02
+current_phase: 03
 current_plan: 2
 status: executing
-last_updated: "2026-03-19T14:44:01Z"
+last_updated: "2026-03-19T16:52:00Z"
 progress:
   total_phases: 3
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 4
+  completed_phases: 2
+  total_plans: 7
+  completed_plans: 6
 ---
 
 # Project State: Invincible Voice — Mobile Interface Overhaul
 
 **Last updated:** 2026-03-19
-**Current phase:** 02
+**Current phase:** 03
 **Current plan:** 2
 
 ---
@@ -29,14 +29,14 @@ progress:
 
 **Tech Stack:** Next.js 15, React 19, Tailwind CSS 4 (no new dependencies)
 
-**Status:** Executing Phase 02
+**Status:** Executing Phase 03
 
 ---
 
 ## Current Position
 
-Phase: 02 (landscape-and-tablet-responsiveness) — EXECUTING
-Plan: 2 of 2 (02-01 complete)
+Phase: 03 (mobile-settings,-history,-and-polish) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -85,6 +85,14 @@ Plan: 2 of 2 (02-01 complete)
 
 12. **overscroll-x-contain on horizontal carousels (02-01):** Quick response carousel uses `overscroll-x-contain` to prevent vertical page scroll when user swipes horizontally past the end of the carousel row.
 
+13. **Mobile threshold extended to include tablets (02-02):** `useMobileDetection` threshold changed from `< 768` to `< 1025` so tablets (768px–1024px) render `MobileConversationLayout` with two-column CSS rather than the desktop layout. All tablet layout logic lives in one component.
+
+14. **md:grid-cols-2 tablet panel layout (02-02):** Panel area uses `md:grid-cols-2 md:gap-4 md:px-2` to show ChatPanel and ResponsePanel side-by-side on tablet. Tab bar hidden with `md:hidden` since both panels are always visible — no tab switching needed on tablet.
+
+15. **HistoryPanel purpose-built mobile component (03-01):** Built as a standalone mobile list rather than wrapping desktop ConversationHistory — the desktop component has a fixed `w-80` width and logo images that break on mobile. Mobile panel uses `flex flex-col flex-1 min-h-0 overflow-hidden` + `overflow-y-auto` scroll container.
+
+16. **History tab hidden on tablet with md:hidden (03-01):** The HistoryPanel slot uses `md:hidden` because tablet layout already shows ConversationHistory in the desktop-style sidebar column. History is a mobile-only navigation concern.
+
 ### Research Highlights
 
 - **iOS 100vh bug:** `h-screen` doesn't account for browser toolbar. Use measured `window.innerHeight - headerHeight - footerHeight` or `dvh` (dynamic viewport height).
@@ -112,7 +120,7 @@ Plan: 2 of 2 (02-01 complete)
 
 ## Session Continuity
 
-**Previous sessions:** 2026-03-19 — completed 01-01 (iOS viewport foundation), 01-02 (tab bar + chat integration), 01-03 (44px tap targets + safe area insets), 02-01 (landscape orientation: debounced resize, landscape: CSS classes)
+**Previous sessions:** 2026-03-19 — completed 01-01 (iOS viewport foundation), 01-02 (tab bar + chat integration), 01-03 (44px tap targets + safe area insets), 02-01 (landscape orientation: debounced resize, landscape: CSS classes), 02-02 (tablet two-column layout, extended mobile threshold to 1025), 03-01 (HistoryPanel component + MobileConversationLayout three-tab layout)
 
 **When resuming:**
 

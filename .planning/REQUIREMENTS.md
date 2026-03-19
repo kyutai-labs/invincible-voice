@@ -9,12 +9,12 @@
 
 - [x] **CHAT-01**: User can see the live conversation (ChatInterface) during an active mobile session
 - [x] **CHAT-02**: Current speaker transcription (STT) is visible in real-time during active session
-- [ ] **CHAT-03**: User can view past conversations on mobile (isViewingPastConversation flow works)
+- [x] **CHAT-03**: User can view past conversations on mobile (isViewingPastConversation flow works)
 
 ### Navigation
 
 - [x] **NAV-01**: Mobile active session has tab/panel navigation to switch between the conversation view and the response/input view
-- [ ] **NAV-02**: Conversation history is accessible from mobile (in a dedicated tab or page, not during active chat to conserve space)
+- [x] **NAV-02**: Conversation history is accessible from mobile (in a dedicated tab or page, not during active chat to conserve space)
 - [ ] **NAV-03**: Settings are accessible from mobile (in a dedicated tab or page, not during active chat to conserve space)
 
 ### Layout — Portrait Phone
@@ -26,7 +26,7 @@
 ### Layout — Landscape & Tablet
 
 - [x] **LAYOUT-04**: Layout adapts correctly when phone is rotated to landscape (no overflow, no broken/cut-off controls)
-- [ ] **LAYOUT-05**: Tablet breakpoint (768px–1024px) renders a usable intermediate layout — not the narrow phone layout, not the full desktop layout
+- [x] **LAYOUT-05**: Tablet breakpoint (768px–1024px) renders a usable intermediate layout — not the narrow phone layout, not the full desktop layout
 
 ### Touch Accessibility
 
@@ -66,15 +66,15 @@
 |-------------|-------|--------|
 | CHAT-01 | Phase 1 | Complete |
 | CHAT-02 | Phase 1 | Complete |
-| CHAT-03 | Phase 3 | Pending |
+| CHAT-03 | Phase 3 | Complete |
 | NAV-01 | Phase 1 | Complete |
-| NAV-02 | Phase 3 | Pending |
+| NAV-02 | Phase 3 | Complete |
 | NAV-03 | Phase 3 | Pending |
 | LAYOUT-01 | Phase 1 | Complete |
 | LAYOUT-02 | Phase 1 | Complete |
 | LAYOUT-03 | Phase 1 | Complete |
 | LAYOUT-04 | Phase 2 | Complete |
-| LAYOUT-05 | Phase 2 | Pending |
+| LAYOUT-05 | Phase 2 | Complete |
 | TOUCH-01 | Phase 1 | Complete |
 
 **Coverage:**

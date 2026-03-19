@@ -105,7 +105,7 @@ Plans:
 5. No flicker or state loss when opening/closing settings modal during active conversation
 6. Haptic feedback on response card selection (Android; visual fallback for iOS)
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 03-01-PLAN.md — HistoryPanel component + MobileConversationLayout history tab (NAV-02, CHAT-03)
@@ -128,7 +128,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Mobile Foundation with Chat Integration | 2/3 | In Progress|  |
 | 2. Landscape & Tablet Responsiveness | 2/2 | Complete   | 2026-03-19 |
-| 3. Mobile Settings, History, and Polish | 0/2 | Not started | - |
+| 3. Mobile Settings, History, and Polish | 1/2 | In Progress|  |
 
 ---
 
