@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   description: 'Help people with SLA.',
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 const satoshi = localFont({
   src: [
     {
