@@ -1085,6 +1085,11 @@ const InvincibleVoice = () => {
             chatHistory={rawChatHistory}
             isConnected={shouldConnect}
             currentSpeakerMessage={currentSpeakerMessage}
+            conversations={userData?.conversations || []}
+            selectedConversationIndex={selectedConversationIndex}
+            onConversationSelect={handleConversationSelect}
+            onNewConversation={handleNewConversation}
+            onDeleteConversation={handleDeleteConversation}
           />
         )}
         {isSettingsOpen && userData && (

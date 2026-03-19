@@ -4,13 +4,15 @@ import { Pause, Settings } from 'lucide-react';
 import { useState, useCallback, useEffect, useRef, ChangeEvent, KeyboardEvent, FC } from 'react';
 import { PendingResponse } from '@/components/chat/ChatInterface';
 import ChatPanel from '@/components/mobile/ChatPanel';
+import HistoryPanel from '@/components/mobile/HistoryPanel';
 import ResponsePanel from '@/components/mobile/ResponsePanel';
 import { useViewportHeight } from '@/hooks/useViewportHeight';
 import { useTranslations } from '@/i18n';
 import { ResponseSize, RESPONSES_SIZES } from '@/constants';
 import { ChatMessage } from '@/types/chatHistory';
+import { Conversation } from '@/utils/userData';
 
-type ActivePanel = 'chat' | 'responses';
+type ActivePanel = 'chat' | 'responses' | 'history';
 
 interface MobileConversationLayoutProps {
   textInput: string;
@@ -27,14 +29,21 @@ interface MobileConversationLayoutProps {
   chatHistory: ChatMessage[];
   isConnected: boolean;
   currentSpeakerMessage?: string;
+  conversations: Conversation[];
+  selectedConversationIndex: number | null;
+  onConversationSelect: (index: number) => void;
+  onNewConversation: () => void;
+  onDeleteConversation: (index: number) => void;
 }
 
 // Size sent to the backend per tab:
 // Chat tab shows compact chips → request short responses from the LLM
 // Responses tab shows full cards → request medium responses
+// History tab shows past conversation → use compact XS (same as chat)
 const SIZE_BY_PANEL: Record<ActivePanel, ResponseSize> = {
   chat: RESPONSES_SIZES.XS,
   responses: RESPONSES_SIZES.M,
+  history: RESPONSES_SIZES.XS,
 };
 
 const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
@@ -52,6 +61,11 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
   chatHistory,
   isConnected,
   currentSpeakerMessage = '',
+  conversations,
+  selectedConversationIndex,
+  onConversationSelect,
+  onNewConversation,
+  onDeleteConversation,
 }) => {
   const t = useTranslations();
   const [activePanel, setActivePanel] = useState<ActivePanel>('chat');
@@ -164,6 +178,16 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
         >
           Responses
         </button>
+        <button
+          className={`flex-1 py-3 landscape:py-1 min-h-[44px] text-sm font-medium transition-colors ${
+            activePanel === 'history'
+              ? 'text-blue-400 border-b-2 border-blue-400'
+              : 'text-gray-400 hover:text-gray-200'
+          }`}
+          onClick={() => setActivePanel('history')}
+        >
+          History
+        </button>
       </div>
 
       {/* Main panel — flex-1 min-h-0 ensures it fills remaining space without overflow */}
@@ -185,6 +209,15 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
             onResponseEdit={onResponseEdit}
             onResponseSelect={onResponseSelect}
             onEditResponseInChat={handleEditResponse}
+          />
+        </div>
+        <div className={activePanel === 'history' ? 'flex flex-col flex-1 min-h-0 md:hidden' : 'hidden'}>
+          <HistoryPanel
+            conversations={conversations}
+            selectedConversationIndex={selectedConversationIndex}
+            onConversationSelect={onConversationSelect}
+            onNewConversation={onNewConversation}
+            onDeleteConversation={onDeleteConversation}
           />
         </div>
       </div>
