@@ -142,8 +142,8 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
         </button>
       </div>
 
-      {/* Tab bar */}
-      <div className='flex border-b border-gray-700 shrink-0'>
+      {/* Tab bar — hidden on tablet (md:) since both panels are always visible */}
+      <div className='flex border-b border-gray-700 shrink-0 md:hidden'>
         <button
           className={`flex-1 py-3 landscape:py-1 min-h-[44px] text-sm font-medium transition-colors ${
             activePanel === 'chat'
@@ -167,15 +167,17 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
       </div>
 
       {/* Main panel — flex-1 min-h-0 ensures it fills remaining space without overflow */}
-      <div className='flex-1 min-h-0 flex flex-col'>
-        {activePanel === 'chat' && (
+      {/* On tablet (md:): two-column grid with both panels always visible side-by-side */}
+      <div className='flex-1 min-h-0 flex flex-col md:grid md:grid-cols-2 md:gap-4 md:px-2'>
+        {/* On mobile: only show active panel. On tablet (md:): both always visible */}
+        <div className={activePanel === 'chat' ? 'flex flex-col flex-1 min-h-0 md:flex' : 'hidden md:flex md:flex-col md:flex-1 md:min-h-0'}>
           <ChatPanel
             chatHistory={chatHistory}
             isConnected={isConnected}
             currentSpeakerMessage={currentSpeakerMessage}
           />
-        )}
-        {activePanel === 'responses' && (
+        </div>
+        <div className={activePanel === 'responses' ? 'flex flex-col flex-1 min-h-0 md:flex' : 'hidden md:flex md:flex-col md:flex-1 md:min-h-0'}>
           <ResponsePanel
             frozenResponses={frozenResponses}
             onFreezeToggle={onFreezeToggle}
@@ -184,7 +186,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
             onResponseSelect={onResponseSelect}
             onEditResponseInChat={handleEditResponse}
           />
-        )}
+        </div>
       </div>
 
       {/* Always-visible text input footer */}
