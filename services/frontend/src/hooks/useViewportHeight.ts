@@ -9,16 +9,26 @@ interface ViewportHeight {
   visualVh: number;
 }
 
+function debounce<T extends (...args: unknown[]) => void>(fn: T, ms: number): T {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  return ((...args: unknown[]) => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  }) as T;
+}
+
 /**
  * Returns stable viewport height measurements for iOS-safe layout.
  *
  * `vh`: Set once on mount via window.innerHeight. Use as the total container
  *   height instead of 100vh / h-screen. On iOS Safari, window.innerHeight
  *   at mount is the visible area; 100vh overshoots by the browser chrome height.
+ *   Updated after orientation changes via a 400ms debounce to avoid layout flicker.
  *
  * `visualVh`: Tracks window.visualViewport.height, which shrinks when the
  *   virtual keyboard opens. Use to calculate scroll compensation for chat/input:
  *   keyboardHeight = vh - visualVh (positive when keyboard is open).
+ *   This listener is NOT debounced — keyboard compensation must remain immediate.
  */
 export const useViewportHeight = (): ViewportHeight => {
   const [vh, setVh] = useState<number>(
@@ -35,19 +45,25 @@ export const useViewportHeight = (): ViewportHeight => {
     setVh(window.innerHeight);
     setVisualVh(window.visualViewport?.height ?? window.innerHeight);
 
-    const onWindowResize = () => {
+    // Debounced at 400ms — orientation changes fire many resize events in quick
+    // succession; debouncing prevents layout flicker and redundant re-renders.
+    const debouncedResize = debounce(() => {
       setVh(window.innerHeight);
-    };
+    }, 400);
 
     const onVisualViewportResize = () => {
       setVisualVh(window.visualViewport?.height ?? window.innerHeight);
     };
 
-    window.addEventListener('resize', onWindowResize);
+    window.addEventListener('resize', debouncedResize);
+    // Both 'resize' and 'orientationchange' are registered: browsers differ in
+    // which event they fire (iOS Safari fires both; Android Chrome fires resize).
+    window.addEventListener('orientationchange', debouncedResize);
     window.visualViewport?.addEventListener('resize', onVisualViewportResize);
 
     return () => {
-      window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener('resize', debouncedResize);
+      window.removeEventListener('orientationchange', debouncedResize);
       window.visualViewport?.removeEventListener(
         'resize',
         onVisualViewportResize,
