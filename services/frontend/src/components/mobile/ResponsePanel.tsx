@@ -12,8 +12,6 @@ import { PendingResponse } from '@/components/chat/ChatInterface';
 import { useTranslations } from '@/i18n';
 import { cn } from '@/utils/cn';
 
-const QUICK_RESPONSES = ['Yes', 'No', 'Ok', 'Tell me more'];
-
 interface ResponsePanelProps {
   frozenResponses: PendingResponse[] | null;
   onFreezeToggle: () => void;
@@ -32,6 +30,12 @@ const ResponsePanel: FC<ResponsePanelProps> = ({
   onEditResponseInChat,
 }) => {
   const t = useTranslations();
+  const quickResponses = [
+    { key: 'yes', label: t('conversation.quickResponses.yes') },
+    { key: 'no', label: t('conversation.quickResponses.no') },
+    { key: 'ok', label: t('conversation.quickResponses.ok') },
+    { key: 'tellMeMore', label: t('conversation.quickResponses.tellMeMore') },
+  ];
   const isFrozen = useMemo(() => frozenResponses !== null, [frozenResponses]);
   const responsesToShow = useMemo(
     () => frozenResponses || pendingResponses,
@@ -58,9 +62,9 @@ const ResponsePanel: FC<ResponsePanelProps> = ({
     <div className='flex flex-col flex-1 min-h-0 overflow-hidden'>
       {/* Quick response presets */}
       <div className='px-4 pt-2 pb-1 border-b border-gray-700 shrink-0 flex gap-2 overflow-x-auto no-scrollbar'>
-        {QUICK_RESPONSES.map((label) => (
+        {quickResponses.map(({ key, label }) => (
           <button
-            key={label}
+            key={key}
             className='shrink-0 px-4 min-h-[36px] bg-gray-800 border border-gray-600 rounded-full text-sm text-gray-200 hover:bg-gray-700 transition-colors'
             onClick={() => onResponseEdit?.(label)}
           >

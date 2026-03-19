@@ -96,7 +96,13 @@
     "keywords": "Mots-clés",
     "sendMessage": "Envoyer",
     "typeMessagePlaceholder": "Tapez votre message ici…",
-    "waitingForResponse": "En attente de réponse…"
+    "waitingForResponse": "En attente de réponse…",
+    "quickResponses": {
+      "yes": "Oui",
+      "no": "Non",
+      "ok": "Ok",
+      "tellMeMore": "Dis-m'en plus"
+    }
   },
   "documentEditor": {
     "editDocument": "Editer un document",

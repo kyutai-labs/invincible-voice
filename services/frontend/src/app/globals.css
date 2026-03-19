@@ -208,3 +208,10 @@ select {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Hide Next.js dev toolbar on mobile (only useful on desktop) */
+@media (max-width: 768px) {
+  nextjs-portal {
+    display: none !important;
+  }
+}

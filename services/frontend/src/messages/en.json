@@ -96,7 +96,13 @@
     "keywords": "Keywords",
     "sendMessage": "Send",
     "typeMessagePlaceholder": "Type your message here…",
-    "waitingForResponse": "Waiting for response…"
+    "waitingForResponse": "Waiting for response…",
+    "quickResponses": {
+      "yes": "Yes",
+      "no": "No",
+      "ok": "Ok",
+      "tellMeMore": "Tell me more"
+    }
   },
   "documentEditor": {
     "editDocument": "Edit document",

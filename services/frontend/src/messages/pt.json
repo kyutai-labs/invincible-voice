@@ -96,7 +96,13 @@
     "keywords": "Palavras-chave",
     "sendMessage": "Enviar",
     "typeMessagePlaceholder": "Digite sua mensagem aqui…",
-    "waitingForResponse": "Aguardando resposta…"
+    "waitingForResponse": "Aguardando resposta…",
+    "quickResponses": {
+      "yes": "Sim",
+      "no": "Não",
+      "ok": "Ok",
+      "tellMeMore": "Me diga mais"
+    }
   },
   "documentEditor": {
     "editDocument": "Editar documento",
