@@ -15,7 +15,7 @@ This roadmap maps 12 v1 requirements into 3 delivery phases. Each phase complete
 ## Phases
 
 - [ ] **Phase 1: Mobile Foundation with Chat Integration** - Chat display, tab navigation, iOS fixes, keyboard handling, touch targets
-- [ ] **Phase 2: Landscape & Tablet Responsiveness** - Orientation handling, landscape layout, intermediate tablet breakpoint
+- [x] **Phase 2: Landscape & Tablet Responsiveness** - Orientation handling, landscape layout, intermediate tablet breakpoint (completed 2026-03-19)
 - [ ] **Phase 3: Mobile Settings, History, and Polish** - Settings access during session, conversation history access, visual affordances
 
 ---
@@ -73,7 +73,7 @@ Plans:
 4. Scroll position and editing state preserved when user rotates device (no state loss, no reset to top)
 5. Orientation change does not flicker or momentarily show incorrect layout (debounced resize handler)
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 02-01-PLAN.md — Landscape CSS + debounced orientation handler: landscape: Tailwind variants on header/grid/footer, 400ms debounce on orientationchange, overscroll-x-contain on carousels
@@ -105,7 +105,11 @@ Plans:
 5. No flicker or state loss when opening/closing settings modal during active conversation
 6. Haptic feedback on response card selection (Android; visual fallback for iOS)
 
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — HistoryPanel component + MobileConversationLayout history tab (NAV-02, CHAT-03)
+- [ ] 03-02-PLAN.md — Wire InvincibleVoice mobile branch + human verify (NAV-02, NAV-03, CHAT-03)
 
 **Technical Scope:**
 - Create HistoryPanel component wrapping ConversationHistory
@@ -123,8 +127,8 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Mobile Foundation with Chat Integration | 2/3 | In Progress|  |
-| 2. Landscape & Tablet Responsiveness | 0/? | Not started | - |
-| 3. Mobile Settings, History, and Polish | 0/? | Not started | - |
+| 2. Landscape & Tablet Responsiveness | 2/2 | Complete   | 2026-03-19 |
+| 3. Mobile Settings, History, and Polish | 0/2 | Not started | - |
 
 ---
 
