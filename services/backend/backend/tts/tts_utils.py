@@ -1,3 +1,4 @@
+import asyncio
 import io
 import logging
 import threading
@@ -51,10 +52,11 @@ def write_to_queue(
     )
 
 
-def generate_data_with_state(
+async def generate_data_with_state(
     tts_model: TTSModel, text_to_generate: str, model_state: dict
 ):
     queue = Queue()
+    loop = asyncio.get_event_loop()
 
     # Run your function in a thread
     thread = threading.Thread(
@@ -62,9 +64,9 @@ def generate_data_with_state(
     )
     thread.start()
 
-    # Yield data as it becomes available
+    # Yield data as it becomes available without blocking the event loop
     while True:
-        data = queue.get()
+        data = await loop.run_in_executor(None, queue.get)
         if data is None:
             break
         yield data
