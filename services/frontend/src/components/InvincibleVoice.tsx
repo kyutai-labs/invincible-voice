@@ -1118,6 +1118,9 @@ const InvincibleVoice = () => {
             isHistoryMode={
               isShowingHistoryFromIdle || isViewingPastConversation
             }
+            additionalKeywords={
+              userData?.user_settings?.additional_keywords ?? []
+            }
             onBack={() => {
               if (isViewingPastConversation) {
                 // Viewing a past conversation → go back to history list

@@ -47,6 +47,7 @@ interface MobileConversationLayoutProps {
   initialActivePanel?: ActivePanel;
   onBack?: () => void;
   isHistoryMode?: boolean;
+  additionalKeywords?: string[];
 }
 
 // Size sent to the backend per tab:
@@ -84,6 +85,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
   initialActivePanel = 'chat',
   onBack = undefined,
   isHistoryMode = false,
+  additionalKeywords = [],
 }) => {
   const t = useTranslations();
   const [activePanel, setActivePanel] =
@@ -149,11 +151,12 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
       ? 'flex flex-col flex-1 min-h-0'
       : hiddenTabClass;
 
-  // Top 2 complete LLM suggestions to show above the text input
+  // Top 2 complete LLM suggestions to show above the text input (hidden on Responses tab to avoid duplication)
   const responsesToShow = frozenResponses ?? pendingResponses;
-  const topSuggestions = responsesToShow
-    .filter((r) => r.text.trim() && r.isComplete)
-    .slice(0, 2);
+  const topSuggestions =
+    activePanel === 'chat'
+      ? responsesToShow.filter((r) => r.text.trim() && r.isComplete).slice(0, 2)
+      : [];
 
   return (
     <div
@@ -279,6 +282,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
             onResponseEdit={onResponseEdit}
             onResponseSelect={onResponseSelect}
             onEditResponseInChat={handleEditResponse}
+            additionalKeywords={additionalKeywords}
           />
         </div>
         <div
@@ -300,8 +304,7 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
 
       {/* Always-visible text input footer */}
       <div className='px-4 pt-2 pb-1 landscape:pt-1 landscape:pb-0 border-t border-gray-700 shrink-0'>
-        {/* Top LLM suggestions (up to 2, S size) — tap to select without switching tabs */}
-        {/* Hidden in landscape to reclaim vertical space (response cards remain accessible) */}
+        {/* Top LLM suggestions (up to 2) — hidden on Responses tab and in landscape */}
         {topSuggestions.length > 0 && (
           <div className='flex gap-2 mb-2 overflow-x-auto no-scrollbar landscape:hidden'>
             {topSuggestions.map((r) => (

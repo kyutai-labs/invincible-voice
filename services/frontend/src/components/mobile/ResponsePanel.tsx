@@ -13,6 +13,7 @@ interface ResponsePanelProps {
   onResponseEdit?: (text: string) => void;
   onResponseSelect: (responseId: string) => void;
   onEditResponseInChat?: (text: string) => void;
+  additionalKeywords?: string[];
 }
 
 const ResponsePanel: FC<ResponsePanelProps> = ({
@@ -22,14 +23,9 @@ const ResponsePanel: FC<ResponsePanelProps> = ({
   onResponseEdit = undefined,
   onResponseSelect,
   onEditResponseInChat = undefined,
+  additionalKeywords = [],
 }) => {
   const t = useTranslations();
-  const quickResponses = [
-    { key: 'yes', label: t('conversation.quickResponses.yes') },
-    { key: 'no', label: t('conversation.quickResponses.no') },
-    { key: 'ok', label: t('conversation.quickResponses.ok') },
-    { key: 'tellMeMore', label: t('conversation.quickResponses.tellMeMore') },
-  ];
   const isFrozen = useMemo(() => frozenResponses !== null, [frozenResponses]);
   const responsesToShow = useMemo(
     () => frozenResponses || pendingResponses,
@@ -54,18 +50,20 @@ const ResponsePanel: FC<ResponsePanelProps> = ({
 
   return (
     <div className='flex flex-col flex-1 min-h-0 overflow-hidden'>
-      {/* Quick response presets */}
-      <div className='px-4 pt-2 pb-1 landscape:pt-1 landscape:pb-0 border-b border-gray-700 shrink-0 flex gap-2 overflow-x-auto no-scrollbar overscroll-x-contain'>
-        {quickResponses.map(({ key, label }) => (
-          <button
-            key={key}
-            className='shrink-0 px-4 min-h-[36px] bg-gray-800 border border-gray-600 rounded-full text-sm text-gray-200 hover:bg-gray-700 transition-colors'
-            onClick={() => onResponseEdit?.(label)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {/* Quick response keywords from user settings */}
+      {additionalKeywords.length > 0 && (
+        <div className='px-4 pt-2 pb-1 landscape:pt-1 landscape:pb-0 border-b border-gray-700 shrink-0 flex gap-2 overflow-x-auto no-scrollbar overscroll-x-contain'>
+          {additionalKeywords.map((keyword) => (
+            <button
+              key={keyword}
+              className='shrink-0 px-4 min-h-[36px] bg-gray-800 border border-gray-600 rounded-full text-sm text-gray-200 hover:bg-gray-700 transition-colors'
+              onClick={() => onResponseEdit?.(keyword)}
+            >
+              {keyword}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Freeze toggle control */}
       <div className='px-4 py-2 landscape:py-1 border-b border-gray-700 shrink-0 flex items-center justify-end'>
@@ -84,7 +82,7 @@ const ResponsePanel: FC<ResponsePanelProps> = ({
       </div>
 
       {/* Response grid — 4-row portrait layout, 2x2 grid in landscape */}
-      <div className='flex-1 overflow-hidden px-4 pb-4 grid grid-rows-4 gap-2 pt-2 landscape:grid-rows-2 landscape:grid-cols-2'>
+      <div className='flex-1 overflow-hidden px-4 pb-4 grid grid-rows-4 gap-1 pt-2 landscape:grid-rows-2 landscape:grid-cols-2'>
         {allResponses.slice(0, 4).map((response) => (
           <div
             key={response.id}
@@ -162,7 +160,7 @@ const BaseResponse: FC<BaseResponseProps> = ({
         disabled={!response.text.trim() || !response.isComplete}
         onClick={onClickResponse}
       >
-        <div className='w-full overflow-hidden text-ellipsis line-clamp-3'>
+        <div className='w-full overflow-hidden text-ellipsis line-clamp-3 pr-8'>
           <p className='text-white leading-relaxed wrap-break-word text-base'>
             {response.text.trim() ? (
               <Fragment>
