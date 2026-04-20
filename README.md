@@ -84,6 +84,30 @@ You can then start the project with docker:
 docker compose up
 ```
 
+### Local HTTPS certificates (required by `docker-compose.yml`)
+
+This repository’s `docker-compose.yml` uses Traefik HTTPS with `websecure` and mounts:
+`./volumes/certs:/certs:ro`, so Traefik expects:
+
+- `cert.pem`
+- `key.pem`
+
+Generate self-signed development certs directly in `volumes/certs`:
+```bash
+mkdir -p volumes/certs
+openssl req -x509 -newkey rsa:2048 -sha256 -nodes -days 365 \
+  -keyout volumes/certs/key.pem \
+  -out volumes/certs/cert.pem \
+  -subj '/C=US/ST=NA/L=NA/O=Local Dev/CN=localhost' \
+  -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1'
+```
+
+Then run:
+```bash
+docker compose up
+```
+If you prefer to avoid HTTPS locally, remove/disable the `websecure` routers and TLS settings in `docker-compose.yml` instead of mounting certs.
+
 
 ### Getting involved with the project
 

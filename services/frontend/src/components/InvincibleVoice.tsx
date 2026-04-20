@@ -105,6 +105,8 @@ const InvincibleVoice = () => {
   >(null);
   const [isViewingPastConversation, setIsViewingPastConversation] =
     useState<boolean>(false);
+  const [isShowingHistoryFromIdle, setIsShowingHistoryFromIdle] =
+    useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [conversationToDelete, setConversationToDelete] = useState<
     number | null
@@ -559,6 +561,7 @@ const InvincibleVoice = () => {
 
       setSelectedConversationIndex(index);
       setIsViewingPastConversation(true);
+      setIsShowingHistoryFromIdle(false);
 
       if (userData?.conversations[index]) {
         const selectedConversation = userData.conversations[index];
@@ -586,6 +589,7 @@ const InvincibleVoice = () => {
 
     setSelectedConversationIndex(null);
     setIsViewingPastConversation(false);
+    setIsShowingHistoryFromIdle(false);
     setRawChatHistory([]);
     clearResponses();
     setTextInput('');
@@ -864,10 +868,14 @@ const InvincibleVoice = () => {
           error.message.includes('microphone access'),
         );
         if (!microphoneErrorExists) {
+          const isInsecure =
+            !window.isSecureContext || !window.navigator.mediaDevices;
           return [
             ...prev,
             makeErrorItem(
-              'Please allow microphone access to use InvincibleVoice.',
+              isInsecure
+                ? 'Microphone access requires HTTPS. Please access this app via a secure connection.'
+                : 'Please allow microphone access to use InvincibleVoice.',
             ),
           ];
         }
@@ -1022,7 +1030,18 @@ const InvincibleVoice = () => {
     clearResponses();
     setCurrentSpeakerMessage('');
     setCurrentSpeakerMessageStartTime(null);
-  }, [readyState, clearResponses]);
+
+    // On mobile, default to XS so the compact chips above the text input
+    // receive short responses. The layout sends M when Responses tab is active.
+    if (isMobile) {
+      sendMessage(
+        JSON.stringify({
+          type: 'desired.responses.length',
+          length: RESPONSES_SIZES.XS,
+        }),
+      );
+    }
+  }, [readyState, clearResponses, isMobile, sendMessage]);
 
   // Cleanup temporary TTS cache when component unmounts
   useEffect(() => {
@@ -1051,23 +1070,68 @@ const InvincibleVoice = () => {
           errors={errors}
           setErrors={setErrors}
         />
-        {!shouldConnect && !isViewingPastConversation && (
-          <MobileNoConversation
-            onConnectButtonPress={onConnectButtonPress}
-            onSettingsPress={handleSettingsOpen}
-          />
-        )}
-        {shouldConnect && !isViewingPastConversation && (
+        {!shouldConnect &&
+          !isViewingPastConversation &&
+          !isShowingHistoryFromIdle && (
+            <MobileNoConversation
+              onConnectButtonPress={onConnectButtonPress}
+              onSettingsPress={handleSettingsOpen}
+              onHistoryPress={() => setIsShowingHistoryFromIdle(true)}
+              hasHistory={(userData?.conversations ?? []).length > 0}
+            />
+          )}
+        {(shouldConnect ||
+          isViewingPastConversation ||
+          isShowingHistoryFromIdle) && (
           <MobileConversationLayout
             textInput={textInput}
             onTextInputChange={handleTextInputChange}
             onSendMessage={handleSendMessage}
             frozenResponses={frozenResponses}
+            onFreezeToggle={handleFreezeToggle}
             pendingResponses={pendingResponses}
             onResponseSelect={handleResponseSelection}
             onResponseEdit={onResponseEdit}
+            onResponseSizeChange={handleSelectResponseSize}
             onConnectButtonPress={onConnectButtonPress}
             onSettingsPress={handleSettingsOpen}
+            chatHistory={rawChatHistory}
+            isConnected={shouldConnect}
+            currentSpeakerMessage={currentSpeakerMessage}
+            conversations={userData?.conversations ?? []}
+            selectedConversationIndex={selectedConversationIndex}
+            onConversationSelect={handleConversationSelect}
+            onNewConversation={handleNewConversation}
+            onDeleteConversation={handleDeleteConversation}
+            pastConversation={
+              selectedConversationIndex !== null &&
+              userData?.conversations[selectedConversationIndex]
+                ? userData.conversations[selectedConversationIndex]
+                : undefined
+            }
+            isViewingPastConversation={isViewingPastConversation}
+            initialActivePanel={
+              isShowingHistoryFromIdle && !isViewingPastConversation
+                ? 'history'
+                : 'chat'
+            }
+            isHistoryMode={
+              isShowingHistoryFromIdle || isViewingPastConversation
+            }
+            additionalKeywords={
+              userData?.user_settings?.additional_keywords ?? []
+            }
+            onBack={() => {
+              if (isViewingPastConversation) {
+                // Viewing a past conversation → go back to history list
+                setIsViewingPastConversation(false);
+                setSelectedConversationIndex(null);
+                setIsShowingHistoryFromIdle(true);
+              } else {
+                // Browsing history list from idle → go back to idle
+                setIsShowingHistoryFromIdle(false);
+              }
+            }}
           />
         )}
         {isSettingsOpen && userData && (

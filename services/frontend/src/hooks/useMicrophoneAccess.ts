@@ -9,6 +9,11 @@ export const useMicrophoneAccess = () => {
 
   const askMicrophoneAccess = useCallback(async () => {
     try {
+      if (!window.isSecureContext || !window.navigator.mediaDevices) {
+        throw new Error(
+          'Microphone access requires a secure connection (HTTPS). Please access this app via HTTPS or localhost.',
+        );
+      }
       mediaStream.current = await window.navigator.mediaDevices.getUserMedia({
         audio: true,
       });

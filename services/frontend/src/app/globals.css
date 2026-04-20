@@ -165,3 +165,53 @@
 .shadow-custom {
   box-shadow: 0px 0px 24px 4px #00000066;
 }
+
+/* Touch accessibility: suppress iOS 300ms double-tap delay on all interactive elements */
+button,
+a,
+[role='button'],
+input,
+textarea,
+select {
+  touch-action: manipulation;
+}
+
+/* Safe area insets for notch/home-indicator clearance (iOS) */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* dvh-based full height: uses dynamic viewport height (shrinks with browser toolbar).
+   Falls back to 100vh on browsers that don't support dvh (pre-2022). */
+.h-dvh {
+  height: 100vh; /* fallback */
+  height: 100dvh;
+}
+
+.min-h-dvh {
+  min-height: 100vh; /* fallback */
+  min-height: 100dvh;
+}
+
+/* IMPORTANT: For safe areas to work on iOS, the viewport meta tag in app/layout.tsx
+   must include content="width=device-width, initial-scale=1, viewport-fit=cover"
+   Check services/frontend/src/app/layout.tsx and add viewport-fit=cover if missing. */
+
+/* Hide scrollbar while keeping scroll functionality (used for horizontal chip strips) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide Next.js dev toolbar on mobile and tablet (only useful on desktop) */
+@media (max-width: 1024px) {
+  nextjs-portal {
+    display: none !important;
+  }
+}

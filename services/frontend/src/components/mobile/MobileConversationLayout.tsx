@@ -1,69 +1,113 @@
 'use client';
 
-import { Edit2, Pause, Settings } from 'lucide-react';
+import { ArrowLeft, Pause, Settings } from 'lucide-react';
 import {
   useState,
-  useRef,
-  useEffect,
-  useMemo,
   useCallback,
+  useEffect,
+  useRef,
   ChangeEvent,
   KeyboardEvent,
   FC,
-  MouseEvent,
-  Fragment,
 } from 'react';
 import { PendingResponse } from '@/components/chat/ChatInterface';
+import ChatPanel from '@/components/mobile/ChatPanel';
+import HistoryPanel from '@/components/mobile/HistoryPanel';
+import ResponsePanel from '@/components/mobile/ResponsePanel';
+import { ResponseSize, RESPONSES_SIZES } from '@/constants';
+import { useViewportHeight } from '@/hooks/useViewportHeight';
 import { useTranslations } from '@/i18n';
-import { cn } from '@/utils/cn';
+import { ChatMessage } from '@/types/chatHistory';
+import { Conversation } from '@/utils/userData';
+
+type ActivePanel = 'chat' | 'responses' | 'history';
 
 interface MobileConversationLayoutProps {
   textInput: string;
   onTextInputChange: (value: string) => void;
   onSendMessage: () => void;
   frozenResponses: PendingResponse[] | null;
+  onFreezeToggle: () => void;
   pendingResponses: PendingResponse[];
   onResponseEdit?: (text: string) => void;
   onResponseSelect: (responseId: string) => void;
+  onResponseSizeChange?: (size: ResponseSize) => void;
   onConnectButtonPress: () => void;
   onSettingsPress: () => void;
+  chatHistory: ChatMessage[];
+  isConnected: boolean;
+  currentSpeakerMessage?: string;
+  conversations: Conversation[];
+  selectedConversationIndex: number | null;
+  onConversationSelect: (index: number) => void;
+  onNewConversation: () => void;
+  onDeleteConversation: (index: number) => void;
+  pastConversation?: Conversation;
+  isViewingPastConversation?: boolean;
+  initialActivePanel?: ActivePanel;
+  onBack?: () => void;
+  isHistoryMode?: boolean;
+  additionalKeywords?: string[];
 }
+
+// Size sent to the backend per tab:
+// Chat tab shows compact chips → request short responses from the LLM
+// Responses tab shows full cards → request medium responses
+// History tab shows past conversation → use compact XS (same as chat)
+const SIZE_BY_PANEL: Record<ActivePanel, ResponseSize> = {
+  chat: RESPONSES_SIZES.XS,
+  responses: RESPONSES_SIZES.M,
+  history: RESPONSES_SIZES.XS,
+};
 
 const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
   textInput,
   onTextInputChange,
   onSendMessage,
   frozenResponses,
+  onFreezeToggle,
   pendingResponses,
   onResponseEdit = undefined,
   onResponseSelect,
+  onResponseSizeChange = undefined,
   onConnectButtonPress,
   onSettingsPress,
+  chatHistory,
+  isConnected,
+  currentSpeakerMessage = '',
+  conversations,
+  selectedConversationIndex,
+  onConversationSelect,
+  onNewConversation,
+  onDeleteConversation,
+  pastConversation = undefined,
+  isViewingPastConversation = false,
+  initialActivePanel = 'chat',
+  onBack = undefined,
+  isHistoryMode = false,
+  additionalKeywords = [],
 }) => {
   const t = useTranslations();
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editingText, setEditingText] = useState<string>('');
-  const isFrozen = useMemo(() => frozenResponses !== null, [frozenResponses]);
-  const responsesToShow = useMemo(
-    () => frozenResponses || pendingResponses,
-    [frozenResponses, pendingResponses],
-  );
+  const [activePanel, setActivePanel] =
+    useState<ActivePanel>(initialActivePanel);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { vh, visualVh } = useViewportHeight();
+  const keyboardHeight = Math.max(0, vh - visualVh);
 
-  const allResponses = useMemo(
-    () =>
-      Array.from({ length: 4 }, (_, index) => {
-        const existingResponse = responsesToShow[index];
-        return (
-          existingResponse || {
-            id: `empty-${index}`,
-            text: '',
-            isComplete: false,
-            messageId: crypto.randomUUID(),
-          }
-        );
-      }),
-    [responsesToShow],
-  );
+  // Notify backend of size whenever active tab changes (and on mount)
+  useEffect(() => {
+    onResponseSizeChange?.(SIZE_BY_PANEL[activePanel]);
+  }, [activePanel, onResponseSizeChange]);
+
+  // Switch to chat when a past conversation is selected; back to history when returning to history list
+  useEffect(() => {
+    if (isViewingPastConversation) {
+      setActivePanel('chat');
+    } else if (isHistoryMode) {
+      setActivePanel('history');
+    }
+  }, [isViewingPastConversation, isHistoryMode]);
+
   const onMessageChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       onTextInputChange(event.target.value);
@@ -80,27 +124,91 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
     [onSendMessage],
   );
 
+  // When user taps Edit on a response card: fill the text input and switch to chat tab
+  const handleEditResponse = useCallback(
+    (text: string) => {
+      onTextInputChange(text);
+      setActivePanel('chat');
+      // Focus the textarea and place cursor at end to open the keyboard
+      setTimeout(() => {
+        const el = textareaRef.current;
+        if (el) {
+          el.focus();
+          el.setSelectionRange(el.value.length, el.value.length);
+        }
+      }, 0);
+    },
+    [onTextInputChange],
+  );
+
+  const hiddenTabClass = isHistoryMode
+    ? 'hidden'
+    : 'hidden md:flex md:flex-col md:flex-1 md:min-h-0';
+  const chatPanelClass =
+    activePanel === 'chat' ? 'flex flex-col flex-1 min-h-0' : hiddenTabClass;
+  const responsesPanelClass =
+    activePanel === 'responses'
+      ? 'flex flex-col flex-1 min-h-0'
+      : hiddenTabClass;
+
+  // Top 2 complete LLM suggestions to show above the text input (hidden on Responses tab to avoid duplication)
+  const responsesToShow = frozenResponses ?? pendingResponses;
+  const topSuggestions =
+    activePanel === 'chat'
+      ? responsesToShow.filter((r) => r.text.trim() && r.isComplete).slice(0, 2)
+      : [];
+
   return (
-    <div className='w-full h-screen flex flex-col bg-[#121212] text-white overflow-hidden'>
-      {/* Header with stop button - fixed height */}
-      <div className='flex items-center justify-between px-4 py-3 shrink-0 h-[60px]'>
+    <div
+      className='w-full flex flex-col bg-[#121212] text-white overflow-hidden'
+      style={{
+        height: `${vh}px`,
+        paddingBottom: keyboardHeight > 0 ? `${keyboardHeight}px` : undefined,
+      }}
+    >
+      {/* Safe area spacer for notch/status bar */}
+      <div
+        style={{ height: 'var(--safe-area-inset-top)' }}
+        className='shrink-0'
+      />
+
+      {/* Header with stop/back button - fixed height, reduced in landscape */}
+      <div className='flex items-center justify-between px-4 py-3 landscape:py-1 shrink-0 h-[60px] landscape:h-[44px]'>
+        {isConnected ? (
+          <button
+            aria-label='Stop conversation'
+            className='shrink-0 h-11 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
+            onClick={onConnectButtonPress}
+            title={t('conversation.stopConversation')}
+          >
+            <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
+              {t('conversation.stopConversation')}
+              <Pause
+                width={24}
+                height={24}
+                className='shrink-0 text-white'
+              />
+            </div>
+          </button>
+        ) : (
+          <button
+            aria-label='Back'
+            className='shrink-0 h-11 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
+            onClick={onBack}
+            title={t('common.back')}
+          >
+            <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
+              <ArrowLeft
+                width={20}
+                height={20}
+                className='shrink-0 text-white'
+              />
+              {t('common.back')}
+            </div>
+          </button>
+        )}
         <button
-          aria-label='Stop conversation'
-          className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
-          onClick={onConnectButtonPress}
-          title={t('conversation.stopConversation')}
-        >
-          <div className='h-full w-full flex flex-row bg-[#181818] items-center justify-center gap-2 rounded-2xl text-sm px-5'>
-            {t('conversation.stopConversation')}
-            <Pause
-              width={24}
-              height={24}
-              className='shrink-0 text-white'
-            />
-          </div>
-        </button>
-        <button
-          className='shrink-0 h-10 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
+          className='shrink-0 h-11 p-px cursor-pointer orange-to-light-orange-gradient rounded-2xl'
           onClick={onSettingsPress}
           title={t('settings.changeSettings')}
         >
@@ -110,210 +218,134 @@ const MobileConversationLayout: FC<MobileConversationLayoutProps> = ({
         </button>
       </div>
 
-      {/* Main content area - 5 equal slots */}
-      <div className='flex-1 px-4 pb-4 min-h-0 flex flex-col overflow-hidden'>
-        {/* Slot 1: Text Input */}
-        <div className='flex-1 min-h-0'>
-          <div className='w-full h-full px-4 py-2 bg-[#101010] rounded-[32px] flex flex-col'>
-            <textarea
-              className='w-full h-full px-4 py-2 text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green'
-              placeholder={t('conversation.typeMessagePlaceholder')}
-              style={{ fontSize: 'clamp(16px, 3.5vw, 22px)' }}
-              value={textInput}
-              onChange={onMessageChange}
-              onKeyDown={onMessageKeyDown}
-            />
-          </div>
-        </div>
-
-        {/* Slots 2-5: Responses */}
-        {allResponses.slice(0, 4).map((response, index) => (
-          <div
-            key={response.id}
-            className='flex-1 min-h-0'
+      {/* Tab bar — hidden on tablet unless in history mode */}
+      {/* History mode (not connected): show Chat (read-only) + History tabs */}
+      {/* Active session (connected): show Chat + Responses tabs only */}
+      <div
+        className={`flex border-b border-gray-700 shrink-0 ${isHistoryMode ? '' : 'md:hidden'}`}
+      >
+        <button
+          className={`flex-1 py-3 landscape:py-1 min-h-[44px] text-sm font-medium transition-colors ${
+            activePanel === 'chat'
+              ? 'text-blue-400 border-b-2 border-blue-400'
+              : 'text-gray-400 hover:text-gray-200'
+          }`}
+          onClick={() => setActivePanel('chat')}
+        >
+          {t('conversation.chat')}
+        </button>
+        {isConnected ? (
+          <button
+            className={`flex-1 py-3 landscape:py-1 min-h-[44px] text-sm font-medium transition-colors ${
+              activePanel === 'responses'
+                ? 'text-blue-400 border-b-2 border-blue-400'
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+            onClick={() => setActivePanel('responses')}
           >
-            <div className='w-full h-full px-4 py-2 bg-[#101010] rounded-[20px]'>
-              {editingIndex === index && (
-                <EditingResponse
-                  editingText={editingText}
-                  onResponseEdit={onResponseEdit}
-                  setEditingIndex={setEditingIndex}
-                  setEditingText={setEditingText}
-                />
-              )}
-              {editingIndex !== index && (
-                <BaseResponse
-                  index={index}
-                  isFrozen={isFrozen}
-                  onResponseEdit={onResponseEdit}
-                  onResponseSelect={onResponseSelect}
-                  response={response}
-                  setEditingIndex={setEditingIndex}
-                  setEditingText={setEditingText}
-                />
-              )}
-            </div>
-          </div>
-        ))}
+            {t('conversation.responses')}
+          </button>
+        ) : (
+          <button
+            className={`flex-1 py-3 landscape:py-1 min-h-[44px] text-sm font-medium transition-colors ${
+              activePanel === 'history'
+                ? 'text-blue-400 border-b-2 border-blue-400'
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+            onClick={() => setActivePanel('history')}
+          >
+            {t('conversation.history')}
+          </button>
+        )}
       </div>
+
+      {/* Main panel — flex-1 min-h-0 ensures it fills remaining space without overflow */}
+      {/* On tablet (md:): two-column grid with both panels always visible side-by-side */}
+      <div
+        className={`flex-1 min-h-0 flex flex-col ${isHistoryMode ? '' : 'md:grid md:grid-cols-2 md:gap-4 md:px-2'}`}
+      >
+        {/* On mobile: only show active panel. On tablet (md:): both always visible (unless history mode) */}
+        <div className={chatPanelClass}>
+          <ChatPanel
+            chatHistory={chatHistory}
+            isConnected={isConnected}
+            currentSpeakerMessage={currentSpeakerMessage}
+            pastConversation={pastConversation}
+            isViewingPastConversation={isViewingPastConversation}
+          />
+        </div>
+        <div className={responsesPanelClass}>
+          <ResponsePanel
+            frozenResponses={frozenResponses}
+            onFreezeToggle={onFreezeToggle}
+            pendingResponses={pendingResponses}
+            onResponseEdit={onResponseEdit}
+            onResponseSelect={onResponseSelect}
+            onEditResponseInChat={handleEditResponse}
+            additionalKeywords={additionalKeywords}
+          />
+        </div>
+        <div
+          className={
+            activePanel === 'history'
+              ? 'flex flex-col flex-1 min-h-0'
+              : 'hidden'
+          }
+        >
+          <HistoryPanel
+            conversations={conversations}
+            selectedConversationIndex={selectedConversationIndex}
+            onConversationSelect={onConversationSelect}
+            onNewConversation={onNewConversation}
+            onDeleteConversation={onDeleteConversation}
+          />
+        </div>
+      </div>
+
+      {/* Always-visible text input footer */}
+      <div className='px-4 pt-2 pb-1 landscape:pt-1 landscape:pb-0 border-t border-gray-700 shrink-0'>
+        {/* Top LLM suggestions (up to 2) — hidden on Responses tab and in landscape */}
+        {topSuggestions.length > 0 && (
+          <div className='flex gap-2 mb-2 overflow-x-auto no-scrollbar landscape:hidden'>
+            {topSuggestions.map((r) => (
+              <button
+                key={r.id}
+                className='shrink-0 px-3 min-h-[28px] bg-gray-800 border border-gray-600 rounded-full text-xs text-gray-300 hover:bg-gray-700 transition-colors max-w-[48vw] truncate'
+                onClick={() => onResponseSelect(r.id)}
+                title={r.text}
+              >
+                {r.text}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className='flex gap-2 pb-1'>
+          <textarea
+            ref={textareaRef}
+            className='flex-1 p-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm landscape:max-h-[38px] landscape:overflow-y-auto'
+            placeholder={t('conversation.typeMessagePlaceholder')}
+            rows={2}
+            value={textInput}
+            onChange={onMessageChange}
+            onKeyDown={onMessageKeyDown}
+          />
+          <button
+            className='px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 text-sm min-w-[56px] min-h-[44px]'
+            onClick={onSendMessage}
+            disabled={!textInput.trim()}
+          >
+            Send
+          </button>
+        </div>
+      </div>
+
+      {/* Safe area spacer for home indicator */}
+      <div
+        style={{ height: 'var(--safe-area-inset-bottom)' }}
+        className='shrink-0'
+      />
     </div>
   );
 };
 
 export default MobileConversationLayout;
-
-interface EditingResponseProps {
-  editingText: string;
-  onResponseEdit?: (text: string) => void;
-  setEditingIndex: (index: number | null) => void;
-  setEditingText: (text: string) => void;
-}
-
-const EditingResponse: FC<EditingResponseProps> = ({
-  editingText,
-  onResponseEdit = () => {},
-  setEditingIndex,
-  setEditingText,
-}) => {
-  const ref = useRef<HTMLTextAreaElement>(null);
-  const onChange = useCallback(
-    (event: ChangeEvent<HTMLTextAreaElement>) => {
-      setEditingText(event.target.value);
-    },
-    [setEditingText],
-  );
-  const onKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        if (editingText.trim()) {
-          onResponseEdit(editingText.trim());
-          setEditingIndex(null);
-          setEditingText('');
-        }
-      } else if (event.key === 'Escape') {
-        setEditingIndex(null);
-        setEditingText('');
-      }
-    },
-    [editingText, onResponseEdit, setEditingIndex, setEditingText],
-  );
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.focus();
-      ref.current.setSelectionRange(
-        ref.current.value.length,
-        ref.current.value.length,
-      );
-    }
-  }, []);
-
-  return (
-    <textarea
-      ref={ref}
-      value={editingText}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      className='w-full h-full bg-transparent outline-none resize-none text-white'
-      style={{ fontSize: 'clamp(16px, 3.5vw, 20px)' }}
-      placeholder='Type your message…'
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus
-    />
-  );
-};
-
-interface BaseReponseProps {
-  index: number;
-  isFrozen: boolean;
-  onResponseEdit?: (text: string) => void;
-  onResponseSelect: (responseId: string) => void;
-  response: PendingResponse;
-  setEditingIndex: (index: number | null) => void;
-  setEditingText: (text: string) => void;
-}
-
-const BaseResponse: FC<BaseReponseProps> = ({
-  index,
-  isFrozen,
-  onResponseEdit = undefined,
-  onResponseSelect,
-  response,
-  setEditingIndex,
-  setEditingText,
-}) => {
-  const onClickResponse = useCallback(() => {
-    onResponseSelect(response.id);
-  }, [onResponseSelect, response]);
-  const onClickEdit = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
-      event.stopPropagation();
-      setEditingIndex(index);
-      setEditingText(response.text);
-    },
-    [index, response.text, setEditingIndex, setEditingText],
-  );
-  const t = useTranslations();
-
-  return (
-    <div className='relative w-full h-full'>
-      <button
-        className={cn(
-          'w-full h-full px-4 py-3 text-left rounded-[20px] border-2 transition-all duration-200 flex flex-col items-start justify-center overflow-hidden',
-          {
-            'border-cyan-400 bg-[#181818] hover:border-cyan-500':
-              isFrozen && response.text.trim() && response.isComplete,
-            'border-green-500 bg-[#181818] hover:border-green-400':
-              !isFrozen && response.text.trim() && response.isComplete,
-            'border-gray-600 bg-[#1B1B1B]':
-              !isFrozen && response.text.trim() && !response.isComplete,
-            'border-gray-700 bg-[#1B1B1B]':
-              !isFrozen && !response.text.trim() && !response.isComplete,
-            'cursor-pointer': response.text.trim() && response.isComplete,
-            'cursor-default': !response.text.trim() || !response.isComplete,
-          },
-        )}
-        disabled={!response.text.trim() || !response.isComplete}
-        onClick={onClickResponse}
-      >
-        <div className='w-full overflow-hidden text-ellipsis line-clamp-3'>
-          <p
-            className='text-white leading-relaxed wrap-break-word'
-            style={{ fontSize: 'clamp(16px, 3.5vw, 20px)' }}
-          >
-            {response.text.trim() ? (
-              <Fragment>
-                {response.text}
-                {!response.isComplete && (
-                  <span className='inline-block w-1 h-4 bg-gray-400 ml-1 animate-pulse' />
-                )}
-              </Fragment>
-            ) : (
-              <span
-                className='text-gray-500 italic'
-                style={{ fontSize: 'clamp(16px, 3.5vw, 20px)' }}
-              >
-                {t('conversation.waitingForResponse')}
-              </span>
-            )}
-          </p>
-        </div>
-        {response.text.trim() && !response.isComplete && (
-          <div className='flex justify-end mt-1'>
-            <div className='w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin' />
-          </div>
-        )}
-      </button>
-      {response.text.trim() && response.isComplete && onResponseEdit && (
-        <button
-          className='absolute top-2 right-2 p-2 rounded hover:bg-gray-700 transition-colors cursor-pointer'
-          onClick={onClickEdit}
-          title={t('conversation.editResponse')}
-        >
-          <Edit2 className='w-5 h-5 text-gray-400' />
-        </button>
-      )}
-    </div>
-  );
-};

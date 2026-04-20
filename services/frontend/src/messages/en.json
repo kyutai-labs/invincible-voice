@@ -30,6 +30,7 @@
     "voice": "Voice",
     "name": "Name",
     "textToSpeechProvider": "Text-to-speech and speech-to-text are generously provided by",
+    "back": "Back",
     "termsOfService": "Terms of service",
     "termsOfServiceMessage": "To use Invincible Voice, you must first consent to the",
     "accept": "Accept the terms of service",
@@ -94,9 +95,18 @@
     "freezeResponses": "Freeze the responses so you can select multiple ones",
     "clickToPlayAudio": "Click to play audio",
     "keywords": "Keywords",
+    "history": "History",
+    "chat": "Chat",
+    "responses": "Responses",
     "sendMessage": "Send",
     "typeMessagePlaceholder": "Type your message here…",
-    "waitingForResponse": "Waiting for response…"
+    "waitingForResponse": "Waiting for response…",
+    "quickResponses": {
+      "yes": "Yes",
+      "no": "No",
+      "ok": "Ok",
+      "tellMeMore": "Tell me more"
+    }
   },
   "documentEditor": {
     "editDocument": "Edit document",

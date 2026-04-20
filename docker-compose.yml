@@ -20,11 +20,14 @@ services:
       - "traefik.http.routers.backend.middlewares=strip-api"
       - "traefik.http.middlewares.strip-api.replacepathregex.regex=^/api/(.*)"
       - "traefik.http.middlewares.strip-api.replacepathregex.replacement=/$$1"
+      - "--providers.file.filename=/etc/traefik/dynamic.yml"
     ports:
       - "80:80"
-      #- "443:443"
+      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik-dynamic.yml:/etc/traefik/dynamic.yml:ro"
+      - "./volumes/certs:/certs:ro"
 
   frontend:
     image: invincible-voice-frontend:latest
@@ -42,6 +45,10 @@ services:
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
       - "traefik.http.routers.frontend.priority=10" # lowest priority
+      - "traefik.http.routers.frontend-secure.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend-secure.entrypoints=websecure"
+      - "traefik.http.routers.frontend-secure.tls=true"
+      - "traefik.http.routers.frontend-secure.priority=10"
 
   backend:
     image: invincible-voice-backend:latest
@@ -81,6 +88,11 @@ services:
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=80"
       - "traefik.http.routers.backend.priority=100" # higher priority than frontend
+      - "traefik.http.routers.backend-secure.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-secure.entrypoints=websecure"
+      - "traefik.http.routers.backend-secure.tls=true"
+      - "traefik.http.routers.backend-secure.middlewares=strip-api"
+      - "traefik.http.routers.backend-secure.priority=100"
       - "traefik.http.routers.block-metrics.rule=Path(`/api/metrics`)"
       - "traefik.http.routers.block-metrics.priority=300"
       - "traefik.http.routers.block-metrics.service=noop@internal"

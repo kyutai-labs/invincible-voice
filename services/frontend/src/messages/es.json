@@ -30,6 +30,7 @@
     "voice": "Voz",
     "name": "Nombre",
     "textToSpeechProvider": "La conversión de texto a voz y de voz a texto es generosamente proporcionada por",
+    "back": "Volver",
     "termsOfService": "Términos de servicio",
     "termsOfServiceMessage": "Para usar Invincible Voice, primero debes consentir los",
     "accept": "Aceptar los términos de servicio",
@@ -94,9 +95,18 @@
     "freezeResponses": "Congelar las respuestas para que puedas seleccionar varias",
     "clickToPlayAudio": "Clic para reproducir audio",
     "keywords": "Palabras clave",
+    "history": "Historial",
+    "chat": "Chat",
+    "responses": "Respuestas",
     "sendMessage": "Enviar",
     "typeMessagePlaceholder": "Escribe tu mensaje aquí…",
-    "waitingForResponse": "Esperando respuesta…"
+    "waitingForResponse": "Esperando respuesta…",
+    "quickResponses": {
+      "yes": "Sí",
+      "no": "No",
+      "ok": "Ok",
+      "tellMeMore": "Cuéntame más"
+    }
   },
   "documentEditor": {
     "editDocument": "Editar documento",
