@@ -6,7 +6,7 @@ from typing import Annotated
 import gradium
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
-from backend.kyutai_constants import TTS_IS_GRADIUM, TTS_VOICE_ID
+from backend.kyutai_constants import TTS_PROVIDER, TTS_VOICE_ID
 from backend.routes.user import get_current_user
 from backend.storage import UserData
 
@@ -15,7 +15,7 @@ logger = getLogger(__name__)
 
 async def _get_voice_uid(voice_name: str, user_email: str) -> str:
     """Get the UID for a voice name."""
-    if not TTS_IS_GRADIUM:
+    if TTS_PROVIDER != "gradium":
         return voice_name
 
     client = gradium.GradiumClient(
@@ -46,7 +46,7 @@ async def delete_voice(
 
     Query parameter: voice_name - The full voice name to delete
     """
-    if not TTS_IS_GRADIUM:
+    if TTS_PROVIDER != "gradium":
         raise HTTPException(
             status_code=400, detail="Voice deletion is only supported with Gradium TTS"
         )
@@ -76,7 +76,7 @@ async def delete_voice(
 
 async def _get_available_voices(user_name: str) -> dict[str, tuple[str, str]]:
     """Get available voices based on the TTS provider."""
-    if not TTS_IS_GRADIUM:
+    if TTS_PROVIDER != "gradium":
         # For Kyutai TTS, return the configured voice with unknown language
         return {TTS_VOICE_ID: (TTS_VOICE_ID, "unknown")}
 
@@ -115,7 +115,7 @@ async def create_voice(
 
     Only works when using Gradium TTS. Returns a 400 error for Kyutai TTS.
     """
-    if not TTS_IS_GRADIUM:
+    if TTS_PROVIDER != "gradium":
         raise HTTPException(
             status_code=400, detail="Voice creation is only supported with Gradium TTS"
         )
