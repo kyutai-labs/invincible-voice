@@ -56,7 +56,7 @@ class UserData(pydantic.BaseModel):
         prompt += "The documents are here to get a better understanding of the user\n\n"
         for i, document in enumerate(self.user_settings.documents):
             prompt += f'### Document {i + 1} "{document.title}"\n'
-            prompt += "{document.content}\n\n"
+            prompt += f"{document.content}\n\n"
         prompt += "## Past conversations with dates\n"
         prompt += "The conversations here were done with the software, and are shown to give you"
         prompt += "context about the user\n\n"
