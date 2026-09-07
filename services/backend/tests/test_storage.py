@@ -1,24 +1,11 @@
-import os
-import tempfile
+import datetime as dt
 import uuid
 
-os.environ.setdefault("STT_IS_GRADIUM", "false")
-os.environ.setdefault("KYUTAI_STT_URL", "ws://stt.example.test")
-os.environ.setdefault("TTS_IS_GRADIUM", "false")
-os.environ.setdefault("TTS_SERVER", "https://tts.example.test")
-os.environ.setdefault("KYUTAI_LLM_API_KEY", "test-key")
-os.environ.setdefault("KYUTAI_LLM_URL", "https://llm.example.test")
-os.environ.setdefault("KYUTAI_LLM_MODEL", "test-model")
-os.environ.setdefault(
-    "KYUTAI_USERS_DATA_PATH",
-    os.path.join(tempfile.gettempdir(), "invincible-voice-test-users"),
-)
+from backend.storage import UserData, get_user_data_from_storage
+from backend.typing import Conversation, Document, SpeakerMessage, UserSettings
 
 
 def test_llm_ready_conversation_includes_document_content() -> None:
-    from backend.storage import UserData
-    from backend.typing import Document, UserSettings
-
     document_content = "The user prefers brief answers and confirms with eye gaze."
     user_data = UserData(
         user_id=uuid.uuid4(),
@@ -49,10 +36,7 @@ def test_llm_ready_conversation_includes_document_content() -> None:
     assert "{document.content}" not in prompt
 
 
-def _make_user_data(conversations):
-    from backend.storage import UserData
-    from backend.typing import UserSettings
-
+def _make_user_data(conversations: list[Conversation]) -> UserData:
     return UserData(
         user_id=uuid.uuid4(),
         email=f"{uuid.uuid4()}@example.com",
@@ -66,11 +50,6 @@ def _make_user_data(conversations):
 
 
 def test_save_leaves_out_empty_conversations() -> None:
-    import datetime as dt
-
-    from backend.storage import get_user_data_from_storage
-    from backend.typing import Conversation, SpeakerMessage
-
     start = dt.datetime(2026, 9, 7, 10, 0, tzinfo=dt.timezone.utc)
     kept = Conversation(
         messages=[SpeakerMessage(speaker="speaker", content="Hello there")],
