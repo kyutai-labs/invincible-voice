@@ -41,7 +41,7 @@ jobs:
           GRADIUM_API_KEY: ${{ secrets.GRADIUM_API_KEY }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           KYUTAI_LLM_API_KEY: ${{ secrets.KYUTAI_LLM_API_KEY }}
-          TTS_VOICE_ID: ${{ secrets.TTS_VOICE_ID }}
+          KYUTAI_TTS_VOICE_ID: ${{ secrets.KYUTAI_TTS_VOICE_ID }}
           BACKEND_REPLICAS_COUNT: ${{ secrets.BACKEND_REPLICAS_COUNT }}
         run: |
           docker -H ssh://${{ secrets.DEPLOYMENT_USER }}@invincible-voice.kyutai.org stack deploy \

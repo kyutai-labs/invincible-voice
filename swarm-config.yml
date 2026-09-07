@@ -62,11 +62,11 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GRADIUM_API_KEY=${GRADIUM_API_KEY}
       # TODO: allow dynamic voice selection
-      - TTS_VOICE_ID=${TTS_VOICE_ID}
-      - STT_IS_GRADIUM=true
-      - KYUTAI_STT_URL=wss://eu.api.gradium.ai/api/speech/asr
-      - TTS_IS_GRADIUM=true
-      - TTS_SERVER=https://eu.api.gradium.ai/api/
+      - KYUTAI_TTS_VOICE_ID=${KYUTAI_TTS_VOICE_ID}
+      - KYUTAI_STT_PROVIDER=gradium
+      - KYUTAI_STT_SERVER=wss://eu.api.gradium.ai/api/speech/asr
+      - KYUTAI_TTS_PROVIDER=gradium
+      - KYUTAI_TTS_SERVER=https://eu.api.gradium.ai/api/
       - ALLOW_PASSWORD=false
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}

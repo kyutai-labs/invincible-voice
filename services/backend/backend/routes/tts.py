@@ -12,8 +12,8 @@ from backend.kyutai_constants import (
     KYUTAI_API_KEY,
     REDIS_HOST,
     REDIS_PORT,
-    TTS_IS_GRADIUM,
     TTS_LOCK_TTL_SECONDS,
+    TTS_PROVIDER,
     TTS_SERVER,
     TTS_VOICE_ID,
 )
@@ -21,6 +21,7 @@ from backend.libs.redis_lock import RedisLockManager
 from backend.routes.user import get_current_user
 from backend.routes.voices import _get_available_voices
 from backend.storage import UserData
+from backend.tts.tts_utils import tts_pocket
 from backend.typing import TTSRequest
 
 logger = getLogger(__name__)
@@ -60,7 +61,7 @@ async def text_to_speech(
     else:
         voice_id = TTS_VOICE_ID
 
-    if TTS_IS_GRADIUM:
+    if TTS_PROVIDER == "gradium":
         client = gradium.client.GradiumClient(
             base_url="https://eu.api.gradium.ai/api/",
         )
@@ -94,6 +95,10 @@ async def text_to_speech(
             await lock.__aexit__(None, None, None)
             raise
 
+    if TTS_PROVIDER == "pocket":
+        return await tts_pocket(request.text, voice_id)
+
+    # Use Kyutai DSM TTS
     query = {
         "text": request.text,
         "voice": voice_id,
@@ -126,7 +131,7 @@ async def text_to_speech(
 
 @tts_router.get("/sample_rate")
 async def get_tts_sample_rate() -> Response:
-    if TTS_IS_GRADIUM:
+    if TTS_PROVIDER == "gradium":
         return {"sample_rate": 48000}  # Could be obtained from gradium client ?
-    else:
+    else:  # DSM and Pocket TTS
         return {"sample_rate": 24000}  # Kyutai TTS sample rate

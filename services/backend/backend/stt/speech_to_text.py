@@ -20,7 +20,7 @@ from backend.kyutai_constants import (
     KYUTAI_STT_URL,
     SAMPLE_RATE,
     STT_DELAY_SEC,
-    STT_IS_GRADIUM,
+    STT_PROVIDER,
 )
 from backend.timer import Stopwatch
 from backend.websocket_utils import WebsocketState
@@ -185,7 +185,7 @@ class SpeechToText:
         self.time_since_first_audio_sent.start_if_not_started()
         mt.STT_SENT_FRAMES.inc()
 
-        if STT_IS_GRADIUM:
+        if STT_PROVIDER == "gradium":
             # Send audio in chunks for Gradium (recommended 1920 samples per chunk = 80ms at 24kHz)
             chunk_size = 1920
             for i in range(0, len(audio), chunk_size):
@@ -200,7 +200,7 @@ class SpeechToText:
             await self._send({"type": "Audio", "pcm": audio.tolist()})
 
     async def send_marker(self, id: int) -> None:
-        if STT_IS_GRADIUM:
+        if STT_PROVIDER == "gradium":
             # Gradium doesn't have marker support, but we can ignore for compatibility
             logger.debug(f"Gradium STT does not support markers, ignoring marker {id}")
         else:
@@ -214,7 +214,7 @@ class SpeechToText:
                 "STT websocket not connected, you cannot send the message {data}"
             )
 
-        if STT_IS_GRADIUM:
+        if STT_PROVIDER == "gradium":
             # Gradium protocol - send JSON
             if isinstance(data, GradiumSTTMessage):
                 await self.websocket.send(data.model_dump_json())
@@ -231,7 +231,7 @@ class SpeechToText:
                 raise ValueError(f"Expected dict for Kyutai, got {type(data)}")
 
     async def start_up(self):
-        if STT_IS_GRADIUM:
+        if STT_PROVIDER == "gradium":
             logger.info(f"Connecting to Gradium STT {self.stt_instance}...")
 
             # Gradium STT connection
@@ -333,7 +333,7 @@ class SpeechToText:
             mt.STT_NUM_WORDS.observe(self.received_words)
 
         if self.websocket:
-            if STT_IS_GRADIUM:
+            if STT_PROVIDER == "gradium":
                 # Send end of stream message for Gradium
                 try:
                     end_msg = GradiumEndOfStreamMessage()
@@ -363,7 +363,7 @@ class SpeechToText:
         n_steps_to_wait = 12
 
         try:
-            if STT_IS_GRADIUM:
+            if STT_PROVIDER == "gradium":
                 # Gradium STT message handling
                 async for response in self.websocket:
                     message_dict = json.loads(response)
@@ -462,14 +462,14 @@ class SpeechToText:
                             raise ValueError(f"Unknown message: {message}")
 
         except websockets.ConnectionClosedOK:
-            if STT_IS_GRADIUM:
+            if STT_PROVIDER == "gradium":
                 logger.info("Gradium STT connection closed normally")
             else:
                 # The server closes the connection once we send \0, and this actually shows
                 # up as a websockets.ConnectionClosedError.
                 pass
         except websockets.ConnectionClosedError as e:
-            if STT_IS_GRADIUM:
+            if STT_PROVIDER == "gradium":
                 logger.error(f"Gradium STT connection closed with error: {e}")
             else:
                 logger.error(f"Kyutai STT connection closed with error: {e}")
