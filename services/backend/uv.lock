@@ -280,7 +280,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
     { name = "fastrtc", specifier = "==0.0.23" },
     { name = "google-auth" },
-    { name = "gradium", specifier = "==0.5.4" },
+    { name = "gradium", specifier = "==0.6.4" },
     { name = "humanize", specifier = ">=4.12.3" },
     { name = "mistralai", specifier = ">=1.5.1" },
     { name = "msgpack", specifier = ">=1.1.0" },
@@ -848,15 +848,15 @@ wheels = [
 
 [[package]]
 name = "gradium"
-version = "0.5.4"
+version = "0.6.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "numpy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ad/c3/dc48d1a0ef06961ea8e180599c407b1db961a86e706ccd3af071424e67eb/gradium-0.5.4.tar.gz", hash = "sha256:489bdce70b394dbf75da898182ad28d35ef4efd4f2731d1f3d753f13f51f30b2", size = 65087, upload-time = "2025-12-02T11:47:55.801Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7a/af/fe31dc88950a0771f182167e4fb2d554b8e663d616223959416bd3a58d8a/gradium-0.6.4.tar.gz", hash = "sha256:b7230de41f6931c46a14cbb6ce3dba74902a29fda5fe09822b786a094158857c", size = 1330277, upload-time = "2026-09-04T14:45:38.407Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/21/1c/52c87a6cbb426a7ec7478c6958869fc617702c497172316ae3545b724b6b/gradium-0.5.4-py3-none-any.whl", hash = "sha256:e99c54e2968cd23f4969571c1899effd3eb6a22ff3f07bf06f59ffb58e0b61aa", size = 16209, upload-time = "2025-12-02T11:47:54.754Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/f8/d9f8043737636d9f3df7f6693b8b50e77a2b29f6cad245ec0bd8a14db5f9/gradium-0.6.4-py3-none-any.whl", hash = "sha256:0800afc099f990c4f9609485add4700c880c04b6a1b84f9b001f1d1e5128d132", size = 29650, upload-time = "2026-09-04T14:45:36.892Z" },
 ]
 
 [[package]]

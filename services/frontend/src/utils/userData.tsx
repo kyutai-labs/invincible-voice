@@ -292,11 +292,13 @@ export async function selectVoice(
  *
  * @param audioFile - The audio file (WAV) to use for voice cloning
  * @param name - The name for the new voice
+ * @param language - ISO 639-1 code of the language spoken in the audio file
  * @returns Promise<ApiResponse<{ uid: string; name: string }>>
  */
 export async function createVoice(
   audioFile: File,
   name: string,
+  language: string,
 ): Promise<ApiResponse<{ uid: string; name: string }>> {
   try {
     const url = `/api/v1/voices/create`;
@@ -304,6 +306,7 @@ export async function createVoice(
     const formData = new FormData();
     formData.append('audio_file', audioFile);
     formData.append('name', name);
+    formData.append('language', language);
 
     const response = await fetch(url, {
       method: 'POST',

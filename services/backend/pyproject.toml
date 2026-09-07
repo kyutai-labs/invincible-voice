@@ -19,7 +19,7 @@ dependencies = [
     "redis>=6.0.0",
     "aiohttp>=3.12.13",
     "humanize>=4.12.3",
-    "gradium==0.5.4",
+    "gradium==0.6.4",
     "pyjwt==2.10.1",
     "pwdlib[argon2]",
     "google-auth",

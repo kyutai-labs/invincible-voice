@@ -60,6 +60,7 @@
     "voiceName": "Nom de la voix",
     "voiceNamePlaceholder": "Ma voix",
     "audioFile": "Fichier audio (MP3, WAV)",
+    "voiceLanguage": "Langue de la voix",
     "deleteVoiceTitle": "Supprimer la voix personnalisée",
     "deleteVoiceMessage": "Êtes-vous sûr de vouloir supprimer cette voix personnalisée ? Cette action est irréversible.",
     "noKeywordsAdded": "Pas de mots-clés ajoutés",

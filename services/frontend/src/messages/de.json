@@ -60,6 +60,7 @@
     "voiceName": "Stimmname",
     "voiceNamePlaceholder": "Meine Stimme",
     "audioFile": "Audiodatei (MP3, WAV)",
+    "voiceLanguage": "Sprache der Stimme",
     "deleteVoiceTitle": "Benutzerdefinierte Stimme löschen",
     "deleteVoiceMessage": "Möchten Sie diese benutzerdefinierte Stimme wirklich löschen? Diese Aktion ist irreversibel.",
     "noKeywordsAdded": "Noch keine Schlüsselwörter hinzugefügt",
