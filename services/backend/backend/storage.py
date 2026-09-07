@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 import uuid
 from typing import Literal
@@ -8,6 +9,12 @@ from cloudpathlib import AnyPath
 
 from backend import kyutai_constants
 from backend import openai_realtime_api_events as ora
+from backend.llm.prompt_budget import (
+    MAX_PROMPT_WORDS,
+    count_words,
+    is_dropped_from_prompt,
+    select_within_budget,
+)
 from backend.llm.system_prompt import BASE_SYSTEM_PROMPT
 from backend.typing import Conversation, LLMMessage, SpeakerMessage, UserSettings
 
@@ -61,43 +68,68 @@ class UserData(pydantic.BaseModel):
         prompt += "The conversations here were done with the software, and are shown to give you "
         prompt += "context about the user\n\n"
 
-        for conversation in self.conversations:
-            if len(conversation.messages) == 0:
-                continue
-            readable_datetime = conversation.start_time.strftime(
-                "%A, %B %d, %Y at %H:%M"  # Monday, July 07, 2025 at 14:56
-            )
-            if conversation is self.conversations[-1]:
-                prompt += "## Current conversation with the user\n\n"
-            else:
-                delta = self.conversations[-1].start_time - conversation.start_time
-                readable_delta = f"({humanize.naturaldelta(delta)} ago)"
-                prompt += (
-                    f"### Conversation of {readable_datetime} {readable_delta}\n\n"
-                )
+        # The last conversation is the current one, everything before it is history.
+        current_conversation = self.conversations[-1] if self.conversations else None
+        rendered_past: list[str] = []
+        if current_conversation is not None:
+            now = current_conversation.start_time
+            rendered_past = [
+                self._render_past_conversation(conversation, now)
+                for conversation in self.conversations[:-1]
+                if not is_dropped_from_prompt(conversation, now)
+            ]
 
-            for message in conversation.messages:
-                if isinstance(message, SpeakerMessage):
-                    prompt += f"* Speaker: {message.content.strip()}\n"
-                else:
-                    prompt += (
-                        f"* {self.user_settings.name} says: {message.content.strip()}\n"
-                    )
+        current_text = ""
+        if current_conversation is not None and current_conversation.messages:
+            current_text += "## Current conversation with the user\n\n"
+            current_text += self._render_messages(current_conversation)
 
-        prompt += "## Desired responses length\n"
-
+        tail = "## Desired responses length\n"
         min_nb_words, max_nb_words = LENGHT_TO_NB_WORDS[desired_responses_length]
-        prompt += f"Each response should be between {min_nb_words} and {max_nb_words} words long.\n\n"
-        prompt += "## User's keywords sent to you to guide your answers\n\n"
+        tail += f"Each response should be between {min_nb_words} and {max_nb_words} words long.\n\n"
+        tail += "## User's keywords sent to you to guide your answers\n\n"
         if user_text_hint is not None:
             # Add the current keywords to the last user message
-            prompt += "The user chose the following keywords to guide the answers, "
-            prompt += (
-                f"use those concept in **all** of your responses: {user_text_hint}."
+            tail += "The user chose the following keywords to guide the answers, "
+            tail += f"use those concept in **all** of your responses: {user_text_hint}."
+
+        # Drop the oldest conversations if needed to stay under MAX_PROMPT_WORDS.
+        reserved_words = (
+            count_words(prompt) + count_words(current_text) + count_words(tail)
+        )
+        kept_past = select_within_budget(rendered_past, reserved_words)
+        if len(kept_past) < len(rendered_past):
+            logger.info(
+                f"Dropped {len(rendered_past) - len(kept_past)} oldest conversations "
+                f"to keep the prompt under {MAX_PROMPT_WORDS} words"
             )
 
+        prompt += "".join(kept_past) + current_text + tail
         _add_to_llm_ready_conversation(result, "system", prompt)
         return result
+
+    def _render_messages(self, conversation: Conversation) -> str:
+        text = ""
+        for message in conversation.messages:
+            if isinstance(message, SpeakerMessage):
+                text += f"* Speaker: {message.content.strip()}\n"
+            else:
+                text += f"* {self.user_settings.name} says: {message.content.strip()}\n"
+        return text
+
+    def _render_past_conversation(
+        self, conversation: Conversation, now: dt.datetime
+    ) -> str:
+        readable_datetime = conversation.start_time.strftime(
+            "%A, %B %d, %Y at %H:%M"  # Monday, July 07, 2025 at 14:56
+        )
+        readable_delta = humanize.naturaldelta(now - conversation.start_time)
+        text = f"### Conversation of {readable_datetime} ({readable_delta} ago)\n\n"
+        if conversation.summary is not None:
+            text += f"Summary of the conversation: {conversation.summary.strip()}\n"
+        else:
+            text += self._render_messages(conversation)
+        return text + "\n"
 
 
 def _add_to_llm_ready_conversation(

@@ -28,6 +28,7 @@ export type ConversationMessage = SpeakerMessage | WriterMessage;
 export interface Conversation {
   messages: ConversationMessage[];
   start_time: string; // ISO 8601 datetime string from backend
+  summary?: string | null; // LLM-written summary, set for long conversations
 }
 
 /**
@@ -363,6 +364,46 @@ export async function deleteVoice(
     }
 
     const data: { message: string; name: string } = await response.json();
+
+    return {
+      data,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      status: 0,
+    };
+  }
+}
+
+/**
+ * Asks the backend to summarize a prompt or a document that is too long
+ * POST /v1/user/summarize
+ *
+ * @param text - The text to summarize
+ * @returns Promise<ApiResponse<{ summary: string; word_count: number }>>
+ */
+export async function summarizeText(
+  text: string,
+): Promise<ApiResponse<{ summary: string; word_count: number }>> {
+  try {
+    const url = `/api/v1/user/summarize`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: addAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ text }),
+    });
+
+    if (!response.ok) {
+      return {
+        error: `Failed to summarize text: ${response.status} ${response.statusText}`,
+        status: response.status,
+      };
+    }
+
+    const data: { summary: string; word_count: number } = await response.json();
 
     return {
       data,

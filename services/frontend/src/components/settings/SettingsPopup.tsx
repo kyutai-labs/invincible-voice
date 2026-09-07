@@ -14,7 +14,12 @@ import Edit from '@/components/icons/Edit';
 import Plus from '@/components/icons/Plus';
 import Trash from '@/components/icons/Trash';
 import { useLocale, useTranslations } from '@/i18n';
-import { estimateTokens, formatTokenCount } from '@/utils/tokenUtils';
+import {
+  MAX_TEXT_WORDS,
+  countWords,
+  estimateTokens,
+  formatTokenCount,
+} from '@/utils/tokenUtils';
 import { playTTSStream } from '@/utils/ttsUtil';
 import {
   updateUserSettings,
@@ -22,6 +27,7 @@ import {
   getVoices,
   createVoice,
   deleteVoice,
+  summarizeText,
 } from '@/utils/userData';
 import type { UserSettings } from '@/utils/userData';
 import {
@@ -30,6 +36,7 @@ import {
 } from '@/utils/voiceLanguages';
 import DocumentEditorPopup from './DocumentEditorPopup';
 import EmailField from './EmailField';
+import TooLongTextNotice from './TooLongTextNotice';
 
 interface SettingsPopupProps {
   userSettings: UserSettings;
@@ -79,6 +86,19 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   const promptTokenCount = useMemo(
     () => estimateTokens(formData.prompt),
     [formData.prompt],
+  );
+  const promptWordCount = useMemo(
+    () => countWords(formData.prompt),
+    [formData.prompt],
+  );
+  const isPromptTooLong = promptWordCount > MAX_TEXT_WORDS;
+  // Prompt as it was before the last summary, so that it can be undone
+  const [promptBeforeSummary, setPromptBeforeSummary] = useState<string | null>(
+    null,
+  );
+  const [isSummarizingPrompt, setIsSummarizingPrompt] = useState(false);
+  const [promptSummaryError, setPromptSummaryError] = useState<string | null>(
+    null,
   );
 
   const handleInputChange = useCallback(
@@ -359,6 +379,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   }, [voiceToDelete, formData.voice, handleInputChange]);
 
   const handleSave = useCallback(async () => {
+    if (isPromptTooLong) {
+      return;
+    }
     setIsLoading(true);
     try {
       const result = await updateUserSettings(formData);
@@ -374,7 +397,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [formData, onSave]);
+  }, [formData, isPromptTooLong, onSave]);
   const onChangeName = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       handleInputChange('name', event.target.value);
@@ -384,9 +407,34 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   const onChangePrompt = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       handleInputChange('prompt', event.target.value);
+      // Editing the text ends the possibility to undo the summary
+      setPromptBeforeSummary(null);
     },
     [handleInputChange],
   );
+  const handleSummarizePrompt = useCallback(async () => {
+    const original = formData.prompt;
+    setIsSummarizingPrompt(true);
+    setPromptSummaryError(null);
+    try {
+      const result = await summarizeText(original);
+      if (result.data) {
+        setPromptBeforeSummary(original);
+        handleInputChange('prompt', result.data.summary);
+      } else {
+        console.error(result.error);
+        setPromptSummaryError(t('settings.summaryFailed'));
+      }
+    } finally {
+      setIsSummarizingPrompt(false);
+    }
+  }, [formData.prompt, handleInputChange, t]);
+  const handleUndoPromptSummary = useCallback(() => {
+    if (promptBeforeSummary !== null) {
+      handleInputChange('prompt', promptBeforeSummary);
+      setPromptBeforeSummary(null);
+    }
+  }, [handleInputChange, promptBeforeSummary]);
   const onChangeNewKeywordInput = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setNewKeywordInput(event.target.value);
@@ -692,6 +740,15 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
               className='flex-1 w-full min-h-0 px-6 py-4 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
               placeholder={t('settings.promptPlaceholder')}
             />
+            <TooLongTextNotice
+              wordCount={promptWordCount}
+              messageKey='settings.promptTooLong'
+              isSummarizing={isSummarizingPrompt}
+              canUndo={promptBeforeSummary !== null}
+              error={promptSummaryError}
+              onSummarize={handleSummarizePrompt}
+              onUndo={handleUndoPromptSummary}
+            />
           </div>
         </div>
 
@@ -857,8 +914,9 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
             </button>
 
             <button
-              className='p-px h-14 light-green-to-green-gradient rounded-2xl'
+              className='p-px h-14 light-green-to-green-gradient rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed'
               onClick={handleSave}
+              disabled={isLoading || isPromptTooLong}
             >
               <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
                 {t('settings.saveConfiguration')}

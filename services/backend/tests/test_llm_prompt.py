@@ -15,6 +15,7 @@ import pytest
 from backend import openai_realtime_api_events as ora
 from backend.llm.chatbot import Chatbot
 from backend.llm.llm_utils import StructuredLLMResponse
+from backend.llm.prompt_budget import MAX_PROMPT_WORDS
 from backend.llm.system_prompt import BASE_SYSTEM_PROMPT
 from backend.storage import (
     LENGHT_TO_NB_WORDS,
@@ -317,3 +318,63 @@ def test_chatbot_selected_response_is_attributed_to_the_user() -> None:
 
     current = section(prompt, "## Current conversation with the user")
     assert "* Speaker: How are you?\n* Ada says: I am tired.\n" in current
+
+
+def test_summarized_conversation_shows_its_summary_instead_of_its_messages() -> None:
+    summarized = Conversation(
+        messages=[speaker("Very long conversation"), writer("with many messages")],
+        start_time=TWO_DAYS_AGO,
+        summary="They talked about lunch plans.",
+    )
+    user_data = make_user_data(
+        conversations=[
+            summarized,
+            Conversation(messages=[speaker("Hi")], start_time=NOW),
+        ]
+    )
+
+    prompt = build_prompt(user_data)
+
+    past = section(prompt, "## Past conversations with dates")
+    assert "### Conversation of Monday, July 07, 2025 at 14:56 (2 days ago)" in past
+    assert "Summary of the conversation: They talked about lunch plans." in past
+    assert "Very long conversation" not in past
+    assert "with many messages" not in past
+
+
+def test_short_and_old_conversations_are_left_out() -> None:
+    conversations = [
+        Conversation(messages=[speaker("ok")], start_time=NOW - dt.timedelta(days=40)),
+        Conversation(messages=[speaker("yes")], start_time=NOW - dt.timedelta(days=2)),
+        Conversation(messages=[speaker("Hi")], start_time=NOW),
+    ]
+
+    prompt = build_prompt(make_user_data(conversations=conversations))
+
+    past = section(prompt, "## Past conversations with dates")
+    assert "* Speaker: ok\n" not in past
+    assert "* Speaker: yes\n" in past
+
+
+def test_oldest_conversations_are_dropped_to_stay_under_the_word_budget() -> None:
+    def long_conversation(label: str, days_ago: int) -> Conversation:
+        content = f"{label} " + " ".join("word" for _ in range(15000))
+        return Conversation(
+            messages=[speaker(content)], start_time=NOW - dt.timedelta(days=days_ago)
+        )
+
+    conversations = [
+        long_conversation("oldest", 3),
+        long_conversation("middle", 2),
+        long_conversation("newest", 1),
+        Conversation(messages=[speaker("Hi")], start_time=NOW),
+    ]
+
+    prompt = build_prompt(make_user_data(conversations=conversations))
+
+    assert len(prompt.split()) < MAX_PROMPT_WORDS
+    past = section(prompt, "## Past conversations with dates")
+    assert "oldest" not in past
+    assert "middle" in past
+    assert "newest" in past
+    assert "* Speaker: Hi\n" in section(prompt, "## Current conversation with the user")

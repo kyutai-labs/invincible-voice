@@ -71,7 +71,12 @@
     "testVoiceMessage": "Hallo, Ihre Stimme wird so klingen. Sie können auch Ihre eigene Stimme klonen, indem Sie eine Audioaufnahme von sich selbst bereitstellen.",
     "expectedTranscriptionLanguage": "Erwartete Transkriptionssprache",
     "letSpeechToTextGuess": "Spracherkennung selbst erraten lassen",
-    "moreSettingsAvailable": "Weitere Einstellungen sind in der Desktop- oder Tablet-Version von Invincible Voice verfügbar"
+    "moreSettingsAvailable": "Weitere Einstellungen sind in der Desktop- oder Tablet-Version von Invincible Voice verfügbar",
+    "promptTooLong": "Ihr Prompt ist zu lang (mehr als {max} Wörter), soll das System ihn für Sie zusammenfassen?",
+    "documentTooLong": "Dieses Dokument ist zu lang (mehr als {max} Wörter), soll das System es für Sie zusammenfassen?",
+    "summarizeYes": "Ja, zusammenfassen",
+    "undoSummary": "Zusammenfassung rückgängig machen",
+    "summaryFailed": "Die Zusammenfassung konnte nicht erstellt werden, bitte versuchen Sie es erneut."
   },
   "conversation": {
     "yesterday": "Gestern",
@@ -82,6 +87,7 @@
     "startSpeaking": "Sprechen Sie und Ihre Stimme wird transkribiert. InvincibleVoice wird Antworten vorschlagen, um die Kommunikation zu erleichtern.",
     "emptyConversation": "Leere Unterhaltung",
     "noMessages": "Diese Unterhaltung hat keine Nachrichten.",
+    "summary": "Zusammenfassung",
     "lockResponses": "Antworten sperren",
     "unlockResponses": "Antworten freigeben",
     "contextQuestion": "Können Sie Ihren Vornamen angeben, um dem Softwarekontext zu helfen? Danke!",

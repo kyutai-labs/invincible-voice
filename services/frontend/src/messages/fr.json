@@ -71,7 +71,12 @@
     "testVoiceMessage": "Bonjour, votre voix ressemblera à cela. Vous pouvez aussi cloner votre propre voix en fournissant un enregistrement audio de vous.",
     "expectedTranscriptionLanguage": "Langue de transcription attendue",
     "letSpeechToTextGuess": "Laisser la reconnaissance vocale deviner",
-    "moreSettingsAvailable": "Plus de paramètres sont disponibles sur la version ordinateur ou tablette d'Invincible Voice"
+    "moreSettingsAvailable": "Plus de paramètres sont disponibles sur la version ordinateur ou tablette d'Invincible Voice",
+    "promptTooLong": "Votre prompt est trop long (plus de {max} mots), voulez-vous que le système le résume pour vous ?",
+    "documentTooLong": "Ce document est trop long (plus de {max} mots), voulez-vous que le système le résume pour vous ?",
+    "summarizeYes": "Oui, le résumer",
+    "undoSummary": "Annuler le résumé",
+    "summaryFailed": "Le résumé n'a pas pu être généré, veuillez réessayer."
   },
   "conversation": {
     "yesterday": "Hier",
@@ -82,6 +87,7 @@
     "startSpeaking": "Commencez à parler et votre voix sera transcrite. InvincibleVoice suggérera des réponses pour aider à communiquer.",
     "emptyConversation": "Conversation vide",
     "noMessages": "Cette conversation n'a aucun message.",
+    "summary": "Résumé",
     "lockResponses": "Vérouiller les réponses",
     "unlockResponses": "Dévérouiller les réponses",
     "contextQuestion": "Tu peux donner ton prénom pour aider le logiciel à comprendre le contexte? Merci!",
