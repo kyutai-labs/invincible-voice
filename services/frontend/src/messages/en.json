@@ -60,6 +60,7 @@
     "voiceName": "Voice name",
     "voiceNamePlaceholder": "My voice",
     "audioFile": "Audio file (MP3, WAV)",
+    "voiceLanguage": "Voice language",
     "deleteVoiceTitle": "Delete custom voice",
     "deleteVoiceMessage": "Are you sure you want to delete this custom voice? This action is irreversible.",
     "noKeywordsAdded": "No keywords added yet",

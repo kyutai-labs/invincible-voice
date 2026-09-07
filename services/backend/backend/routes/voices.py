@@ -3,6 +3,7 @@ import tempfile
 from logging import getLogger
 from typing import Annotated
 
+import aiohttp
 import gradium
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
@@ -11,6 +12,9 @@ from backend.routes.user import get_current_user
 from backend.storage import UserData
 
 logger = getLogger(__name__)
+
+# ISO 639-1 codes accepted by Gradium for voice cloning.
+SUPPORTED_VOICE_LANGUAGES = ("en", "fr", "es", "pt", "de")
 
 
 async def _get_voice_uid(voice_name: str, user_email: str) -> str:
@@ -109,15 +113,33 @@ async def _get_available_voices(user_name: str) -> dict[str, tuple[str, str]]:
 async def create_voice(
     audio_file: Annotated[UploadFile, File(description="Audio file for voice cloning")],
     name: Annotated[str, Form(description="Name for the new voice")],
+    language: Annotated[
+        str,
+        Form(
+            description="ISO 639-1 language code of the voice: "
+            + ", ".join(SUPPORTED_VOICE_LANGUAGES)
+        ),
+    ],
     user: Annotated[UserData, Depends(get_current_user)],
 ) -> dict:
     """Create a new custom voice by uploading an audio file.
 
     Only works when using Gradium TTS. Returns a 400 error for Kyutai TTS.
+    The language is required by Gradium and must be one of
+    SUPPORTED_VOICE_LANGUAGES.
     """
     if not TTS_IS_GRADIUM:
         raise HTTPException(
             status_code=400, detail="Voice creation is only supported with Gradium TTS"
+        )
+
+    if language not in SUPPORTED_VOICE_LANGUAGES:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unsupported voice language '{language}'. "
+                f"Supported languages: {', '.join(SUPPORTED_VOICE_LANGUAGES)}"
+            ),
         )
 
     client = gradium.GradiumClient(
@@ -132,14 +154,20 @@ async def create_voice(
         tmp.write(content)
         tmp_path = pathlib.Path(tmp.name)
 
-        result = await gradium.voices.create(
-            client=client,
-            audio_file=tmp_path,
-            name=user.email + "/" + name,
-        )
-
-        # TODO: add error detection, currently we just return the result
-        # it's not great because we get 200 instead of an error.
+        try:
+            result = await gradium.voices.create(
+                client=client,
+                audio_file=tmp_path,
+                name=user.email + "/" + name,
+                language=language,
+            )
+        except aiohttp.ClientResponseError as e:
+            # Surface the upstream error instead of an opaque 500.
+            logger.error(f"Gradium voice creation failed: {e.status} {e.message}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Voice creation failed: {e.status} {e.message}",
+            ) from None
 
         return result
 

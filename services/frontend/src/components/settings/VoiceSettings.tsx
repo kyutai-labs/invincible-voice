@@ -1,7 +1,8 @@
 import { FC, useState, useCallback, useEffect } from 'react';
-import { useTranslations } from '@/i18n';
+import { useLocale, useTranslations } from '@/i18n';
 import { playTTSStream } from '@/utils/ttsUtil';
 import { getVoices, deleteVoice } from '@/utils/userData';
+import { getDefaultVoiceLanguage } from '@/utils/voiceLanguages';
 import VoiceSelector from './VoiceSelector';
 import VoiceUploadForm from './VoiceUploadForm';
 
@@ -15,6 +16,7 @@ const VoiceSettings: FC<VoiceSettingsProps> = ({
   onVoiceChange,
 }) => {
   const t = useTranslations();
+  const locale = useLocale();
   const [availableVoices, setAvailableVoices] = useState<Record<
     string,
     string
@@ -24,6 +26,9 @@ const VoiceSettings: FC<VoiceSettingsProps> = ({
   const [showVoiceUpload, setShowVoiceUpload] = useState(false);
   const [voiceUploadFile, setVoiceUploadFile] = useState<File | null>(null);
   const [voiceUploadName, setVoiceUploadName] = useState<string>('');
+  const [voiceUploadLanguage, setVoiceUploadLanguage] = useState<string>(() =>
+    getDefaultVoiceLanguage(null, locale),
+  );
   const [voiceUploadError, setVoiceUploadError] = useState<string | null>(null);
   const [isCreatingVoice, setIsCreatingVoice] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -79,7 +84,11 @@ const VoiceSettings: FC<VoiceSettingsProps> = ({
 
     try {
       const { createVoice } = await import('@/utils/userData');
-      const result = await createVoice(voiceUploadFile, voiceUploadName);
+      const result = await createVoice(
+        voiceUploadFile,
+        voiceUploadName,
+        voiceUploadLanguage,
+      );
 
       if (result.error) {
         setVoiceUploadError(result.error);
@@ -110,7 +119,13 @@ const VoiceSettings: FC<VoiceSettingsProps> = ({
     } finally {
       setIsCreatingVoice(false);
     }
-  }, [voiceUploadFile, voiceUploadName, handleVoiceChange, t]);
+  }, [
+    voiceUploadFile,
+    voiceUploadName,
+    voiceUploadLanguage,
+    handleVoiceChange,
+    t,
+  ]);
 
   const handleDeleteVoice = useCallback(async () => {
     if (!currentVoice) return;
@@ -178,6 +193,8 @@ const VoiceSettings: FC<VoiceSettingsProps> = ({
         <VoiceUploadForm
           voiceName={voiceUploadName}
           onVoiceNameChange={setVoiceUploadName}
+          voiceLanguage={voiceUploadLanguage}
+          onVoiceLanguageChange={setVoiceUploadLanguage}
           onFileChange={(file) => {
             setVoiceUploadFile(file);
             setVoiceUploadError(null);

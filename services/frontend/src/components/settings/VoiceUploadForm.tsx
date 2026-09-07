@@ -1,10 +1,13 @@
 import { LoaderCircleIcon } from 'lucide-react';
 import { FC, ChangeEvent } from 'react';
 import { useTranslations } from '@/i18n';
+import { VOICE_LANGUAGES } from '@/utils/voiceLanguages';
 
 interface VoiceUploadFormProps {
   voiceName: string;
   onVoiceNameChange: (value: string) => void;
+  voiceLanguage: string;
+  onVoiceLanguageChange: (value: string) => void;
   onFileChange: (file: File | null) => void;
   onCreateVoice: () => void;
   onCancel: () => void;
@@ -15,6 +18,8 @@ interface VoiceUploadFormProps {
 const VoiceUploadForm: FC<VoiceUploadFormProps> = ({
   voiceName,
   onVoiceNameChange,
+  voiceLanguage,
+  onVoiceLanguageChange,
   onFileChange,
   onCreateVoice,
   onCancel,
@@ -56,6 +61,31 @@ const VoiceUploadForm: FC<VoiceUploadFormProps> = ({
             className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green'
             placeholder={t('settings.voiceNamePlaceholder')}
           />
+        </div>
+
+        <div className='flex flex-col gap-1'>
+          <label
+            htmlFor='voice-upload-language-select'
+            className='text-xs font-medium text-gray-300'
+          >
+            {t('settings.voiceLanguage')}
+          </label>
+
+          <select
+            id='voice-upload-language-select'
+            value={voiceLanguage}
+            onChange={(e) => onVoiceLanguageChange(e.target.value)}
+            className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green'
+          >
+            {VOICE_LANGUAGES.map(({ code, label }) => (
+              <option
+                key={code}
+                value={code}
+              >
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className='flex flex-col gap-1'>

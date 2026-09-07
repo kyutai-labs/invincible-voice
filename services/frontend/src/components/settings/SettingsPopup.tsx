@@ -13,7 +13,7 @@ import { useAuthContext } from '@/auth/authContext';
 import Edit from '@/components/icons/Edit';
 import Plus from '@/components/icons/Plus';
 import Trash from '@/components/icons/Trash';
-import { useTranslations } from '@/i18n';
+import { useLocale, useTranslations } from '@/i18n';
 import { estimateTokens, formatTokenCount } from '@/utils/tokenUtils';
 import { playTTSStream } from '@/utils/ttsUtil';
 import {
@@ -24,6 +24,10 @@ import {
   deleteVoice,
 } from '@/utils/userData';
 import type { UserSettings } from '@/utils/userData';
+import {
+  VOICE_LANGUAGES,
+  getDefaultVoiceLanguage,
+} from '@/utils/voiceLanguages';
 import DocumentEditorPopup from './DocumentEditorPopup';
 import EmailField from './EmailField';
 
@@ -41,6 +45,7 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   onCancel,
 }) => {
   const t = useTranslations();
+  const locale = useLocale();
   const { signOut } = useAuthContext();
   const [formData, setFormData] = useState<UserSettings>(userSettings);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,6 +66,12 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
   const [showVoiceUpload, setShowVoiceUpload] = useState(false);
   const [voiceUploadFile, setVoiceUploadFile] = useState<File | null>(null);
   const [voiceUploadName, setVoiceUploadName] = useState<string>('');
+  const [voiceUploadLanguage, setVoiceUploadLanguage] = useState<string>(() =>
+    getDefaultVoiceLanguage(
+      userSettings.expected_transcription_language,
+      locale,
+    ),
+  );
   const [voiceUploadError, setVoiceUploadError] = useState<string | null>(null);
   const [showDeleteVoiceConfirm, setShowDeleteVoiceConfirm] = useState(false);
   const [voiceToDelete, setVoiceToDelete] = useState<string | null>(null);
@@ -241,7 +252,11 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     setVoiceUploadError(null);
 
     try {
-      const result = await createVoice(voiceUploadFile, voiceUploadName);
+      const result = await createVoice(
+        voiceUploadFile,
+        voiceUploadName,
+        voiceUploadLanguage,
+      );
 
       if (result.error) {
         setVoiceUploadError(result.error);
@@ -277,7 +292,13 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
     } finally {
       setIsCreatingVoice(false);
     }
-  }, [voiceUploadFile, voiceUploadName, handleInputChange, t]);
+  }, [
+    voiceUploadFile,
+    voiceUploadName,
+    voiceUploadLanguage,
+    handleInputChange,
+    t,
+  ]);
 
   // Handle voice file selection
   const handleVoiceFileChange = useCallback(
@@ -544,6 +565,31 @@ const SettingsPopup: FC<SettingsPopupProps> = ({
                       className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green'
                       placeholder={t('settings.voiceNamePlaceholder')}
                     />
+                  </div>
+
+                  <div className='flex flex-col gap-1'>
+                    <label
+                      htmlFor='voice-upload-language-select'
+                      className='text-xs font-medium text-gray-300'
+                    >
+                      {t('settings.voiceLanguage')}
+                    </label>
+
+                    <select
+                      id='voice-upload-language-select'
+                      value={voiceUploadLanguage}
+                      onChange={(e) => setVoiceUploadLanguage(e.target.value)}
+                      className='w-full px-3 py-2 text-sm text-white bg-[#1B1B1B] border border-white rounded-xl focus:outline-none focus:border-green'
+                    >
+                      {VOICE_LANGUAGES.map(({ code, label }) => (
+                        <option
+                          key={code}
+                          value={code}
+                        >
+                          {label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className='flex flex-col gap-1'>
