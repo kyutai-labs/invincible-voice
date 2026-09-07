@@ -58,7 +58,7 @@ class UserData(pydantic.BaseModel):
             prompt += f'### Document {i + 1} "{document.title}"\n'
             prompt += f"{document.content}\n\n"
         prompt += "## Past conversations with dates\n"
-        prompt += "The conversations here were done with the software, and are shown to give you"
+        prompt += "The conversations here were done with the software, and are shown to give you "
         prompt += "context about the user\n\n"
 
         for conversation in self.conversations:
