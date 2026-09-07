@@ -138,6 +138,14 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
           <p className='text-xs'>{t('conversation.noMessages')}</p>
         </div>
       )}
+      {isViewingPastConversation && pastConversation?.summary && (
+        <div className='px-4 py-3 mb-2 text-sm text-gray-300 bg-[#181818] border border-white/20 rounded-2xl'>
+          <p className='mb-1 text-xs font-medium text-white'>
+            {t('conversation.summary')}
+          </p>
+          <p className='whitespace-pre-wrap'>{pastConversation.summary}</p>
+        </div>
+      )}
       {processedMessages.map((message) => (
         <ProcessedMessage
           key={message.key}

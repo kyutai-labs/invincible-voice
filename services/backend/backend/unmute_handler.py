@@ -26,6 +26,7 @@ from backend.llm.llm_utils import (
     VLLMStream,
     get_openai_client,
 )
+from backend.llm.summarize import summarize_long_conversations
 from backend.quest_manager import Quest, QuestManager
 from backend.storage import UserData, get_user_data_from_storage
 from backend.stt.speech_to_text import (
@@ -396,6 +397,12 @@ class UnmuteHandler(AsyncStreamHandler):
     async def start_up(self):
         await self.start_up_stt()
         self.waiting_for_user_start_time = self.audio_received_sec()
+        # Long past conversations get an LLM summary so that the prompt stays small.
+        # Done in the background: the session must not wait for the LLM, and the
+        # prompt falls back to the full messages until the summary exists.
+        self._summarize_task = asyncio.create_task(
+            summarize_long_conversations(self.chatbot.user_data, self.openai_client)
+        )
 
     async def __aexit__(self, *exc: Any) -> None:
         return await self.quest_manager.__aexit__(*exc)

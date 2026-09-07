@@ -24,6 +24,9 @@ class WriterMessage(pydantic.BaseModel):
 class Conversation(pydantic.BaseModel):
     messages: list[SpeakerMessage | WriterMessage]
     start_time: dt.datetime
+    # LLM-written summary, set for long conversations. When present it replaces
+    # the messages in the prompt sent to the LLM.
+    summary: str | None = None
 
 
 class Document(pydantic.BaseModel):
@@ -66,3 +69,12 @@ class TTSRequest(pydantic.BaseModel):
 
 class VoiceSelectionRequest(pydantic.BaseModel):
     voice: str
+
+
+class SummarizeRequest(pydantic.BaseModel):
+    text: str
+
+
+class SummarizeResponse(pydantic.BaseModel):
+    summary: str
+    word_count: int

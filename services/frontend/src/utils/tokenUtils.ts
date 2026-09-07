@@ -87,3 +87,21 @@ export function calculateTotalTokens(userSettings: {
 
   return promptTokens + documentTokens;
 }
+
+/**
+ * Maximum number of words allowed in the user's prompt and in each document.
+ * Above this, the UI proposes an LLM summary. Mirrors MAX_TEXT_WORDS in
+ * services/backend/backend/llm/prompt_budget.py.
+ */
+export const MAX_TEXT_WORDS = 3000;
+
+/**
+ * Counts words by splitting on whitespace, the same way the backend does.
+ */
+export function countWords(text: string): number {
+  const trimmed = text.trim();
+  if (trimmed.length === 0) {
+    return 0;
+  }
+  return trimmed.split(/\s+/).length;
+}

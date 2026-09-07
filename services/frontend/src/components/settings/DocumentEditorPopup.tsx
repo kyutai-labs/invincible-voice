@@ -8,8 +8,14 @@ import {
   ChangeEvent,
 } from 'react';
 import { useTranslations } from '@/i18n';
-import { estimateTokens, formatTokenCount } from '@/utils/tokenUtils';
-import { Document } from '@/utils/userData';
+import {
+  MAX_TEXT_WORDS,
+  countWords,
+  estimateTokens,
+  formatTokenCount,
+} from '@/utils/tokenUtils';
+import { Document, summarizeText } from '@/utils/userData';
+import TooLongTextNotice from './TooLongTextNotice';
 
 interface DocumentEditorPopupProps {
   document: Document | null;
@@ -28,6 +34,14 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const tokenCount = useMemo(() => estimateTokens(content), [content]);
+  const wordCount = useMemo(() => countWords(content), [content]);
+  const isTooLong = wordCount > MAX_TEXT_WORDS;
+  // Content as it was before the last summary, so that it can be undone
+  const [contentBeforeSummary, setContentBeforeSummary] = useState<
+    string | null
+  >(null);
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setTitle(event.target.value);
@@ -37,14 +51,39 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
   const handleContentChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       setContent(event.target.value);
+      // Editing the text ends the possibility to undo the summary
+      setContentBeforeSummary(null);
     },
     [],
   );
+  const handleSummarize = useCallback(async () => {
+    const original = content;
+    setIsSummarizing(true);
+    setSummaryError(null);
+    try {
+      const result = await summarizeText(original);
+      if (result.data) {
+        setContentBeforeSummary(original);
+        setContent(result.data.summary);
+      } else {
+        console.error(result.error);
+        setSummaryError(t('settings.summaryFailed'));
+      }
+    } finally {
+      setIsSummarizing(false);
+    }
+  }, [content, t]);
+  const handleUndoSummary = useCallback(() => {
+    if (contentBeforeSummary !== null) {
+      setContent(contentBeforeSummary);
+      setContentBeforeSummary(null);
+    }
+  }, [contentBeforeSummary]);
   const handleSave = useCallback(() => {
-    if (title.trim()) {
+    if (title.trim() && !isTooLong) {
       onSave({ title: title.trim(), content });
     }
-  }, [content, onSave, title]);
+  }, [content, isTooLong, onSave, title]);
 
   useEffect(() => {
     if (document) {
@@ -54,6 +93,8 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
       setTitle('');
       setContent('');
     }
+    setContentBeforeSummary(null);
+    setSummaryError(null);
   }, [document, isOpen]);
 
   useEffect(() => {
@@ -127,6 +168,17 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
               className='flex-1 w-full min-h-0 px-6 py-4 text-base text-white bg-[#1B1B1B] border border-white rounded-3xl resize-none focus:outline-none focus:border-green scrollbar-hidden scrollable'
               placeholder={t('documentEditor.documentContentPlaceholder')}
             />
+            <div className='mt-2'>
+              <TooLongTextNotice
+                wordCount={wordCount}
+                messageKey='settings.documentTooLong'
+                isSummarizing={isSummarizing}
+                canUndo={contentBeforeSummary !== null}
+                error={summaryError}
+                onSummarize={handleSummarize}
+                onUndo={handleUndoSummary}
+              />
+            </div>
           </div>
         </div>
         <div className='flex justify-end gap-x-3'>
@@ -138,8 +190,8 @@ const DocumentEditorPopup: FC<DocumentEditorPopupProps> = ({
           </button>
           <button
             onClick={handleSave}
-            disabled={!title.trim()}
-            className='p-px h-14 light-green-to-green-gradient rounded-2xl'
+            disabled={!title.trim() || isTooLong}
+            className='p-px h-14 light-green-to-green-gradient rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed'
           >
             <div className='flex flex-row bg-[#181818] size-full items-center justify-center gap-4 px-8 rounded-2xl'>
               {t('documentEditor.save')}

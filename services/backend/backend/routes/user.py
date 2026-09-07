@@ -15,10 +15,12 @@ from backend import metrics as mt
 from backend.kyutai_constants import REDIS_HOST, REDIS_PORT, STT_LOCK_TTL_SECONDS
 from backend.libs.redis_lock import RedisLockManager
 from backend.libs.websockets import report_websocket_exception, run_route
+from backend.llm.prompt_budget import TEXT_SUMMARY_TARGET_WORDS, count_words
+from backend.llm.summarize import summarize_text
 from backend.security import decode_access_token
 from backend.storage import UserData, get_user_data_from_storage
 from backend.timer import Stopwatch
-from backend.typing import UserSettings
+from backend.typing import SummarizeRequest, SummarizeResponse, UserSettings
 from backend.unmute_handler import UnmuteHandler
 
 _stt_lock_manager = RedisLockManager(REDIS_HOST, REDIS_PORT, STT_LOCK_TTL_SECONDS)
@@ -92,6 +94,19 @@ def update_user_settings(
 ):
     user.user_settings = settings
     user.save()
+
+
+@user_router.post("/summarize")
+async def summarize(
+    request: SummarizeRequest,
+    user: Annotated[UserData, Depends(get_current_user)],
+) -> SummarizeResponse:
+    """Summarize a user prompt or document that is too long for the settings.
+
+    The result is around TEXT_SUMMARY_TARGET_WORDS words, whatever the input size.
+    """
+    summary = await summarize_text(request.text, TEXT_SUMMARY_TARGET_WORDS)
+    return SummarizeResponse(summary=summary, word_count=count_words(summary))
 
 
 @user_router.delete("/conversations/{conversation_id}")
