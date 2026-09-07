@@ -40,10 +40,27 @@ class UserData(pydantic.BaseModel):
     conversations: list[Conversation]
 
     def save(self) -> None:
+        """Write the user data to storage, leaving out empty conversations.
+
+        A conversation is created as soon as a session starts, so a user who
+        connects without saying anything would otherwise fill the file with
+        empty conversations. Only the written copy is filtered: the in-memory
+        list is untouched so that a live session keeps appending to its own
+        (still empty) current conversation.
+        """
+        to_save = self.model_copy(
+            update={
+                "conversations": [
+                    conversation
+                    for conversation in self.conversations
+                    if conversation.messages
+                ]
+            }
+        )
         user_data_path = get_user_data_path(self.email)
         user_data_path.parent.mkdir(parents=True, exist_ok=True)
         with user_data_path.open("w") as f:
-            f.write(self.model_dump_json(indent=4))
+            f.write(to_save.model_dump_json(indent=4))
         logger.info(f"User data saved to {user_data_path}")
 
     def to_llm_ready_conversation(
