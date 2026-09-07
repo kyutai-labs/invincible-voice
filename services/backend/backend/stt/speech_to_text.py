@@ -32,11 +32,26 @@ logger = getLogger(__name__)
 
 
 class GradiumSetupMessage(BaseModel):
-    language: str | None
     type: Literal["setup"] = "setup"
     model_name: str
     input_format: str
+    # Transcription settings (language, keywords, ...) must go in `json_config`,
+    # serialized as a JSON string. See
+    # https://docs.gradium.ai/guides/transcription-settings
+    json_config: str | None = None
     close_ws_on_eos: bool = False
+
+
+def gradium_stt_json_config(expected_language: str | None) -> str | None:
+    """Build the `json_config` of the Gradium STT setup message.
+
+    A top-level `language` key is silently ignored by Gradium, the language
+    has to be inside `json_config`. Returns None when nothing needs to be set
+    so that Gradium falls back to language auto-detection.
+    """
+    if not expected_language:
+        return None
+    return json.dumps({"language": expected_language})
 
 
 class GradiumVADPrediction(BaseModel):
@@ -217,7 +232,9 @@ class SpeechToText:
         if STT_IS_GRADIUM:
             # Gradium protocol - send JSON
             if isinstance(data, GradiumSTTMessage):
-                await self.websocket.send(data.model_dump_json())
+                # exclude_none: Gradium expects optional setup keys to be absent
+                # rather than null, like the official SDK does.
+                await self.websocket.send(data.model_dump_json(exclude_none=True))
             else:
                 raise ValueError(
                     f"Expected GradiumSTTMessage for Gradium, got {type(data)}"
@@ -251,9 +268,9 @@ class SpeechToText:
             try:
                 # Send setup message
                 setup_msg = GradiumSetupMessage(
-                    language=self.expected_language,
                     model_name="default",
                     input_format="pcm",
+                    json_config=gradium_stt_json_config(self.expected_language),
                 )
                 logger.info(f"{setup_msg}")
                 await self._send(setup_msg)
