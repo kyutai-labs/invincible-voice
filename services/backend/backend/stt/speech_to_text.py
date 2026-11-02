@@ -42,16 +42,14 @@ class GradiumSetupMessage(BaseModel):
     close_ws_on_eos: bool = False
 
 
-def gradium_stt_json_config(expected_language: str | None) -> str | None:
+def gradium_stt_json_config(expected_language: str | None) -> str:
     """Build the `json_config` of the Gradium STT setup message.
 
     A top-level `language` key is silently ignored by Gradium, the language
-    has to be inside `json_config`. Returns None when nothing needs to be set
-    so that Gradium falls back to language auto-detection.
+    has to be inside `json_config`. Gradium refuses to start a session without
+    a language, so "any" asks for auto-detection when none was chosen.
     """
-    if not expected_language:
-        return None
-    return json.dumps({"language": expected_language})
+    return json.dumps({"language": expected_language or "any"})
 
 
 class GradiumVADPrediction(BaseModel):
