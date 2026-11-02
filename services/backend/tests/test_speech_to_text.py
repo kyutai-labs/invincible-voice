@@ -21,13 +21,13 @@ from backend.stt.speech_to_text import (
 
 def test_json_config_contains_the_language():
     config = gradium_stt_json_config("fr")
-    assert config is not None
     assert json.loads(config) == {"language": "fr"}
 
 
 @pytest.mark.parametrize("expected_language", [None, ""])
-def test_no_json_config_when_no_language(expected_language):
-    assert gradium_stt_json_config(expected_language) is None
+def test_json_config_asks_for_any_language_when_no_language(expected_language):
+    config = gradium_stt_json_config(expected_language)
+    assert json.loads(config) == {"language": "any"}
 
 
 def test_setup_message_has_no_top_level_language():
@@ -60,7 +60,7 @@ async def test_setup_message_sent_to_gradium(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_setup_message_without_language_omits_json_config(monkeypatch):
+async def test_setup_message_without_language_asks_for_any_language(monkeypatch):
     monkeypatch.setattr(speech_to_text, "STT_IS_GRADIUM", True)
     stt = SpeechToText(expected_language=None)
     stt.websocket = AsyncMock()
@@ -75,4 +75,4 @@ async def test_setup_message_without_language_omits_json_config(monkeypatch):
 
     sent = json.loads(stt.websocket.send.call_args.args[0])
     assert "language" not in sent
-    assert "json_config" not in sent
+    assert json.loads(sent["json_config"]) == {"language": "any"}
